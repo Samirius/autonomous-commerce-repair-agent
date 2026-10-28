@@ -18,5 +18,14 @@ Checks return a defect list with severity ranks. The agent repairs one defect at
 ## D7 — No defect→fix mappings (2026-10-28)
 The agent loop contains no per-defect solution logic. The model picks the file and the exact replacement from evidence + file contents; code only enforces generic scope/safety rules and deterministic verification. Two model attempts per defect, with validation/verification failure fed back, before the defect is left unrepaired and the queue moves on.
 
+## D8 — Discovery mode with a generic invariant probe (2026-10-28, Mission 003)
+For unseen defects the agent gets no defect ids or expected fixes. `scripts/probe.mjs` reports generic commerce invariants (interactive usability per viewport, horizontal overflow, price/cart consistency vs the catalog in integer minor units); the model diagnoses the underlying issue from probe + screenshot + sources. Discovery commits only when failing signals strictly decrease with zero regressions, else the file rolls back. The blind oracle lives in `eval/oracles.mjs`, is never imported by agent code, and the agent only ever works on a copied storefront under `eval/results/.../work/` — it cannot edit variants, oracles, or tests (allowlist + basename validation).
+
+## D9 — Screenshots are model inputs, not just artifacts (2026-10-28)
+Audit of Mission 001/002 found the model received text-only payloads. The provider now sends the Playwright screenshot as a base64 `image_url` part with the structured evidence, and each decision record stores the screenshot SHA-256/size plus the model response id, so visual input is provable. Verified live: Muse Wonder identified the covering promo banner from the screenshot alone.
+
+## D10 — Open-weight verifier is advisory only (2026-10-28)
+Muse Spark Open (Baseten) is integrated behind `src/verifier.mjs` to independently review committed repairs. It cannot override deterministic browser checks. Without `BASETEN_API_KEY` it reports unavailable; fabricating a verifier response is forbidden.
+
 ## D4 — Run artifacts as the memory (2026-10-28)
 Each run writes `artifacts/run-<ts>/` (screenshots, evidence, model decision, diff, verification, history) and appends a summary line to `memory/runs.jsonl`. Rationale: judges and future agents can audit exactly what the model decided and what the tests returned — no fabricated history.

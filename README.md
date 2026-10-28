@@ -5,7 +5,21 @@ AI system that autonomously detects, repairs and verifies real e-commerce storef
 
 Built for the Meta Global AI Developer Hackathon (Oct 26–Nov 4, 2026). Core intelligence is Meta-powered (Meta Model API — Muse Wonder / Muse Spark); the model layer is provider-independent.
 
-## Mission 002 — multi-defect repair
+## Mission 003 — generalization, vision, open-weight verifier
+
+- **Blind evaluation** (`eval/`): six unseen storefront variants (cookie-bar CTA overlap, 430px fixed-width overflow at 360px, bulk discount applied twice, quantity-squared cart total, subtotal charging an extra unit, displayed price from the wrong catalog product). The agent works on a copied storefront only; the private oracle (`eval/oracles.mjs`) is never shown to it. Discovery mode (`src/discover.mjs`) gets no defect names or expected fixes — only a generic invariant probe (`scripts/probe.mjs`: interactive usability at 390/360/1280, horizontal overflow, displayed-price and cart-total consistency in integer minor units), the screenshot, and the source files. Latest blind run: **6/6 discovered, 6/6 repaired, 1 attempt each, 0 regressions, 17,758 total tokens** (`docs/eval-mission003-summary.json`; full artifacts in `eval/results/`, gitignored).
+- **Real multimodal input**: model requests now include the actual Playwright screenshot as a base64 `image_url` content part alongside structured evidence (previously screenshots were artifacts only). Each run records the screenshot SHA-256 + byte size next to the model response id as proof of what was sent.
+- **Open-weight verifier** (`src/verifier.mjs`): provider-independent adapter for Muse Spark Open on Baseten (`meta-models/muse-spark-open`, `https://inference.baseten.co/v1`). Role: independent review of a committed repair — never the final authority; deterministic browser tests remain decisive. **Blocked**: no `BASETEN_API_KEY` in the environment (endpoint returns 403 unauthenticated); the adapter reports `available:false` and no response is fabricated. Set `BASETEN_API_KEY` and it activates with no code changes.
+
+Run the blind evaluation:
+
+```bash
+node eval/run-eval.mjs            # all six variants
+node eval/run-eval.mjs --only=v1,v3
+```
+
+## Mission 001/002 — main demo storefront
+
 
 The storefront now has two independent defects, discovered and queued by severity (critical first):
 

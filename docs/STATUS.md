@@ -3,23 +3,24 @@
 Updated: 2026-10-28
 
 ## Completed
-- Mission 001: single-defect CTA repair, live Meta run verified (see git history e661e16).
-- Mission 002: canonical catalog (`storefront/catalog.js`, integer minor units, agent read-only); price-mismatch defect added (cart used stale `LEGACY_CART_PRICE_MINOR=7900` vs canonical 8900).
-- Deterministic checks now return a defect list: cta-overlap (mobile 390×844 + desktop 1280×800) and price-mismatch (displayed price + 2-click cart total vs catalog, integer minor units). Before-run: both RED (cart 15800 vs expected 17800).
-- Agent generalized: severity-prioritized queue, one defect at a time, model selects file (allowlist styles.css/app.js/index.html; catalog.js excluded) and patch — no defect→fix mappings. Generic validation incl. anti-hardcoding of canonical values and no execution constructs. Per-defect verify + regression recheck of previously repaired defects; rollback is per-file; queue continues on failure; max 2 model attempts/defect with failure feedback.
-- Provider config tests added (meta defaults, env-only provider/model swap, unknown provider rejected) — no network.
-- Tests: 11/11 passing (validation, catalog rejection, anti-hardcode, CTA rollback, price per-file rollback, regression rollback, provider config).
-- Live Mission 002 run `run-2026-10-28T15-36-24-508Z`: queue [cta-overlap, price-mismatch]; muse-wonder-1.0 repaired both on attempt 1 — styles.css `bottom: 16px→100px`; app.js `LEGACY_CART_PRICE_MINOR * count` → `product.priceMinor * count` (catalog-derived, no hardcoded 8900). Final check: all pass. Receipts in artifacts + memory/runs.jsonl.
+- Missions 001–002: known-defect multi-repair on the main storefront, live Meta runs verified (git e661e16, 9e3d38e).
+- Mission 003 Part B (vision): audit found Mission 001/002 model calls were text-only. Provider now sends the screenshot as a base64 `image_url` part; proof = screenshot SHA-256/size recorded beside each model response id. Standalone live probe: Muse Wonder identified the covering promo banner from the screenshot alone (chatcmpl-01a1832c…, 1,545 tokens).
+- Mission 003 Part A (blind eval): generic invariant probe (`scripts/probe.mjs`) + discovery mode (`src/discover.mjs`, no defect names/fixes given). Six unseen variants in `eval/variants/`, private oracle in `eval/oracles.mjs`. Blind run `eval-2026-10-28T15-44-14-331Z`: **6/6 discovered, 6/6 repaired, 1 attempt each, 0 regressions, 0 unexpected rollbacks, 17,758 tokens total** (2,475–3,505 per variant). Summary committed at `docs/eval-mission003-summary.json`; full artifacts in `eval/results/` (gitignored).
+- Mission 003 Part C (open-weight verifier): Baseten adapter implemented (`src/verifier.mjs`) for `meta-models/muse-spark-open`; advisory only.
+- Security: agent allowlist + path/traversal rejection tests (cannot patch eval/oracles/catalog/agent itself); secret scan of tracked files clean; no project `.env`.
+- Tests: 14/14 passing. Main storefront check still green.
 
 ## Ongoing
-- None for Mission 002.
+- None for Mission 003.
 
 ## Blocked
-- None.
+- Muse Spark Open real request: **no BASETEN_API_KEY available** (unauthenticated endpoint probe returned HTTP 403). Adapter reports unavailable; no response fabricated. Unblocks instantly when a key is provided.
 
 ## Weaknesses noted
-- The model's price repair left the now-unused `LEGACY_CART_PRICE_MINOR` constant in app.js (dead code; harmless, but a cleanup pass could remove it).
-- Price check isolates pricing with DOM clicks when the CTA is obscured; pointer-level cart proof only exists via the CTA defect check.
+- Blind variants are still single-product, single-page stores authored by us; "unseen" means unseen by the agent/model, not independently authored. A truly external test set remains the biggest credibility gap.
+- Discovery commit rule (failing signals must strictly decrease) can reject a correct partial fix that does not reduce the signal count.
+- USD cost per model is not exposed by the Meta API responses; tokens are tracked exactly, dollar cost is not claimed.
 
 ## Next
-- Mission 003 candidate: third defect class + judge-facing demo script (reset-to-broken → run → receipts), and remove the dead legacy constant via a model cleanup repair or leave as evidence.
+- Provide BASETEN_API_KEY → run verifier live on the eval set for the Open Weights track.
+- Judge demo: re-break main storefront, run `npm run agent`, show receipts; optionally add independently-authored variants.
