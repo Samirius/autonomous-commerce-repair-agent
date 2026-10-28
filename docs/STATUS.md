@@ -13,8 +13,9 @@ Updated: 2026-10-28
 ## Ongoing
 - Final submission preparation (demo script/video, README polish) — next mission.
 
-## Blocked
-- Muse Spark Open (Baseten): **no `BASETEN_API_KEY`** — exact requirement: a Baseten API key with access to `meta-models/muse-spark-open` set as `BASETEN_API_KEY` in the environment or project `.env`. Adapter ready; zero simulated responses used.
+## Blockers
+- None. (Open Weights formerly blocked here — resolved, see below.)
+- Muse Spark Open (Baseten): **UNBLOCKED 2026-10-28** — Samir provided a key (session env only, never committed; repo scanned clean for it). Live check (`src/verifier-live-check.mjs`, `artifacts/openweight/verifier-live-check.json`): Muse Spark Open approved the investigation-proof repair (1,539 tokens). Integrated demo run (`demo-2026-10-28T20-55-27-120Z`): Spark Open reviewed both committed repairs in-process — approve (CTA CSS, 4,607 tokens) and concern (cart fix, 2,259 tokens; it correctly noted our evidenceAfter payload was empty — payload improved to include probe-pass status). Deterministic checks remained the final authority in all cases.
 
 ## Weaknesses / remaining limitations
 - The confirmed-repair path only supports cart-total scenarios (cart-scenario/apply-promo/inspect-cart); other suspicion classes still end as suspected-unverified.
@@ -22,4 +23,4 @@ Updated: 2026-10-28
 - Investigation tokens remain material (~9–14k per run) even with budgets.
 
 ## Next
-- Samir approval to push Mission 008; BASETEN_API_KEY for the Open Weights verifier; record the 3-minute demo from `npm run demo` + the investigation-proof artifacts.
+- Samir approval to push Missions 008 + Open Weights integration; record the 3-minute demo from `npm run demo` + the investigation-proof artifacts.

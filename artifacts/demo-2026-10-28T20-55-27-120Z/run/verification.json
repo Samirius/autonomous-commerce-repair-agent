@@ -1,0 +1,144 @@
+{
+  "target": "target",
+  "state": "confirmed-issue-repaired",
+  "investigation": null,
+  "initialFailing": [
+    "interactive-usable@mobile:add-to-cart",
+    "interactive-usable@small:add-to-cart",
+    "interactive-usable@desktop:add-to-cart",
+    "cart-total-for-product:nova-sneaker",
+    "cart-total-matches-catalog-rules",
+    "pointer-purchase-works:featured"
+  ],
+  "repairsCommitted": 2,
+  "finalPass": true,
+  "finalFailing": [],
+  "receipts": [
+    {
+      "round": 1,
+      "attempt": 1,
+      "status": "committed",
+      "repair": {
+        "diagnosis": "Sticky promo overlays and blocks the fixed Add to Cart button",
+        "evidenceSummary": "Screenshot shows the bottom promo bar with no visible Add to Cart button; hit tests on mobile, small, and desktop report hitElement sticky-promo instead of add-to-cart despite the button being in viewport. CSS places both fixed at the bottom, with promo height 84px and z-index 20 above the button at bottom 16px and z-index 10.",
+        "file": "styles.css",
+        "old": "bottom: 16px;",
+        "new": "bottom: 100px;",
+        "rationale": "Moving the button up by the 84px promo height plus its original 16px spacing clears the sticky promo without removing or hiding either element, so real pointer clicks reach Add to Cart."
+      },
+      "model": {
+        "provider": "meta",
+        "model": "muse-wonder-1.0",
+        "id": "chatcmpl-01a1844c-6500-754a-b821-c43db46d91fc",
+        "usage": {
+          "completion_tokens": 2316,
+          "prompt_tokens": 2609,
+          "total_tokens": 4925,
+          "completion_tokens_details": {
+            "reasoning_tokens": 2148
+          },
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        }
+      },
+      "vision": {
+        "included": true,
+        "screenshot": "round1.png",
+        "sha256": "fa2742e8bdf0f19b30e26f543cb8308f37fcb9a3db9d3f753692ff9ae41c3b80",
+        "bytes": 22522
+      },
+      "failingAfter": [
+        "cart-total-for-product:nova-sneaker",
+        "cart-total-matches-catalog-rules"
+      ],
+      "openWeightVerification": {
+        "provider": "baseten",
+        "model": "meta-models/muse-spark-open",
+        "id": "chatcmpl-d9910ca46b8245179486626391b7a602",
+        "usage": {
+          "prompt_tokens": 828,
+          "completion_tokens": 3779,
+          "total_tokens": 4607,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          },
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 2593,
+            "audio_tokens": 0,
+            "reasoning_tokens": 3626,
+            "rejected_prediction_tokens": 5730
+          }
+        },
+        "parsed": {
+          "verdict": "approve",
+          "rationale": "Diagnosis matches evidence: 3 viewports show add-to-cart inViewport true but hitIsSelf false with hitElement sticky-promo (promo 84px, z-index 20 over button z-index 10 at bottom 16px). Fix bottom:16px to 100px (84+16) correctly lifts button above promo without hiding/removing either element, restoring real pointer clicks. EvidenceAfter no longer lists interactive-usable/pointer-purchase failures, consistent with fix; remaining cart-total pricing mismatches (7900 vs catalog 8900) are unrelated to CSS and not addressed by this change, but repair is safe and minimal for its scope."
+        },
+        "rawText": "{\"verdict\":\"approve\",\"rationale\":\"Diagnosis matches evidence: 3 viewports show add-to-cart inViewport true but hitIsSelf false with hitElement sticky-promo (promo 84px, z-index 20 over button z-index 10 at bottom 16px). Fix bottom:16px to 100px (84+16) correctly lifts button above promo without hiding/removing either element, restoring real pointer clicks. EvidenceAfter no longer lists interactive-usable/pointer-purchase failures, consistent with fix; remaining cart-total pricing mismatches (7900 vs catalog 8900) are unrelated to CSS and not addressed by this change, but repair is safe and minimal for its scope.\"}"
+      }
+    },
+    {
+      "round": 2,
+      "attempt": 1,
+      "status": "committed",
+      "repair": {
+        "diagnosis": "Cart total uses a stale legacy unit price instead of the catalog price for nova-sneaker",
+        "evidenceSummary": "Screenshot and catalog show displayed price $89.00 (8900 minor), but probes show cart total 7900 for qty 1 and 15800 for qty 2, i.e. 7900 per item instead of expected 8900/17800 from catalog",
+        "file": "app.js",
+        "old": "totalMinor = LEGACY_CART_PRICE_MINOR * count;",
+        "new": "totalMinor = product.priceMinor * count;",
+        "rationale": "Use product.priceMinor already loaded from window.CATALOG as the single source of truth, without hardcoding the catalog value"
+      },
+      "model": {
+        "provider": "meta",
+        "model": "muse-wonder-1.0",
+        "id": "chatcmpl-01a1844c-e21b-74a3-908b-036a2243eeee",
+        "usage": {
+          "completion_tokens": 1000,
+          "prompt_tokens": 2037,
+          "total_tokens": 3037,
+          "completion_tokens_details": {
+            "reasoning_tokens": 850
+          },
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        }
+      },
+      "vision": {
+        "included": true,
+        "screenshot": "round2.png",
+        "sha256": "c1ec0261e854444c14749777bd16a66be612a0fa3530f26e1fe8f1edfe97de6c",
+        "bytes": 23946
+      },
+      "failingAfter": [],
+      "openWeightVerification": {
+        "provider": "baseten",
+        "model": "meta-models/muse-spark-open",
+        "id": "chatcmpl-156826ab91a9495bac1e3b76e00a40bd",
+        "usage": {
+          "prompt_tokens": 459,
+          "completion_tokens": 1800,
+          "total_tokens": 2259,
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 128
+          },
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 1227,
+            "audio_tokens": 0,
+            "reasoning_tokens": 1683,
+            "rejected_prediction_tokens": 2784
+          }
+        },
+        "parsed": {
+          "verdict": "concern",
+          "rationale": "Diagnosis matches evidenceBefore: cart uses 7900/qty (7900/15800) vs catalog 8900/qty (8900/17800) for nova-sneaker. Fix correctly replaces LEGACY_CART_PRICE_MINOR with product.priceMinor from window.CATALOG, minimal and avoids hardcoding. Directionally correct, but evidenceAfter is empty - no post-fix probe confirms totalMinor now equals 8900/17800, so cannot fully approve without verification."
+        },
+        "rawText": "{\"verdict\":\"concern\",\"rationale\":\"Diagnosis matches evidenceBefore: cart uses 7900/qty (7900/15800) vs catalog 8900/qty (8900/17800) for nova-sneaker. Fix correctly replaces LEGACY_CART_PRICE_MINOR with product.priceMinor from window.CATALOG, minimal and avoids hardcoding. Directionally correct, but evidenceAfter is empty - no post-fix probe confirms totalMinor now equals 8900/17800, so cannot fully approve without verification.\"}"
+      }
+    }
+  ],
+  "finishedAt": "2026-10-28T20:56:43.693Z"
+}

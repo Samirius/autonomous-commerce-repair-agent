@@ -1,0 +1,27 @@
+{
+  "provider": "baseten",
+  "model": "meta-models/muse-spark-open",
+  "id": "chatcmpl-401b8d355ffc4fc5b648e187b6a0aebd",
+  "usage": {
+    "prompt_tokens": 292,
+    "completion_tokens": 1247,
+    "total_tokens": 1539,
+    "prompt_tokens_details": {
+      "audio_tokens": 0,
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": 861,
+      "audio_tokens": 0,
+      "reasoning_tokens": 1185,
+      "rejected_prediction_tokens": 1834
+    }
+  },
+  "parsed": {
+    "verdict": "approve",
+    "rationale": "Change directly implements diagnosis (firstPrice -> subtotal for promo discount). Evidence shows mixed-cart SAVE10 total now matches expected 19080 (was 19910) and fullProbePass true indicates no regression."
+  },
+  "rawText": "{\"verdict\":\"approve\",\"rationale\":\"Change directly implements diagnosis (firstPrice -> subtotal for promo discount). Evidence shows mixed-cart SAVE10 total now matches expected 19080 (was 19910) and fullProbePass true indicates no regression.\"}",
+  "elapsedMs": 6427,
+  "reviewedAt": "2026-10-28T20:55:04.457Z"
+}

@@ -166,7 +166,12 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
             if (verifyProbe.pass && scenarioOk) {
               repairsCommitted += 1;
               investigation.state = 'confirmed-issue-repaired';
-              receipts.push({ status: 'committed', phase: 'confirmed-repair', repair, model: { provider: result.provider, model: result.model, id: result.id, usage: result.usage }, verify: { probePass: true, scenarioTotalMinor: verifyObs.cart.totalMinor, expected } });
+              let owVerification = null;
+              if (verifier?.available) {
+                try { owVerification = await verifier.review({ repair, evidenceBefore: investigation.confirmation, evidenceAfter: { scenarioTotalMinor: verifyObs.cart.totalMinor, expected, probePass: true } }); }
+                catch (e) { owVerification = { error: String(e).slice(0, 300) }; }
+              }
+              receipts.push({ status: 'committed', phase: 'confirmed-repair', repair, model: { provider: result.provider, model: result.model, id: result.id, usage: result.usage }, verify: { probePass: true, scenarioTotalMinor: verifyObs.cart.totalMinor, expected }, openWeightVerification: owVerification });
               record('confirmed-committed', { attempt, file: repair.file });
               probe = verifyProbe;
               break;
@@ -249,7 +254,7 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
         committed = true; repairsCommitted += 1; probe = after;
         let verification = null;
         if (verifier?.available) {
-          try { verification = await verifier.review({ repair, evidenceBefore: failing, evidenceAfter: failingAfter }); }
+          try { verification = await verifier.review({ repair, evidenceBefore: { failingSignalsBefore: failing.map((s) => s.id) }, evidenceAfter: { failingSignalsAfter: failingAfter, deterministicProbePassAfter: failingAfter.length === 0 } }); }
           catch (e) { verification = { error: String(e).slice(0, 300) }; }
         }
         receipts.push({ round, attempt, status: 'committed', repair, model: { provider: result.provider, model: result.model, id: result.id, usage: result.usage }, vision, failingAfter, openWeightVerification: verification });

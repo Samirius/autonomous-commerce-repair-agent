@@ -1,0 +1,33 @@
+{
+  "modelInfo": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "id": "chatcmpl-01a1844c-e21b-74a3-908b-036a2243eeee",
+    "usage": {
+      "completion_tokens": 1000,
+      "prompt_tokens": 2037,
+      "total_tokens": 3037,
+      "completion_tokens_details": {
+        "reasoning_tokens": 850
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "rawText": "{\"diagnosis\":\"Cart total uses a stale legacy unit price instead of the catalog price for nova-sneaker\",\"evidenceSummary\":\"Screenshot and catalog show displayed price $89.00 (8900 minor), but probes show cart total 7900 for qty 1 and 15800 for qty 2, i.e. 7900 per item instead of expected 8900/17800 from catalog\",\"file\":\"app.js\",\"old\":\"totalMinor = LEGACY_CART_PRICE_MINOR * count;\",\"new\":\"totalMinor = product.priceMinor * count;\",\"rationale\":\"Use product.priceMinor already loaded from window.CATALOG as the single source of truth, without hardcoding the catalog value\"}"
+  },
+  "vision": {
+    "included": true,
+    "screenshot": "round2.png",
+    "sha256": "c1ec0261e854444c14749777bd16a66be612a0fa3530f26e1fe8f1edfe97de6c",
+    "bytes": 23946
+  },
+  "response": {
+    "diagnosis": "Cart total uses a stale legacy unit price instead of the catalog price for nova-sneaker",
+    "evidenceSummary": "Screenshot and catalog show displayed price $89.00 (8900 minor), but probes show cart total 7900 for qty 1 and 15800 for qty 2, i.e. 7900 per item instead of expected 8900/17800 from catalog",
+    "file": "app.js",
+    "old": "totalMinor = LEGACY_CART_PRICE_MINOR * count;",
+    "new": "totalMinor = product.priceMinor * count;",
+    "rationale": "Use product.priceMinor already loaded from window.CATALOG as the single source of truth, without hardcoding the catalog value"
+  }
+}

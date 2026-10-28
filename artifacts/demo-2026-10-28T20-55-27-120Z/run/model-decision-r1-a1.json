@@ -1,0 +1,33 @@
+{
+  "modelInfo": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "id": "chatcmpl-01a1844c-6500-754a-b821-c43db46d91fc",
+    "usage": {
+      "completion_tokens": 2316,
+      "prompt_tokens": 2609,
+      "total_tokens": 4925,
+      "completion_tokens_details": {
+        "reasoning_tokens": 2148
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "rawText": "{\"diagnosis\":\"Sticky promo overlays and blocks the fixed Add to Cart button\",\"evidenceSummary\":\"Screenshot shows the bottom promo bar with no visible Add to Cart button; hit tests on mobile, small, and desktop report hitElement sticky-promo instead of add-to-cart despite the button being in viewport. CSS places both fixed at the bottom, with promo height 84px and z-index 20 above the button at bottom 16px and z-index 10.\",\"file\":\"styles.css\",\"old\":\"bottom: 16px;\",\"new\":\"bottom: 100px;\",\"rationale\":\"Moving the button up by the 84px promo height plus its original 16px spacing clears the sticky promo without removing or hiding either element, so real pointer clicks reach Add to Cart.\"}"
+  },
+  "vision": {
+    "included": true,
+    "screenshot": "round1.png",
+    "sha256": "fa2742e8bdf0f19b30e26f543cb8308f37fcb9a3db9d3f753692ff9ae41c3b80",
+    "bytes": 22522
+  },
+  "response": {
+    "diagnosis": "Sticky promo overlays and blocks the fixed Add to Cart button",
+    "evidenceSummary": "Screenshot shows the bottom promo bar with no visible Add to Cart button; hit tests on mobile, small, and desktop report hitElement sticky-promo instead of add-to-cart despite the button being in viewport. CSS places both fixed at the bottom, with promo height 84px and z-index 20 above the button at bottom 16px and z-index 10.",
+    "file": "styles.css",
+    "old": "bottom: 16px;",
+    "new": "bottom: 100px;",
+    "rationale": "Moving the button up by the 84px promo height plus its original 16px spacing clears the sticky promo without removing or hiding either element, so real pointer clicks reach Add to Cart."
+  }
+}

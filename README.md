@@ -5,7 +5,7 @@ AI system that autonomously detects, repairs and verifies real e-commerce storef
 
 Built for the Meta Global AI Developer Hackathon (Oct 26–Nov 4, 2026), from scratch during the hackathon.
 
-**Models used:** Muse Wonder (`muse-wonder-1.0`, Meta Model API, multimodal — planner/diagnosis) via a provider-independent layer (`src/provider.mjs`, env-selected). Optional independent verifier: Muse Spark Open (`meta-models/muse-spark-open`) via Baseten (`src/verifier.mjs`) — advisory only, currently blocked on `BASETEN_API_KEY` in our environment. Deterministic Playwright checks are always the final pass/fail authority.
+**Models used:** Muse Wonder (`muse-wonder-1.0`, Meta Model API, multimodal — planner/diagnosis) via a provider-independent layer (`src/provider.mjs`, env-selected). Independent verifier: Muse Spark Open (`meta-models/muse-spark-open`, open weights) via Baseten (`src/verifier.mjs`) — advisory only, live-verified; deterministic Playwright checks are always the final pass/fail authority. Set `BASETEN_API_KEY` to enable it.
 
 ## Installation
 
