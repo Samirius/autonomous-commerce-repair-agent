@@ -1,0 +1,13 @@
+diff --git a/storefront/app.js b/storefront/app.js
+index 3fca3f2..ccdb74a 100644
+--- a/storefront/app.js
++++ b/storefront/app.js
+@@ -14,7 +14,7 @@ let count = 0;
+ let totalMinor = 0;
+ document.getElementById('add-to-cart').addEventListener('click', () => {
+   count += 1;
+-  totalMinor = LEGACY_CART_PRICE_MINOR * count;
++  totalMinor = product.priceMinor * count;
+   document.getElementById('cart-count').textContent = String(count);
+   const totalEl = document.getElementById('cart-total');
+   totalEl.textContent = formatMinor(totalMinor);

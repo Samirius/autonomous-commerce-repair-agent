@@ -1,0 +1,27 @@
+{
+  "modelInfo": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "id": "chatcmpl-01a18328-115b-724b-baa4-b098fdb5d102",
+    "usage": {
+      "completion_tokens": 2060,
+      "prompt_tokens": 1648,
+      "total_tokens": 3708,
+      "completion_tokens_details": {
+        "reasoning_tokens": 1874
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "rawText": "{\"diagnosis\":\"Sticky promo overlaps CTA: .sticky-promo is fixed bottom:0 height:84px z-index:20 while .add-to-cart is fixed bottom:16px z-index:10, so promo covers CTA\",\"evidenceSummary\":\"Both mobile (390x844) and desktop (1280x800) show ctaInViewport:true but mobile/desktopNotObscured:false and Clickable:false, hitElement id sticky-promo, hitIsCta:false, clickOk:false; CTA bottom area lies within promo's 84px bottom band\",\"file\":\"styles.css\",\"old\":\"bottom: 16px;\",\"new\":\"bottom: 100px;\",\"rationale\":\"Raise CTA 16px above the 84px-high sticky promo (84+16=100) so it is fully visible and clickable in viewport without hiding or removing CTA or promo\"}"
+  },
+  "repair": {
+    "diagnosis": "Sticky promo overlaps CTA: .sticky-promo is fixed bottom:0 height:84px z-index:20 while .add-to-cart is fixed bottom:16px z-index:10, so promo covers CTA",
+    "evidenceSummary": "Both mobile (390x844) and desktop (1280x800) show ctaInViewport:true but mobile/desktopNotObscured:false and Clickable:false, hitElement id sticky-promo, hitIsCta:false, clickOk:false; CTA bottom area lies within promo's 84px bottom band",
+    "file": "styles.css",
+    "old": "bottom: 16px;",
+    "new": "bottom: 100px;",
+    "rationale": "Raise CTA 16px above the 84px-high sticky promo (84+16=100) so it is fully visible and clickable in viewport without hiding or removing CTA or promo"
+  }
+}

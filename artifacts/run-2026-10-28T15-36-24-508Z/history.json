@@ -1,0 +1,80 @@
+[
+  {
+    "t": "2026-10-28T15:36:31.924Z",
+    "step": "observe",
+    "detail": [
+      {
+        "id": "cta-overlap",
+        "pass": false
+      },
+      {
+        "id": "price-mismatch",
+        "pass": false
+      }
+    ]
+  },
+  {
+    "t": "2026-10-28T15:36:31.925Z",
+    "step": "queue",
+    "detail": [
+      "cta-overlap (critical)",
+      "price-mismatch (high)"
+    ]
+  },
+  {
+    "t": "2026-10-28T15:36:31.927Z",
+    "step": "provider",
+    "detail": {
+      "provider": "meta",
+      "model": "muse-wonder-1.0",
+      "baseUrl": "https://api.meta.ai/v1"
+    }
+  },
+  {
+    "t": "2026-10-28T15:36:43.350Z",
+    "step": "diagnose",
+    "detail": {
+      "defect": "cta-overlap",
+      "attempt": 1,
+      "model": "muse-wonder-1.0",
+      "file": "styles.css",
+      "diagnosis": "Sticky promo overlaps CTA: .sticky-promo is fixed bottom:0 height:84px z-index:20 while .add-to-cart is fixed bottom:16px z-index:10, so promo covers CTA"
+    }
+  },
+  {
+    "t": "2026-10-28T15:36:44.460Z",
+    "step": "verify",
+    "detail": {
+      "defect": "cta-overlap",
+      "attempt": 1,
+      "status": "committed",
+      "regressions": []
+    }
+  },
+  {
+    "t": "2026-10-28T15:36:52.837Z",
+    "step": "diagnose",
+    "detail": {
+      "defect": "price-mismatch",
+      "attempt": 1,
+      "model": "muse-wonder-1.0",
+      "file": "app.js",
+      "diagnosis": "Cart total uses stale LEGACY_CART_PRICE_MINOR (7900) instead of the canonical catalog price from window.CATALOG, while displayed price correctly uses product.priceMinor."
+    }
+  },
+  {
+    "t": "2026-10-28T15:36:55.279Z",
+    "step": "verify",
+    "detail": {
+      "defect": "price-mismatch",
+      "attempt": 1,
+      "status": "committed",
+      "regressions": []
+    }
+  },
+  {
+    "t": "2026-10-28T15:36:57.184Z",
+    "step": "remember",
+    "detail": "finalPass=true repaired=cta-overlap,price-mismatch"
+  }
+]

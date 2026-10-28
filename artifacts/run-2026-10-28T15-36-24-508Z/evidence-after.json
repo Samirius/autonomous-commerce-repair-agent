@@ -1,0 +1,87 @@
+{
+  "pass": true,
+  "defects": [
+    {
+      "id": "cta-overlap",
+      "title": "Add to Cart CTA obscured by overlapping element",
+      "severity": "critical",
+      "severityRank": 1,
+      "pass": true,
+      "checks": {
+        "mobileInViewport": true,
+        "mobileNotObscured": true,
+        "mobileClickable": true,
+        "desktopInViewport": true,
+        "desktopNotObscured": true,
+        "desktopClickable": true
+      },
+      "evidence": {
+        "mobile": {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "cta": {
+            "x": 16,
+            "y": 692,
+            "width": 358,
+            "height": 52,
+            "bottom": 744
+          },
+          "hitElement": {
+            "id": "add-to-cart",
+            "className": "add-to-cart",
+            "tag": "BUTTON"
+          },
+          "hitIsCta": true,
+          "ctaInViewport": true,
+          "clickOk": true
+        },
+        "desktop": {
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "cta": {
+            "x": 16,
+            "y": 648,
+            "width": 1248,
+            "height": 52,
+            "bottom": 700
+          },
+          "hitElement": {
+            "id": "add-to-cart",
+            "className": "add-to-cart",
+            "tag": "BUTTON"
+          },
+          "hitIsCta": true,
+          "ctaInViewport": true,
+          "clickOk": true
+        }
+      }
+    },
+    {
+      "id": "price-mismatch",
+      "title": "Cart total disagrees with canonical catalog price",
+      "severity": "high",
+      "severityRank": 2,
+      "pass": true,
+      "checks": {
+        "displayedPriceMatchesCatalog": true,
+        "cartTotalMatchesCatalog": true
+      },
+      "evidence": {
+        "catalog": {
+          "id": "nova-sneaker",
+          "priceMinor": 8900,
+          "currency": "USD"
+        },
+        "displayedPriceMinor": 8900,
+        "quantity": 2,
+        "cartCount": 2,
+        "cartTotalMinor": 17800,
+        "expectedTotalMinor": 17800
+      }
+    }
+  ]
+}

@@ -38,9 +38,7 @@ async function brokenCopy() {
   await writeFile(cssPath, (await readFile(cssPath, 'utf8')).replace(/bottom: \d+px;(\s*\n\s*z-index: 10;)/, 'bottom: 16px;$1'));
   const appPath = path.join(root, 'app.js');
   const app = await readFile(appPath, 'utf8');
-  if (!app.includes('LEGACY_CART_PRICE_MINOR')) {
-    await writeFile(appPath, app.replace('product.priceMinor * count', 'LEGACY_CART_PRICE_MINOR * count'));
-  }
+  await writeFile(appPath, app.replace('totalMinor = product.priceMinor * count;', 'totalMinor = LEGACY_CART_PRICE_MINOR * count;'));
   return root;
 }
 
