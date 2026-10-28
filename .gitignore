@@ -3,3 +3,6 @@ node_modules/
 artifacts/before/
 eval/results/
 artifacts/investigation-demo/target/
+artifacts/demo-*/target/
+artifacts/investigation-proof/target/
+artifacts/investigation-demo2/target/

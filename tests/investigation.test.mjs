@@ -26,15 +26,32 @@ test('investigation: healthy verdict only after >=2 observations -> verified-hea
   const { root, runDir } = await copyFixture();
   const before = await readFile(path.join(root, 'app.js'), 'utf8');
   const provider = stubProvider([
-    { observationRequest: { kind: 'cart-scenario', items: [{ id: 'trail-runner', qty: 2 }] } },
-    { observationRequest: { kind: 'apply-promo', items: [{ productId: 'canvas-tote', qty: 1 }], promoCode: 'SAVE10' } },
-    { verdict: 'healthy', evidenceSummary: 'cart and promo behaved as catalog specifies' },
+    { observationRequest: { kind: 'cart-scenario', items: [{ id: 'trail-runner', qty: 1 }, { id: 'canvas-tote', qty: 1 }], promoCode: 'SAVE10' } },
+    { observationRequest: { kind: 'quantity-change', items: [{ productId: 'trail-runner', qty: 1 }], productId: 'trail-runner', delta: 1 } },
+    { verdict: 'healthy', evidenceSummary: 'mixed cart, promo and quantity behaved as catalog specifies' },
   ]);
   const summary = await discoverAndRepair({ root, runDir, provider });
   assert.equal(summary.state, 'verified-healthy');
   assert.equal(summary.investigation.observations, 2);
   assert.equal(summary.repairsCommitted, 0);
   assert.equal(await readFile(path.join(root, 'app.js'), 'utf8'), before);
+});
+
+test('investigation: suspected + confirmed scenario discrepancy is repaired and verified', async () => {
+  const dir = await mkdtemp(path.join(tmpdir(), 'acra-inv-'));
+  const root = path.join(dir, 'store');
+  await cp(path.resolve('fixtures/investigation-target'), root, { recursive: true });
+  const provider = stubProvider([
+    { observationRequest: { kind: 'cart-scenario', items: [{ id: 'trail-runner', qty: 1 }, { id: 'canvas-tote', qty: 1 }], promoCode: 'SAVE10' } },
+    { observationRequest: { kind: 'quantity-change', items: [{ id: 'trail-runner', qty: 1 }], productId: 'trail-runner', delta: 1 } },
+    { verdict: 'suspected', suspectedIssue: 'promo total in mixed cart looks wrong', confirmation: { kind: 'cart-scenario', items: [{ id: 'trail-runner', qty: 1 }, { id: 'canvas-tote', qty: 1 }], promoCode: 'SAVE10' } },
+    { diagnosis: 'discount base wrong', file: 'app.js', old: 'const discount = Math.round(firstPrice * promoPercent / 100);', new: 'const discount = Math.round(subtotal * promoPercent / 100);', rationale: 'discount must be computed on the subtotal' },
+  ]);
+  const summary = await discoverAndRepair({ root, runDir: path.join(dir, 'run'), provider });
+  assert.equal(summary.state, 'confirmed-issue-repaired');
+  assert.equal(summary.repairsCommitted, 1);
+  assert.equal(summary.investigation.confirmation.observed, 16510);
+  assert.equal(summary.investigation.confirmation.expected, 16020);
 });
 
 test('investigation: a bare repair proposal on a passing store is suspicion, never a patch', async () => {

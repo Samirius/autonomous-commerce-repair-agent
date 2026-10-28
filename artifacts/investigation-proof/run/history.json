@@ -1,0 +1,78 @@
+[
+  {
+    "t": "2026-10-28T19:45:39.186Z",
+    "step": "probe-before",
+    "detail": {
+      "failing": []
+    }
+  },
+  {
+    "t": "2026-10-28T19:45:48.634Z",
+    "step": "investigation-observation",
+    "detail": {
+      "turn": 1,
+      "kind": "cart-scenario",
+      "result": "{\"kind\":\"cart-scenario\",\"items\":[{\"id\":\"trail-runner\",\"qty\":1},{\"id\":\"canvas-tote\",\"qty\":1},{\"id\":\"insulated-bottle\",\"qty\":1}],\"cart\":{\"count\":3,\"totalMinor\":19910},\"cartState\":{\"lines\":[\"Trail Runner Shoes\\n      −\\n      1\\n      +\\n      $129.00Canvas Tote Bag\\n      −\\n      1\\n      +\\n      $4"
+    }
+  },
+  {
+    "t": "2026-10-28T19:46:03.903Z",
+    "step": "investigation-observation",
+    "detail": {
+      "turn": 2,
+      "kind": "quantity-change",
+      "result": "{\"kind\":\"quantity-change\",\"target\":\"trail-runner\",\"delta\":1,\"beforeQty\":{\"count\":1,\"totalMinor\":12900},\"afterQty\":{\"count\":2,\"totalMinor\":25800},\"errors\":[]}"
+    }
+  },
+  {
+    "t": "2026-10-28T19:46:14.248Z",
+    "step": "investigation-coverage-complete",
+    "detail": {
+      "turn": 3
+    }
+  },
+  {
+    "t": "2026-10-28T19:46:37.073Z",
+    "step": "investigation",
+    "detail": {
+      "state": "suspected-unverified",
+      "observations": 2,
+      "turns": 4
+    }
+  },
+  {
+    "t": "2026-10-28T19:46:41.430Z",
+    "step": "confirmation",
+    "detail": {
+      "spec": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "promoCode": "SAVE10"
+      },
+      "expected": 19080,
+      "observed": 19910,
+      "confirmed": true
+    }
+  },
+  {
+    "t": "2026-10-28T19:46:59.715Z",
+    "step": "confirmed-committed",
+    "detail": {
+      "attempt": 1,
+      "file": "app.js"
+    }
+  }
+]

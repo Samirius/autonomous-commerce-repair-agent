@@ -1,0 +1,7 @@
+[probe-before] {"failing":[]}
+[investigation-observation] {"turn":1,"kind":"cart-scenario","result":"{\"kind\":\"cart-scenario\",\"items\":[{\"id\":\"trail-runner\",\"qty\":1},{\"id\":\"canvas-tote\",\"qty\":1},{\"id\":\"insulated-bottle\",\"qty\":1}],\"cart\":{\"count\":3,\"totalMinor\":19080},\"cartState\":{\"lines\":[\"Trail Runner Shoes\\n      −\\n      1\\n      +\\n      $129.00Canvas Tote Bag\\n      −\\n      1\\n      +\\n      $4"}
+[investigation-observation] {"turn":2,"kind":"apply-promo","result":"{\"kind\":\"apply-promo\",\"items\":[{\"id\":\"trail-runner\",\"qty\":1},{\"id\":\"canvas-tote\",\"qty\":1},{\"id\":\"insulated-bottle\",\"qty\":1}],\"cart\":{\"count\":3,\"totalMinor\":18020},\"cartState\":{\"lines\":[\"Trail Runner Shoes\\n      −\\n      1\\n      +\\n      $129.00Canvas Tote Bag\\n      −\\n      1\\n      +\\n      $49."}
+[investigation-observation] {"turn":3,"kind":"quantity-change","result":"{\"kind\":\"quantity-change\",\"target\":\"trail-runner\",\"delta\":1,\"beforeQty\":{\"count\":1,\"totalMinor\":12900},\"afterQty\":{\"count\":2,\"totalMinor\":25800},\"errors\":[]}"}
+[investigation-coverage-complete] {"turn":4}
+[investigation] {"state":"verified-healthy","observations":3,"turns":5}
+RESULT: finalPass=true repairs=0

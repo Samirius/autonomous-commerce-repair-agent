@@ -1,0 +1,42 @@
+{
+  "modelInfo": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "id": "chatcmpl-01a1840c-da9a-7094-bc33-adc5503cbc94",
+    "usage": {
+      "completion_tokens": 1107,
+      "prompt_tokens": 1912,
+      "total_tokens": 3019,
+      "completion_tokens_details": {
+        "reasoning_tokens": 884
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "rawText": "{\"verdict\":\"suspected\",\"suspectedIssue\":\"Promo SAVE10 discounts only the Trail Runner Shoes line instead of the whole mixed-cart subtotal\",\"evidenceSummary\":\"Mixed cart 1x trail-runner ($129.00) + 1x canvas-tote ($49.00) + 1x insulated-bottle ($34.00): subtotalMinor 21200, but discountMinor 1290 and totalMinor 19910 with 'SAVE10 applied: 10% off'. 1290 is 10% of 12900 (trail-runner only), not 10% of 21200 (2120); expected total 19080. Single-product promo probes passed, masking this composition-dependent defect. Quantity change for trail-runner was correct (12900 to 25800).\",\"confirmation\":{\"kind\":\"cart-scenario\",\"items\":[{\"id\":\"trail-runner\",\"qty\":1},{\"id\":\"canvas-tote\",\"qty\":1},{\"id\":\"insulated-bottle\",\"qty\":1}],\"promoCode\":\"SAVE10\"}}"
+  },
+  "response": {
+    "verdict": "suspected",
+    "suspectedIssue": "Promo SAVE10 discounts only the Trail Runner Shoes line instead of the whole mixed-cart subtotal",
+    "evidenceSummary": "Mixed cart 1x trail-runner ($129.00) + 1x canvas-tote ($49.00) + 1x insulated-bottle ($34.00): subtotalMinor 21200, but discountMinor 1290 and totalMinor 19910 with 'SAVE10 applied: 10% off'. 1290 is 10% of 12900 (trail-runner only), not 10% of 21200 (2120); expected total 19080. Single-product promo probes passed, masking this composition-dependent defect. Quantity change for trail-runner was correct (12900 to 25800).",
+    "confirmation": {
+      "kind": "cart-scenario",
+      "items": [
+        {
+          "id": "trail-runner",
+          "qty": 1
+        },
+        {
+          "id": "canvas-tote",
+          "qty": 1
+        },
+        {
+          "id": "insulated-bottle",
+          "qty": 1
+        }
+      ],
+      "promoCode": "SAVE10"
+    }
+  }
+}

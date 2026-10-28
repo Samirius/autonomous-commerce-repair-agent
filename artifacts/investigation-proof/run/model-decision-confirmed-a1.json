@@ -1,0 +1,50 @@
+{
+  "modelInfo": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "id": "chatcmpl-01a1840d-2328-7324-a5ad-cb6a571647c4",
+    "usage": {
+      "completion_tokens": 861,
+      "prompt_tokens": 3207,
+      "total_tokens": 4068,
+      "completion_tokens_details": {
+        "reasoning_tokens": 627
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "rawText": "{\"diagnosis\":\"Promo discount is calculated from only the first cart line's unit price instead of the whole cart subtotal\",\"evidenceSummary\":\"Catalog: 12900+4900+3400=21200 subtotal; SAVE10=10% should give 2120 discount and 19080 total. Observed 19910 equals 21200-1290, i.e. 10% of only the 12900 Trail Runner Shoes first line.\",\"file\":\"app.js\",\"old\":\"  const firstLine = [...cart.entries()][0];\\n  const firstPrice = firstLine ? window.CATALOG.products.find((x) => x.id === firstLine[0]).priceMinor : 0;\\n  const discount = Math.round(firstPrice * promoPercent / 100);\",\"new\":\"  const discount = Math.round(subtotal * promoPercent / 100);\",\"rationale\":\"Using the already-computed subtotal (which sums price*qty for all lines) makes the promo apply to the whole mixed cart, yielding 21200-2120=19080 for the confirmed scenario.\"}"
+  },
+  "repair": {
+    "diagnosis": "Promo discount is calculated from only the first cart line's unit price instead of the whole cart subtotal",
+    "evidenceSummary": "Catalog: 12900+4900+3400=21200 subtotal; SAVE10=10% should give 2120 discount and 19080 total. Observed 19910 equals 21200-1290, i.e. 10% of only the 12900 Trail Runner Shoes first line.",
+    "file": "app.js",
+    "old": "  const firstLine = [...cart.entries()][0];\n  const firstPrice = firstLine ? window.CATALOG.products.find((x) => x.id === firstLine[0]).priceMinor : 0;\n  const discount = Math.round(firstPrice * promoPercent / 100);",
+    "new": "  const discount = Math.round(subtotal * promoPercent / 100);",
+    "rationale": "Using the already-computed subtotal (which sums price*qty for all lines) makes the promo apply to the whole mixed cart, yielding 21200-2120=19080 for the confirmed scenario."
+  },
+  "confirmation": {
+    "spec": {
+      "kind": "cart-scenario",
+      "items": [
+        {
+          "id": "trail-runner",
+          "qty": 1
+        },
+        {
+          "id": "canvas-tote",
+          "qty": 1
+        },
+        {
+          "id": "insulated-bottle",
+          "qty": 1
+        }
+      ],
+      "promoCode": "SAVE10"
+    },
+    "expected": 19080,
+    "observed": 19910,
+    "confirmed": true
+  }
+}

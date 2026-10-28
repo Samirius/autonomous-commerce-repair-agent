@@ -1,0 +1,33 @@
+{
+  "modelInfo": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "id": "chatcmpl-01a1840e-3608-7296-abef-460a8ac5fa99",
+    "usage": {
+      "completion_tokens": 1130,
+      "prompt_tokens": 2609,
+      "total_tokens": 3739,
+      "completion_tokens_details": {
+        "reasoning_tokens": 952
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "rawText": "{\"diagnosis\":\"The fixed Add to Cart button is occluded by the fixed sticky-promo bar, making it unclickable at all viewports.\",\"evidenceSummary\":\"Probes at mobile, small, and desktop show add-to-cart in viewport but hitIsSelf=false with hitElement sticky-promo; screenshot shows only the bottom promo bar and no visible button; styles.css places add-to-cart at bottom:16px with z-index:10 while sticky-promo is bottom:0, height:84px, z-index:20.\",\"file\":\"styles.css\",\"old\":\"bottom: 16px;\",\"new\":\"bottom: 100px;\",\"rationale\":\"Moving the button to 100px from the bottom clears the 84px promo plus a 16px gap, preserving both elements while making the button hit-testable.\"}"
+  },
+  "vision": {
+    "included": true,
+    "screenshot": "round1.png",
+    "sha256": "fa2742e8bdf0f19b30e26f543cb8308f37fcb9a3db9d3f753692ff9ae41c3b80",
+    "bytes": 22522
+  },
+  "response": {
+    "diagnosis": "The fixed Add to Cart button is occluded by the fixed sticky-promo bar, making it unclickable at all viewports.",
+    "evidenceSummary": "Probes at mobile, small, and desktop show add-to-cart in viewport but hitIsSelf=false with hitElement sticky-promo; screenshot shows only the bottom promo bar and no visible button; styles.css places add-to-cart at bottom:16px with z-index:10 while sticky-promo is bottom:0, height:84px, z-index:20.",
+    "file": "styles.css",
+    "old": "bottom: 16px;",
+    "new": "bottom: 100px;",
+    "rationale": "Moving the button to 100px from the bottom clears the 84px promo plus a 16px gap, preserving both elements while making the button hit-testable."
+  }
+}

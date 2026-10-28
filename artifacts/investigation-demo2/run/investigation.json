@@ -1,0 +1,161 @@
+{
+  "state": "verified-healthy",
+  "observations": [
+    {
+      "turn": 1,
+      "request": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "promoCode": "SAVE10"
+      },
+      "observation": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "cart": {
+          "count": 3,
+          "totalMinor": 19080
+        },
+        "cartState": {
+          "lines": [
+            "Trail Runner Shoes\n      −\n      1\n      +\n      $129.00Canvas Tote Bag\n      −\n      1\n      +\n      $49.00Insulated Bottle 1L\n      −\n      1\n      +\n      $3"
+          ],
+          "subtotalMinor": 21200,
+          "discountMinor": 2120,
+          "promoStatus": "SAVE10 applied: 10% off",
+          "checkoutText": "Checkout"
+        },
+        "catalogRuleSummary": {
+          "promoCodes": {
+            "SAVE10": 10,
+            "WELCOME15": 15
+          }
+        },
+        "errors": []
+      }
+    },
+    {
+      "turn": 2,
+      "request": {
+        "kind": "apply-promo",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "promoCode": "WELCOME15"
+      },
+      "observation": {
+        "kind": "apply-promo",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "cart": {
+          "count": 3,
+          "totalMinor": 18020
+        },
+        "cartState": {
+          "lines": [
+            "Trail Runner Shoes\n      −\n      1\n      +\n      $129.00Canvas Tote Bag\n      −\n      1\n      +\n      $49.00Insulated Bottle 1L\n      −\n      1\n      +\n      $3"
+          ],
+          "subtotalMinor": 21200,
+          "discountMinor": 3180,
+          "promoStatus": "WELCOME15 applied: 15% off",
+          "checkoutText": "Checkout"
+        },
+        "catalogRuleSummary": {
+          "promoCodes": {
+            "SAVE10": 10,
+            "WELCOME15": 15
+          }
+        },
+        "errors": []
+      }
+    },
+    {
+      "turn": 3,
+      "request": {
+        "kind": "quantity-change",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          }
+        ],
+        "productId": "trail-runner",
+        "delta": 1
+      },
+      "observation": {
+        "kind": "quantity-change",
+        "target": "trail-runner",
+        "delta": 1,
+        "beforeQty": {
+          "count": 1,
+          "totalMinor": 12900
+        },
+        "afterQty": {
+          "count": 2,
+          "totalMinor": 25800
+        },
+        "errors": []
+      }
+    }
+  ],
+  "verdict": {
+    "verdict": "healthy",
+    "evidenceSummary": "Mixed cart of trail-runner ($129), canvas-tote ($49) and insulated-bottle ($34) gave subtotal 21200 minor; SAVE10 gave 2120 discount and 19080 total, WELCOME15 gave 3180 discount and 18020 total, both matching catalog promo rules. Quantity increase for trail-runner from 1 to 2 updated count 1->2 and total 12900->25800. All deterministic probes also passed with no console errors."
+  },
+  "turns": 5,
+  "tokensUsed": 13653,
+  "tokenBudget": 30000,
+  "coverage": {
+    "mixedCart": true,
+    "promo": true,
+    "quantity": true
+  }
+}

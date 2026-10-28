@@ -32,6 +32,14 @@ export function expectedCartMinor(catalog, items) {
   return subtotal;
 }
 
+export function expectedScenarioMinor(catalog, items, promoCode = null) {
+  // items: [{id, qty}] — bulk rule first (expectedCartMinor), then promo % off
+  let total = expectedCartMinor(catalog, items);
+  const pct = promoCode ? catalog.rules?.promoCodes?.[promoCode] : 0;
+  if (pct) total -= Math.round(total * pct / 100);
+  return total;
+}
+
 const parseMoney = (text) => {
   const m = String(text || '').replace(/,/g, '').match(/(\d+)\.(\d{2})/);
   return m ? Number(m[1]) * 100 + Number(m[2]) : null;

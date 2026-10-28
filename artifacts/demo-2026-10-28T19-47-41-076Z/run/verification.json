@@ -1,0 +1,96 @@
+{
+  "target": "target",
+  "state": "confirmed-issue-repaired",
+  "investigation": null,
+  "initialFailing": [
+    "interactive-usable@mobile:add-to-cart",
+    "interactive-usable@small:add-to-cart",
+    "interactive-usable@desktop:add-to-cart",
+    "cart-total-for-product:nova-sneaker",
+    "cart-total-matches-catalog-rules",
+    "pointer-purchase-works:featured"
+  ],
+  "repairsCommitted": 2,
+  "finalPass": true,
+  "finalFailing": [],
+  "receipts": [
+    {
+      "round": 1,
+      "attempt": 1,
+      "status": "committed",
+      "repair": {
+        "diagnosis": "The fixed Add to Cart button is occluded by the fixed sticky-promo bar, making it unclickable at all viewports.",
+        "evidenceSummary": "Probes at mobile, small, and desktop show add-to-cart in viewport but hitIsSelf=false with hitElement sticky-promo; screenshot shows only the bottom promo bar and no visible button; styles.css places add-to-cart at bottom:16px with z-index:10 while sticky-promo is bottom:0, height:84px, z-index:20.",
+        "file": "styles.css",
+        "old": "bottom: 16px;",
+        "new": "bottom: 100px;",
+        "rationale": "Moving the button to 100px from the bottom clears the 84px promo plus a 16px gap, preserving both elements while making the button hit-testable."
+      },
+      "model": {
+        "provider": "meta",
+        "model": "muse-wonder-1.0",
+        "id": "chatcmpl-01a1840e-3608-7296-abef-460a8ac5fa99",
+        "usage": {
+          "completion_tokens": 1130,
+          "prompt_tokens": 2609,
+          "total_tokens": 3739,
+          "completion_tokens_details": {
+            "reasoning_tokens": 952
+          },
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        }
+      },
+      "vision": {
+        "included": true,
+        "screenshot": "round1.png",
+        "sha256": "fa2742e8bdf0f19b30e26f543cb8308f37fcb9a3db9d3f753692ff9ae41c3b80",
+        "bytes": 22522
+      },
+      "failingAfter": [
+        "cart-total-for-product:nova-sneaker",
+        "cart-total-matches-catalog-rules"
+      ],
+      "openWeightVerification": null
+    },
+    {
+      "round": 2,
+      "attempt": 1,
+      "status": "committed",
+      "repair": {
+        "diagnosis": "Cart total uses a stale legacy unit price instead of the canonical catalog price for nova-sneaker",
+        "evidenceSummary": "Screenshot and catalog show displayed price $89.00 (8900 minor), but probes show cart total 7900 after 1 item and 15800 after 2 items, i.e. 7900 per item, contradicting catalog priceMinor 8900",
+        "file": "app.js",
+        "old": "  totalMinor = LEGACY_CART_PRICE_MINOR * count;",
+        "new": "  totalMinor = product.priceMinor * count;",
+        "rationale": "Use product.priceMinor loaded from window.CATALOG as the single source of truth for cart totals, without hardcoding the catalog value"
+      },
+      "model": {
+        "provider": "meta",
+        "model": "muse-wonder-1.0",
+        "id": "chatcmpl-01a1840e-6330-768b-90e4-d90981ad0903",
+        "usage": {
+          "completion_tokens": 796,
+          "prompt_tokens": 2037,
+          "total_tokens": 2833,
+          "completion_tokens_details": {
+            "reasoning_tokens": 643
+          },
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        }
+      },
+      "vision": {
+        "included": true,
+        "screenshot": "round2.png",
+        "sha256": "c1ec0261e854444c14749777bd16a66be612a0fa3530f26e1fe8f1edfe97de6c",
+        "bytes": 23946
+      },
+      "failingAfter": [],
+      "openWeightVerification": null
+    }
+  ],
+  "finishedAt": "2026-10-28T19:48:21.569Z"
+}

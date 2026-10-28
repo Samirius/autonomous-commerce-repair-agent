@@ -1,0 +1,216 @@
+{
+  "target": "target",
+  "state": "verified-healthy",
+  "investigation": {
+    "state": "verified-healthy",
+    "observations": 3,
+    "turns": 5,
+    "verdict": {
+      "verdict": "healthy",
+      "evidenceSummary": "Mixed cart of trail-runner ($129), canvas-tote ($49) and insulated-bottle ($34) gave subtotal 21200 minor; SAVE10 gave 2120 discount and 19080 total, WELCOME15 gave 3180 discount and 18020 total, both matching catalog promo rules. Quantity increase for trail-runner from 1 to 2 updated count 1->2 and total 12900->25800. All deterministic probes also passed with no console errors."
+    },
+    "confirmation": null,
+    "coverage": {
+      "mixedCart": true,
+      "promo": true,
+      "quantity": true
+    },
+    "tokensUsed": 13653
+  },
+  "initialFailing": [],
+  "repairsCommitted": 0,
+  "finalPass": true,
+  "finalFailing": [],
+  "receipts": [
+    {
+      "status": "investigation-observation",
+      "request": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "promoCode": "SAVE10"
+      },
+      "observation": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "cart": {
+          "count": 3,
+          "totalMinor": 19080
+        },
+        "cartState": {
+          "lines": [
+            "Trail Runner Shoes\n      −\n      1\n      +\n      $129.00Canvas Tote Bag\n      −\n      1\n      +\n      $49.00Insulated Bottle 1L\n      −\n      1\n      +\n      $3"
+          ],
+          "subtotalMinor": 21200,
+          "discountMinor": 2120,
+          "promoStatus": "SAVE10 applied: 10% off",
+          "checkoutText": "Checkout"
+        },
+        "catalogRuleSummary": {
+          "promoCodes": {
+            "SAVE10": 10,
+            "WELCOME15": 15
+          }
+        },
+        "errors": []
+      },
+      "model": {
+        "model": "muse-wonder-1.0",
+        "id": "chatcmpl-01a1840e-d0af-757e-99af-09fd14b9b8d0",
+        "usage": {
+          "completion_tokens": 390,
+          "prompt_tokens": 1651,
+          "total_tokens": 2041,
+          "completion_tokens_details": {
+            "reasoning_tokens": 330
+          },
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        }
+      }
+    },
+    {
+      "status": "investigation-observation",
+      "request": {
+        "kind": "apply-promo",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "promoCode": "WELCOME15"
+      },
+      "observation": {
+        "kind": "apply-promo",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "cart": {
+          "count": 3,
+          "totalMinor": 18020
+        },
+        "cartState": {
+          "lines": [
+            "Trail Runner Shoes\n      −\n      1\n      +\n      $129.00Canvas Tote Bag\n      −\n      1\n      +\n      $49.00Insulated Bottle 1L\n      −\n      1\n      +\n      $3"
+          ],
+          "subtotalMinor": 21200,
+          "discountMinor": 3180,
+          "promoStatus": "WELCOME15 applied: 15% off",
+          "checkoutText": "Checkout"
+        },
+        "catalogRuleSummary": {
+          "promoCodes": {
+            "SAVE10": 10,
+            "WELCOME15": 15
+          }
+        },
+        "errors": []
+      },
+      "model": {
+        "model": "muse-wonder-1.0",
+        "id": "chatcmpl-01a1840f-2939-747c-9912-69cc2e6e3ee1",
+        "usage": {
+          "completion_tokens": 1995,
+          "prompt_tokens": 1840,
+          "total_tokens": 3835,
+          "completion_tokens_details": {
+            "reasoning_tokens": 1933
+          },
+          "prompt_tokens_details": {
+            "cached_tokens": 756
+          }
+        }
+      }
+    },
+    {
+      "status": "investigation-observation",
+      "request": {
+        "kind": "quantity-change",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          }
+        ],
+        "productId": "trail-runner",
+        "delta": 1
+      },
+      "observation": {
+        "kind": "quantity-change",
+        "target": "trail-runner",
+        "delta": 1,
+        "beforeQty": {
+          "count": 1,
+          "totalMinor": 12900
+        },
+        "afterQty": {
+          "count": 2,
+          "totalMinor": 25800
+        },
+        "errors": []
+      },
+      "model": {
+        "model": "muse-wonder-1.0",
+        "id": "chatcmpl-01a1840f-3cd7-766f-8dc5-183c0c7a5647",
+        "usage": {
+          "completion_tokens": 359,
+          "prompt_tokens": 2025,
+          "total_tokens": 2384,
+          "completion_tokens_details": {
+            "reasoning_tokens": 315
+          },
+          "prompt_tokens_details": {
+            "cached_tokens": 884
+          }
+        }
+      }
+    }
+  ],
+  "finishedAt": "2026-10-28T19:49:35.982Z"
+}

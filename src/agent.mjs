@@ -17,6 +17,26 @@ export const ALLOWED_FILES = ['styles.css', 'app.js', 'index.html'];
 const READ_ONLY_FILES = ['catalog.js'];
 const MAX_ATTEMPTS = 2;
 
+// Resolve a model patch against file content, tolerating LF vs CRLF
+// line-ending differences (models emit LF; files on disk may be CRLF).
+// Returns the effective {old, new} in the file's own line endings, or null.
+export function resolveRepair(repair, content) {
+  if (!repair?.old) return null;
+  const variants = [repair.old, repair.old.replace(/\r\n/g, '\n').replace(/\n/g, '\r\n'), repair.old.replace(/\r\n/g, '\n')];
+  for (const old of [...new Set(variants)]) {
+    if (content.split(old).length - 1 === 1) {
+      const newText = old.includes('\r\n') ? repair.new.replace(/\r\n/g, '\n').replace(/\n/g, '\r\n') : repair.new;
+      return { old, new: newText };
+    }
+  }
+  return null;
+}
+
+export function applyPatchText(content, repair) {
+  const effective = resolveRepair(repair, content) || repair;
+  return content.replace(effective.old, effective.new);
+}
+
 export function validateRepair(repair, content, opts = {}) {
   if (!repair || typeof repair !== 'object') return 'repair is not an object';
   const allowed = opts.allowedFiles || ALLOWED_FILES;
@@ -30,7 +50,7 @@ export function validateRepair(repair, content, opts = {}) {
     if (lit && repair.new.includes(lit)) return `repair.new hardcodes canonical value "${lit}" — derive it from the canonical data instead`;
   }
   const occurrences = content.split(repair.old).length - 1;
-  if (occurrences !== 1) return `repair.old must occur exactly once in ${repair.file} (found ${occurrences})`;
+  if (occurrences !== 1 && !resolveRepair(repair, content)) return `repair.old must occur exactly once in ${repair.file} (found ${occurrences})`;
   return null;
 }
 
@@ -50,7 +70,7 @@ export async function applyAndVerify({ root, repair, defectId, priorDefectIds = 
   const original = await readFile(filePath, 'utf8');
   const error = validateRepair(repair, original, { forbiddenLiterals });
   if (error) return { status: 'rejected', error, diff: '' };
-  await writeFile(filePath, original.replace(repair.old, repair.new));
+  await writeFile(filePath, applyPatchText(original, repair));
   const diff = gitDiff(repair.file);
   if (runDir) await writeFile(path.join(runDir, `repair-${defectId}.diff`), diff);
   const result = await checkFn(root);

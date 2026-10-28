@@ -3,22 +3,23 @@
 Updated: 2026-10-28
 
 ## Completed
-- Missions 001–006 as recorded (blind external eval: Mission 005 1/3 → Mission 006 3/3 oracle-verified by ChatGPT). Commit `7dc725c` pushed to the private repo.
-- Mission 007: investigation phase in discovery — when probes pass, Wonder must request typed observations (cart-scenario, quantity-change, apply-promo, inspect-cart with optional checkout, product-detail, console-reload, viewport) before any verdict; states: verified-healthy / investigation-incomplete / suspected-unverified / confirmed-issue; suspicion never patches code. Review fixes: all promo codes iterated (was first only), `id` vs `productId` normalized, console-reload actually reloads, desktop screenshots saved when requested.
-- Tests: 25/25 (`npm test`), incl. stub-provider investigation tests (verified-healthy gating, suspicion-never-patches, premature-verdict = incomplete) and promo/productId/reload tests. Main storefront check green.
-- Live tool-use demo (`artifacts/investigation-demo/run/`, committed; the copied target is gitignored): Wonder made 7 observation requests across 6 tool kinds on a copy of the healthy realistic store, then returned a quantified healthy verdict → state `verified-healthy`, 21,937 tokens, target byte-identical to the fixture. First two demo attempts hit the turn budget without a verdict (`investigation-incomplete`); adding explicit turn/budget pressure to the prompt fixed convergence — recorded honestly in DECISIONS D13.
+- Missions 001–007 as recorded. `e69dc40` pushed to the private repo (Mission 008 Task 1: tests 25/25 + secret scan re-verified before pushing).
+- Mission 008: investigation coverage matrix (mixed cart / quantity / promo-on-mixed-cart), 6-turn + 30k-token investigation budgets, coverage-complete verdict forcing; confirmation scenarios (`expectedScenarioMinor`) turning suspicions into deterministic confirmed defects with probe+scenario verified repairs and rollback; CRLF-tolerant patch application (`resolveRepair`).
+- **Autonomous investigation proof (live, `artifacts/investigation-proof/`)**: target store passes every probe signal, yet Wonder's observations (mixed cart + SAVE10) exposed a promo defect (discount on first line only), the agent confirmed it deterministically (expected 19080 vs observed 19910 minor units), repaired it (`discount` rebased to subtotal), and verified probe + scenario green. Run history includes two honest failures first: a false verified-healthy (promo tested on one product only → coverage matrix fixed) and CRLF patch rejections (→ resolveRepair).
+- Reliability repeats: investigation-target proof succeeded on the fixed system (8,829 receipt tokens, ~89s); healthy realistic store re-investigated to `verified-healthy` with 3 observations / 13,653 investigation tokens (down from 21,937 in Mission 007); stub-provider state-machine tests cover both paths without network.
+- Demo: `npm run demo` (copies `fixtures/demo-broken/`, real Meta calls, prints patches + verification; latest run: 2 repairs, 6,572 tokens, 40s). Repeatable with no manual reset.
+- Tests: 27/27. Main storefront green. Committed locally; NOT pushed (awaiting approval).
 
 ## Ongoing
-- Awaiting review of Mission 007 commit (local only, not pushed).
+- Final submission preparation (demo script/video, README polish) — next mission.
 
 ## Blocked
-- Muse Spark Open (Baseten): still no `BASETEN_API_KEY` in the environment. Adapter remains `available:false`; nothing fabricated.
+- Muse Spark Open (Baseten): **no `BASETEN_API_KEY`** — exact requirement: a Baseten API key with access to `meta-models/muse-spark-open` set as `BASETEN_API_KEY` in the environment or project `.env`. Adapter ready; zero simulated responses used.
 
 ## Weaknesses / remaining limitations
-- Investigation only triggers when the initial probe fully passes; a store with one known failure gets repairs, not open-ended exploration of other workflows.
-- The model will happily spend its whole observation budget exploring; verdict convergence depends on explicit budget-pressure wording.
-- The investigation demo's run artifacts are committed under `artifacts/investigation-demo/run/` (target copy gitignored); other eval bundles remain gitignored, so parts of the evidence trail are docs + reproducible commands only.
-- Probe/observation semantics remain contract-bound (fixture ids, our discount math) as previously noted.
+- The confirmed-repair path only supports cart-total scenarios (cart-scenario/apply-promo/inspect-cart); other suspicion classes still end as suspected-unverified.
+- Investigation reliability is model-dependent: in 3 live investigation-target attempts, outcomes were 1 false-healthy (pre-fix), 1 confirmed-but-unrepaired (CRLF, pre-fix), 1 full success (post-fix). One post-fix success is a demonstration, not a reliability statistic.
+- Investigation tokens remain material (~9–14k per run) even with budgets.
 
 ## Next
-- Push Mission 007 after review; provide BASETEN_API_KEY for the Open Weights verifier; prepare the 3-minute demo (re-break → guided run → investigation on healthy store).
+- Samir approval to push Mission 008; BASETEN_API_KEY for the Open Weights verifier; record the 3-minute demo from `npm run demo` + the investigation-proof artifacts.

@@ -7,6 +7,7 @@
   "scripts": {
     "check": "node scripts/check.mjs",
     "agent": "node src/agent.mjs",
+    "demo": "node scripts/demo.mjs",
     "test": "node --test tests/agent.test.mjs tests/verifier.test.mjs tests/realistic.test.mjs tests/probe.test.mjs tests/investigation.test.mjs"
   },
   "devDependencies": {

@@ -13,6 +13,15 @@ test('validateRepair accepts a scoped patch in an allowed file', () => {
   assert.equal(validateRepair({ file: 'styles.css', old: 'bottom: 16px;', new: 'bottom: 96px;' }, css), null);
   assert.equal(validateRepair({ file: 'app.js', old: 'LEGACY_CART_PRICE_MINOR * count', new: 'product.priceMinor * count' }, js), null);
 });
+test('resolveRepair tolerates LF patch against CRLF file content', async () => {
+  const { resolveRepair, applyPatchText } = await import('../src/agent.mjs');
+  const crlf = 'line1\r\nconst discount = oldCalc();\r\nline3\r\n';
+  const repair = { file: 'app.js', old: 'const discount = oldCalc();', new: 'const discount = newCalc();' };
+  assert.ok(resolveRepair(repair, crlf));
+  assert.equal(applyPatchText(crlf, repair), 'line1\r\nconst discount = newCalc();\r\nline3\r\n');
+  const multiLf = { file: 'app.js', old: 'a();\nb();', new: 'a();\nc();' };
+  assert.equal(applyPatchText('a();\r\nb();\r\n', multiLf), 'a();\r\nc();\r\n');
+});
 test('validateRepair rejects the read-only canonical catalog', () => {
   assert.match(validateRepair({ file: 'catalog.js', old: '8900', new: '7900' }, '8900'), /allowlist/);
 });

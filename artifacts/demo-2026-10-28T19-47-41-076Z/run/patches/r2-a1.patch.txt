@@ -1,0 +1,6 @@
+file: app.js
+status: committed
+--- old ---
+  totalMinor = LEGACY_CART_PRICE_MINOR * count;
+--- new ---
+  totalMinor = product.priceMinor * count;

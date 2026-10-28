@@ -1,0 +1,39 @@
+{
+  "modelInfo": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "id": "chatcmpl-01a1840e-d0af-757e-99af-09fd14b9b8d0",
+    "usage": {
+      "completion_tokens": 390,
+      "prompt_tokens": 1651,
+      "total_tokens": 2041,
+      "completion_tokens_details": {
+        "reasoning_tokens": 330
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      }
+    },
+    "rawText": "{\"observationRequest\":{\"kind\":\"cart-scenario\",\"items\":[{\"id\":\"trail-runner\",\"qty\":1},{\"id\":\"canvas-tote\",\"qty\":1},{\"id\":\"insulated-bottle\",\"qty\":1}],\"promoCode\":\"SAVE10\"}}"
+  },
+  "response": {
+    "observationRequest": {
+      "kind": "cart-scenario",
+      "items": [
+        {
+          "id": "trail-runner",
+          "qty": 1
+        },
+        {
+          "id": "canvas-tote",
+          "qty": 1
+        },
+        {
+          "id": "insulated-bottle",
+          "qty": 1
+        }
+      ],
+      "promoCode": "SAVE10"
+    }
+  }
+}

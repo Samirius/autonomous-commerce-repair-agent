@@ -1,0 +1,848 @@
+{
+  "pass": true,
+  "signals": [
+    {
+      "id": "interactive-usable@mobile:add-to-cart",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "mobile",
+          "width": 390,
+          "height": 844
+        },
+        "id": "add-to-cart",
+        "text": "Add to Cart",
+        "box": {
+          "x": 37,
+          "y": 402.59375,
+          "width": 316,
+          "height": 39,
+          "right": 353,
+          "bottom": 441.59375
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "add-to-cart",
+          "className": "add-btn",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@mobile:Add to Cart",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "mobile",
+          "width": 390,
+          "height": 844
+        },
+        "id": null,
+        "text": "Add to Cart",
+        "box": {
+          "x": 37,
+          "y": 402.3125,
+          "width": 316,
+          "height": 39,
+          "right": 353,
+          "bottom": 441.3125
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": null,
+          "className": "add-btn",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@mobile:Add to Cart",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "mobile",
+          "width": 390,
+          "height": 844
+        },
+        "id": null,
+        "text": "Add to Cart",
+        "box": {
+          "x": 37,
+          "y": 402.03125,
+          "width": 316,
+          "height": 39,
+          "right": 353,
+          "bottom": 441.03125
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": null,
+          "className": "add-btn",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@mobile:promo-code",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "mobile",
+          "width": 390,
+          "height": 844
+        },
+        "id": "promo-code",
+        "text": "",
+        "box": {
+          "x": 127.375,
+          "y": 548.84375,
+          "width": 191,
+          "height": 37,
+          "right": 318.375,
+          "bottom": 585.84375
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "promo-code",
+          "className": "",
+          "tag": "INPUT"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@mobile:apply-promo",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "mobile",
+          "width": 390,
+          "height": 844
+        },
+        "id": "apply-promo",
+        "text": "Apply promo",
+        "box": {
+          "x": 37,
+          "y": 593.84375,
+          "width": 110.203125,
+          "height": 35,
+          "right": 147.203125,
+          "bottom": 628.84375
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "apply-promo",
+          "className": "",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@mobile:checkout",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "mobile",
+          "width": 390,
+          "height": 844
+        },
+        "id": "checkout",
+        "text": "Checkout",
+        "box": {
+          "x": 37,
+          "y": 755.84375,
+          "width": 88.734375,
+          "height": 35,
+          "right": 125.734375,
+          "bottom": 790.84375
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "checkout",
+          "className": "",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "no-horizontal-overflow@mobile",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "mobile",
+          "width": 390,
+          "height": 844
+        },
+        "overflowX": false
+      }
+    },
+    {
+      "id": "interactive-usable@small:add-to-cart",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "small",
+          "width": 360,
+          "height": 740
+        },
+        "id": "add-to-cart",
+        "text": "Add to Cart",
+        "box": {
+          "x": 37,
+          "y": 350.59375,
+          "width": 286,
+          "height": 39,
+          "right": 323,
+          "bottom": 389.59375
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "add-to-cart",
+          "className": "add-btn",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@small:Add to Cart",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "small",
+          "width": 360,
+          "height": 740
+        },
+        "id": null,
+        "text": "Add to Cart",
+        "box": {
+          "x": 37,
+          "y": 350.3125,
+          "width": 286,
+          "height": 39,
+          "right": 323,
+          "bottom": 389.3125
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": null,
+          "className": "add-btn",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@small:Add to Cart",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "small",
+          "width": 360,
+          "height": 740
+        },
+        "id": null,
+        "text": "Add to Cart",
+        "box": {
+          "x": 37,
+          "y": 350.03125,
+          "width": 286,
+          "height": 39,
+          "right": 323,
+          "bottom": 389.03125
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": null,
+          "className": "add-btn",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@small:promo-code",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "small",
+          "width": 360,
+          "height": 740
+        },
+        "id": "promo-code",
+        "text": "",
+        "box": {
+          "x": 127.375,
+          "y": 444.84375,
+          "width": 191,
+          "height": 37,
+          "right": 318.375,
+          "bottom": 481.84375
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "promo-code",
+          "className": "",
+          "tag": "INPUT"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@small:apply-promo",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "small",
+          "width": 360,
+          "height": 740
+        },
+        "id": "apply-promo",
+        "text": "Apply promo",
+        "box": {
+          "x": 37,
+          "y": 489.84375,
+          "width": 110.203125,
+          "height": 35,
+          "right": 147.203125,
+          "bottom": 524.84375
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "apply-promo",
+          "className": "",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@small:checkout",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "small",
+          "width": 360,
+          "height": 740
+        },
+        "id": "checkout",
+        "text": "Checkout",
+        "box": {
+          "x": 37,
+          "y": 651.84375,
+          "width": 88.734375,
+          "height": 35,
+          "right": 125.734375,
+          "bottom": 686.84375
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "checkout",
+          "className": "",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "no-horizontal-overflow@small",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "small",
+          "width": 360,
+          "height": 740
+        },
+        "overflowX": false
+      }
+    },
+    {
+      "id": "interactive-usable@desktop:add-to-cart",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "desktop",
+          "width": 1280,
+          "height": 800
+        },
+        "id": "add-to-cart",
+        "text": "Add to Cart",
+        "box": {
+          "x": 137,
+          "y": 380.59375,
+          "width": 302,
+          "height": 39,
+          "right": 439,
+          "bottom": 419.59375
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "add-to-cart",
+          "className": "add-btn",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@desktop:Add to Cart",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "desktop",
+          "width": 1280,
+          "height": 800
+        },
+        "id": null,
+        "text": "Add to Cart",
+        "box": {
+          "x": 489,
+          "y": 380.59375,
+          "width": 302,
+          "height": 39,
+          "right": 791,
+          "bottom": 419.59375
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": null,
+          "className": "add-btn",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@desktop:Add to Cart",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "desktop",
+          "width": 1280,
+          "height": 800
+        },
+        "id": null,
+        "text": "Add to Cart",
+        "box": {
+          "x": 841,
+          "y": 380.59375,
+          "width": 302,
+          "height": 39,
+          "right": 1143,
+          "bottom": 419.59375
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": null,
+          "className": "add-btn",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@desktop:promo-code",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "desktop",
+          "width": 1280,
+          "height": 800
+        },
+        "id": "promo-code",
+        "text": "",
+        "box": {
+          "x": 227.375,
+          "y": 548.40625,
+          "width": 191,
+          "height": 37,
+          "right": 418.375,
+          "bottom": 585.40625
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "promo-code",
+          "className": "",
+          "tag": "INPUT"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@desktop:apply-promo",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "desktop",
+          "width": 1280,
+          "height": 800
+        },
+        "id": "apply-promo",
+        "text": "Apply promo",
+        "box": {
+          "x": 422.765625,
+          "y": 549.40625,
+          "width": 110.203125,
+          "height": 35,
+          "right": 532.96875,
+          "bottom": 584.40625
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "apply-promo",
+          "className": "",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "interactive-usable@desktop:checkout",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "desktop",
+          "width": 1280,
+          "height": 800
+        },
+        "id": "checkout",
+        "text": "Checkout",
+        "box": {
+          "x": 137,
+          "y": 712.40625,
+          "width": 88.734375,
+          "height": 35,
+          "right": 225.734375,
+          "bottom": 747.40625
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "checkout",
+          "className": "",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "no-horizontal-overflow@desktop",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "desktop",
+          "width": 1280,
+          "height": 800
+        },
+        "overflowX": false
+      }
+    },
+    {
+      "id": "catalog-products-presented",
+      "pass": true,
+      "evidence": {
+        "presented": [
+          "trail-runner",
+          "canvas-tote",
+          "insulated-bottle"
+        ],
+        "catalogCount": 3
+      }
+    },
+    {
+      "id": "displayed-price-matches-catalog:trail-runner",
+      "pass": true,
+      "evidence": {
+        "id": "trail-runner",
+        "name": "Trail Runner Shoes",
+        "catalogPriceMinor": 12900,
+        "priceMinorAttr": 12900,
+        "priceText": "$129.00",
+        "priceTextMinor": 12900,
+        "addSelector": "[data-add=\"trail-runner\"]"
+      }
+    },
+    {
+      "id": "displayed-price-matches-catalog:canvas-tote",
+      "pass": true,
+      "evidence": {
+        "id": "canvas-tote",
+        "name": "Canvas Tote Bag",
+        "catalogPriceMinor": 4900,
+        "priceMinorAttr": 4900,
+        "priceText": "$49.00",
+        "priceTextMinor": 4900,
+        "addSelector": "[data-add=\"canvas-tote\"]"
+      }
+    },
+    {
+      "id": "displayed-price-matches-catalog:insulated-bottle",
+      "pass": true,
+      "evidence": {
+        "id": "insulated-bottle",
+        "name": "Insulated Bottle 1L",
+        "catalogPriceMinor": 3400,
+        "priceMinorAttr": 3400,
+        "priceText": "$34.00",
+        "priceTextMinor": 3400,
+        "addSelector": "[data-add=\"insulated-bottle\"]"
+      }
+    },
+    {
+      "id": "displayed-price-matches-catalog",
+      "pass": true,
+      "evidence": {
+        "id": "trail-runner",
+        "name": "Trail Runner Shoes",
+        "catalogPriceMinor": 12900,
+        "priceMinorAttr": 12900,
+        "priceText": "$129.00",
+        "priceTextMinor": 12900,
+        "addSelector": "[data-add=\"trail-runner\"]"
+      }
+    },
+    {
+      "id": "cart-total-for-product:trail-runner",
+      "pass": true,
+      "evidence": {
+        "product": "trail-runner",
+        "qty": 2,
+        "cart": {
+          "count": 2,
+          "totalMinor": 25800
+        },
+        "clickError": null
+      }
+    },
+    {
+      "id": "cart-total-for-product:canvas-tote",
+      "pass": true,
+      "evidence": {
+        "product": "canvas-tote",
+        "qty": 2,
+        "cart": {
+          "count": 2,
+          "totalMinor": 9800
+        },
+        "clickError": null
+      }
+    },
+    {
+      "id": "cart-total-for-product:insulated-bottle",
+      "pass": true,
+      "evidence": {
+        "product": "insulated-bottle",
+        "qty": 2,
+        "cart": {
+          "count": 2,
+          "totalMinor": 6800
+        },
+        "clickError": null
+      }
+    },
+    {
+      "id": "cart-count-matches-clicks",
+      "pass": true,
+      "evidence": {
+        "after1": {
+          "count": 1,
+          "totalMinor": 12900
+        },
+        "after2": {
+          "count": 2,
+          "totalMinor": 25800
+        }
+      }
+    },
+    {
+      "id": "cart-total-matches-catalog-rules",
+      "pass": true,
+      "evidence": {
+        "after1": {
+          "count": 1,
+          "totalMinor": 12900
+        },
+        "after2": {
+          "count": 2,
+          "totalMinor": 25800
+        },
+        "expectedQty1": 12900,
+        "expectedQty2": 25800,
+        "catalog": {
+          "products": [
+            {
+              "id": "trail-runner",
+              "name": "Trail Runner Shoes",
+              "priceMinor": 12900,
+              "currency": "USD",
+              "tag": "Featured"
+            },
+            {
+              "id": "canvas-tote",
+              "name": "Canvas Tote Bag",
+              "priceMinor": 4900,
+              "currency": "USD",
+              "tag": "Everyday"
+            },
+            {
+              "id": "insulated-bottle",
+              "name": "Insulated Bottle 1L",
+              "priceMinor": 3400,
+              "currency": "USD",
+              "tag": "New"
+            }
+          ],
+          "rules": {
+            "promoCodes": {
+              "SAVE10": 10,
+              "WELCOME15": 15
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "mixed-cart-total-matches-catalog",
+      "pass": true,
+      "evidence": {
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "cart": {
+          "count": 3,
+          "totalMinor": 21200
+        },
+        "clickError": null
+      }
+    },
+    {
+      "id": "quantity-increase-updates-total",
+      "pass": true,
+      "evidence": {
+        "beforeQty": {
+          "count": 1,
+          "totalMinor": 12900
+        },
+        "afterInc": {
+          "count": 2,
+          "totalMinor": 25800
+        }
+      }
+    },
+    {
+      "id": "promo-code-applies-correctly:SAVE10",
+      "pass": true,
+      "evidence": {
+        "code": "SAVE10",
+        "pct": 10,
+        "cart": {
+          "count": 1,
+          "totalMinor": 11610
+        },
+        "product": "trail-runner"
+      }
+    },
+    {
+      "id": "promo-code-applies-correctly:WELCOME15",
+      "pass": true,
+      "evidence": {
+        "code": "WELCOME15",
+        "pct": 15,
+        "cart": {
+          "count": 1,
+          "totalMinor": 10965
+        },
+        "product": "trail-runner"
+      }
+    },
+    {
+      "id": "pointer-purchase-works:featured",
+      "pass": true,
+      "evidence": {
+        "method": "real pointer click on #add-to-cart"
+      }
+    },
+    {
+      "id": "no-console-errors",
+      "pass": true,
+      "evidence": {
+        "errors": []
+      }
+    }
+  ],
+  "presented": [
+    {
+      "id": "trail-runner",
+      "name": "Trail Runner Shoes",
+      "catalogPriceMinor": 12900,
+      "priceMinorAttr": 12900,
+      "priceText": "$129.00",
+      "priceTextMinor": 12900,
+      "addSelector": "[data-add=\"trail-runner\"]"
+    },
+    {
+      "id": "canvas-tote",
+      "name": "Canvas Tote Bag",
+      "catalogPriceMinor": 4900,
+      "priceMinorAttr": 4900,
+      "priceText": "$49.00",
+      "priceTextMinor": 4900,
+      "addSelector": "[data-add=\"canvas-tote\"]"
+    },
+    {
+      "id": "insulated-bottle",
+      "name": "Insulated Bottle 1L",
+      "catalogPriceMinor": 3400,
+      "priceMinorAttr": 3400,
+      "priceText": "$34.00",
+      "priceTextMinor": 3400,
+      "addSelector": "[data-add=\"insulated-bottle\"]"
+    }
+  ],
+  "catalog": {
+    "products": [
+      {
+        "id": "trail-runner",
+        "name": "Trail Runner Shoes",
+        "priceMinor": 12900,
+        "currency": "USD",
+        "tag": "Featured"
+      },
+      {
+        "id": "canvas-tote",
+        "name": "Canvas Tote Bag",
+        "priceMinor": 4900,
+        "currency": "USD",
+        "tag": "Everyday"
+      },
+      {
+        "id": "insulated-bottle",
+        "name": "Insulated Bottle 1L",
+        "priceMinor": 3400,
+        "currency": "USD",
+        "tag": "New"
+      }
+    ],
+    "rules": {
+      "promoCodes": {
+        "SAVE10": 10,
+        "WELCOME15": 15
+      }
+    }
+  }
+}

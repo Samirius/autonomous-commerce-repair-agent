@@ -1,0 +1,75 @@
+[
+  {
+    "t": "2026-10-28T19:47:47.548Z",
+    "step": "probe-before",
+    "detail": {
+      "failing": [
+        "interactive-usable@mobile:add-to-cart",
+        "interactive-usable@small:add-to-cart",
+        "interactive-usable@desktop:add-to-cart",
+        "cart-total-for-product:nova-sneaker",
+        "cart-total-matches-catalog-rules",
+        "pointer-purchase-works:featured"
+      ]
+    }
+  },
+  {
+    "t": "2026-10-28T19:48:06.041Z",
+    "step": "diagnose",
+    "detail": {
+      "round": 1,
+      "attempt": 1,
+      "model": "muse-wonder-1.0",
+      "id": "chatcmpl-01a1840e-3608-7296-abef-460a8ac5fa99",
+      "file": "styles.css",
+      "diagnosis": "The fixed Add to Cart button is occluded by the fixed sticky-promo bar, making it unclickable at all viewports.",
+      "vision": {
+        "included": true,
+        "screenshot": "round1.png",
+        "sha256": "fa2742e8bdf0f19b30e26f543cb8308f37fcb9a3db9d3f753692ff9ae41c3b80",
+        "bytes": 22522
+      }
+    }
+  },
+  {
+    "t": "2026-10-28T19:48:08.050Z",
+    "step": "committed",
+    "detail": {
+      "round": 1,
+      "file": "styles.css",
+      "failingAfter": [
+        "cart-total-for-product:nova-sneaker",
+        "cart-total-matches-catalog-rules"
+      ],
+      "openWeight": "unavailable"
+    }
+  },
+  {
+    "t": "2026-10-28T19:48:17.572Z",
+    "step": "diagnose",
+    "detail": {
+      "round": 2,
+      "attempt": 1,
+      "model": "muse-wonder-1.0",
+      "id": "chatcmpl-01a1840e-6330-768b-90e4-d90981ad0903",
+      "file": "app.js",
+      "diagnosis": "Cart total uses a stale legacy unit price instead of the canonical catalog price for nova-sneaker",
+      "vision": {
+        "included": true,
+        "screenshot": "round2.png",
+        "sha256": "c1ec0261e854444c14749777bd16a66be612a0fa3530f26e1fe8f1edfe97de6c",
+        "bytes": 23946
+      }
+    }
+  },
+  {
+    "t": "2026-10-28T19:48:19.552Z",
+    "step": "committed",
+    "detail": {
+      "round": 2,
+      "file": "app.js",
+      "failingAfter": [],
+      "openWeight": "unavailable"
+    }
+  }
+]

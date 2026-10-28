@@ -1,0 +1,145 @@
+{
+  "state": "confirmed-issue-repaired",
+  "observations": [
+    {
+      "turn": 1,
+      "request": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "promoCode": "SAVE10"
+      },
+      "observation": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "cart": {
+          "count": 3,
+          "totalMinor": 19910
+        },
+        "cartState": {
+          "lines": [
+            "Trail Runner Shoes\n      −\n      1\n      +\n      $129.00Canvas Tote Bag\n      −\n      1\n      +\n      $49.00Insulated Bottle 1L\n      −\n      1\n      +\n      $3"
+          ],
+          "subtotalMinor": 21200,
+          "discountMinor": 1290,
+          "promoStatus": "SAVE10 applied: 10% off",
+          "checkoutText": "Checkout"
+        },
+        "catalogRuleSummary": {
+          "promoCodes": {
+            "SAVE10": 10,
+            "WELCOME15": 15
+          }
+        },
+        "errors": []
+      }
+    },
+    {
+      "turn": 2,
+      "request": {
+        "kind": "quantity-change",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          }
+        ],
+        "productId": "trail-runner",
+        "delta": 1
+      },
+      "observation": {
+        "kind": "quantity-change",
+        "target": "trail-runner",
+        "delta": 1,
+        "beforeQty": {
+          "count": 1,
+          "totalMinor": 12900
+        },
+        "afterQty": {
+          "count": 2,
+          "totalMinor": 25800
+        },
+        "errors": []
+      }
+    }
+  ],
+  "verdict": {
+    "verdict": "suspected",
+    "suspectedIssue": "Promo SAVE10 discounts only the Trail Runner Shoes line instead of the whole mixed-cart subtotal",
+    "evidenceSummary": "Mixed cart 1x trail-runner ($129.00) + 1x canvas-tote ($49.00) + 1x insulated-bottle ($34.00): subtotalMinor 21200, but discountMinor 1290 and totalMinor 19910 with 'SAVE10 applied: 10% off'. 1290 is 10% of 12900 (trail-runner only), not 10% of 21200 (2120); expected total 19080. Single-product promo probes passed, masking this composition-dependent defect. Quantity change for trail-runner was correct (12900 to 25800).",
+    "confirmation": {
+      "kind": "cart-scenario",
+      "items": [
+        {
+          "id": "trail-runner",
+          "qty": 1
+        },
+        {
+          "id": "canvas-tote",
+          "qty": 1
+        },
+        {
+          "id": "insulated-bottle",
+          "qty": 1
+        }
+      ],
+      "promoCode": "SAVE10"
+    }
+  },
+  "turns": 4,
+  "tokensUsed": 10885,
+  "tokenBudget": 30000,
+  "coverage": {
+    "mixedCart": true,
+    "promo": true,
+    "quantity": true
+  },
+  "confirmation": {
+    "spec": {
+      "kind": "cart-scenario",
+      "items": [
+        {
+          "id": "trail-runner",
+          "qty": 1
+        },
+        {
+          "id": "canvas-tote",
+          "qty": 1
+        },
+        {
+          "id": "insulated-bottle",
+          "qty": 1
+        }
+      ],
+      "promoCode": "SAVE10"
+    },
+    "expected": 19080,
+    "observed": 19910,
+    "confirmed": true
+  }
+}

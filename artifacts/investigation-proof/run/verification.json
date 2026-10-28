@@ -1,0 +1,217 @@
+{
+  "target": "target",
+  "state": "confirmed-issue-repaired",
+  "investigation": {
+    "state": "confirmed-issue-repaired",
+    "observations": 2,
+    "turns": 4,
+    "verdict": {
+      "verdict": "suspected",
+      "suspectedIssue": "Promo SAVE10 discounts only the Trail Runner Shoes line instead of the whole mixed-cart subtotal",
+      "evidenceSummary": "Mixed cart 1x trail-runner ($129.00) + 1x canvas-tote ($49.00) + 1x insulated-bottle ($34.00): subtotalMinor 21200, but discountMinor 1290 and totalMinor 19910 with 'SAVE10 applied: 10% off'. 1290 is 10% of 12900 (trail-runner only), not 10% of 21200 (2120); expected total 19080. Single-product promo probes passed, masking this composition-dependent defect. Quantity change for trail-runner was correct (12900 to 25800).",
+      "confirmation": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "promoCode": "SAVE10"
+      }
+    },
+    "confirmation": {
+      "spec": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "promoCode": "SAVE10"
+      },
+      "expected": 19080,
+      "observed": 19910,
+      "confirmed": true
+    },
+    "coverage": {
+      "mixedCart": true,
+      "promo": true,
+      "quantity": true
+    },
+    "tokensUsed": 10885
+  },
+  "initialFailing": [],
+  "repairsCommitted": 1,
+  "finalPass": true,
+  "finalFailing": [],
+  "receipts": [
+    {
+      "status": "investigation-observation",
+      "request": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "promoCode": "SAVE10"
+      },
+      "observation": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          },
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "cart": {
+          "count": 3,
+          "totalMinor": 19910
+        },
+        "cartState": {
+          "lines": [
+            "Trail Runner Shoes\n      −\n      1\n      +\n      $129.00Canvas Tote Bag\n      −\n      1\n      +\n      $49.00Insulated Bottle 1L\n      −\n      1\n      +\n      $3"
+          ],
+          "subtotalMinor": 21200,
+          "discountMinor": 1290,
+          "promoStatus": "SAVE10 applied: 10% off",
+          "checkoutText": "Checkout"
+        },
+        "catalogRuleSummary": {
+          "promoCodes": {
+            "SAVE10": 10,
+            "WELCOME15": 15
+          }
+        },
+        "errors": []
+      },
+      "model": {
+        "model": "muse-wonder-1.0",
+        "id": "chatcmpl-01a1840c-1b3c-73a5-9746-9339b1be482d",
+        "usage": {
+          "completion_tokens": 448,
+          "prompt_tokens": 1651,
+          "total_tokens": 2099,
+          "completion_tokens_details": {
+            "reasoning_tokens": 388
+          },
+          "prompt_tokens_details": {
+            "cached_tokens": 628
+          }
+        }
+      }
+    },
+    {
+      "status": "investigation-observation",
+      "request": {
+        "kind": "quantity-change",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          }
+        ],
+        "productId": "trail-runner",
+        "delta": 1
+      },
+      "observation": {
+        "kind": "quantity-change",
+        "target": "trail-runner",
+        "delta": 1,
+        "beforeQty": {
+          "count": 1,
+          "totalMinor": 12900
+        },
+        "afterQty": {
+          "count": 2,
+          "totalMinor": 25800
+        },
+        "errors": []
+      },
+      "model": {
+        "model": "muse-wonder-1.0",
+        "id": "chatcmpl-01a1840c-56f7-72cb-bba9-3bd2eac0ac73",
+        "usage": {
+          "completion_tokens": 822,
+          "prompt_tokens": 1840,
+          "total_tokens": 2662,
+          "completion_tokens_details": {
+            "reasoning_tokens": 778
+          },
+          "prompt_tokens_details": {
+            "cached_tokens": 884
+          }
+        }
+      }
+    },
+    {
+      "status": "committed",
+      "phase": "confirmed-repair",
+      "repair": {
+        "diagnosis": "Promo discount is calculated from only the first cart line's unit price instead of the whole cart subtotal",
+        "evidenceSummary": "Catalog: 12900+4900+3400=21200 subtotal; SAVE10=10% should give 2120 discount and 19080 total. Observed 19910 equals 21200-1290, i.e. 10% of only the 12900 Trail Runner Shoes first line.",
+        "file": "app.js",
+        "old": "  const firstLine = [...cart.entries()][0];\n  const firstPrice = firstLine ? window.CATALOG.products.find((x) => x.id === firstLine[0]).priceMinor : 0;\n  const discount = Math.round(firstPrice * promoPercent / 100);",
+        "new": "  const discount = Math.round(subtotal * promoPercent / 100);",
+        "rationale": "Using the already-computed subtotal (which sums price*qty for all lines) makes the promo apply to the whole mixed cart, yielding 21200-2120=19080 for the confirmed scenario."
+      },
+      "model": {
+        "provider": "meta",
+        "model": "muse-wonder-1.0",
+        "id": "chatcmpl-01a1840d-2328-7324-a5ad-cb6a571647c4",
+        "usage": {
+          "completion_tokens": 861,
+          "prompt_tokens": 3207,
+          "total_tokens": 4068,
+          "completion_tokens_details": {
+            "reasoning_tokens": 627
+          },
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        }
+      },
+      "verify": {
+        "probePass": true,
+        "scenarioTotalMinor": 19080,
+        "expected": 19080
+      }
+    }
+  ],
+  "finishedAt": "2026-10-28T19:47:03.403Z"
+}

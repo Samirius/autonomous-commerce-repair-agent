@@ -1,0 +1,23 @@
+{
+  "modelInfo": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "id": "chatcmpl-01a1840f-7787-74d5-813c-8c69a88a5181",
+    "usage": {
+      "completion_tokens": 450,
+      "prompt_tokens": 2097,
+      "total_tokens": 2547,
+      "completion_tokens_details": {
+        "reasoning_tokens": 330
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 1012
+      }
+    },
+    "rawText": "{\"verdict\":\"healthy\",\"evidenceSummary\":\"Mixed cart of trail-runner ($129), canvas-tote ($49) and insulated-bottle ($34) gave subtotal 21200 minor; SAVE10 gave 2120 discount and 19080 total, WELCOME15 gave 3180 discount and 18020 total, both matching catalog promo rules. Quantity increase for trail-runner from 1 to 2 updated count 1->2 and total 12900->25800. All deterministic probes also passed with no console errors.\"}"
+  },
+  "response": {
+    "verdict": "healthy",
+    "evidenceSummary": "Mixed cart of trail-runner ($129), canvas-tote ($49) and insulated-bottle ($34) gave subtotal 21200 minor; SAVE10 gave 2120 discount and 19080 total, WELCOME15 gave 3180 discount and 18020 total, both matching catalog promo rules. Quantity increase for trail-runner from 1 to 2 updated count 1->2 and total 12900->25800. All deterministic probes also passed with no console errors."
+  }
+}

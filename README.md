@@ -13,9 +13,10 @@ Built for the Meta Global AI Developer Hackathon (Oct 26–Nov 4, 2026), from sc
 git clone <this repo> && cd autonomous-commerce-repair-agent
 npm install
 cp .env.example .env   # MODEL_API_KEY from the Meta Model API dashboard
-npm test               # 16 tests, no API key needed for most
+npm test               # 27 tests, no API key needed for most
 npm run check          # deterministic check of the demo storefront
 npm run agent          # guided repair of the demo storefront (Meta model)
+npm run demo           # repeatable demo: pristine broken store -> real Meta repair -> verification
 node eval/run-eval.mjs # internal blind evaluation (6 unseen variants)
 ```
 

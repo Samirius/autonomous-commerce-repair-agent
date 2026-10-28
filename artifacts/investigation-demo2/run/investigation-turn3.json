@@ -1,0 +1,32 @@
+{
+  "modelInfo": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "id": "chatcmpl-01a1840f-3cd7-766f-8dc5-183c0c7a5647",
+    "usage": {
+      "completion_tokens": 359,
+      "prompt_tokens": 2025,
+      "total_tokens": 2384,
+      "completion_tokens_details": {
+        "reasoning_tokens": 315
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 884
+      }
+    },
+    "rawText": "{\"observationRequest\":{\"kind\":\"quantity-change\",\"items\":[{\"id\":\"trail-runner\",\"qty\":1}],\"productId\":\"trail-runner\",\"delta\":1}}"
+  },
+  "response": {
+    "observationRequest": {
+      "kind": "quantity-change",
+      "items": [
+        {
+          "id": "trail-runner",
+          "qty": 1
+        }
+      ],
+      "productId": "trail-runner",
+      "delta": 1
+    }
+  }
+}

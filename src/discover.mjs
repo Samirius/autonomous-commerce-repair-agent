@@ -8,10 +8,10 @@ import { readFile, writeFile, mkdir, appendFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
-import { runProbe, runObservation, runViewportScreenshot } from '../scripts/probe.mjs';
+import { runProbe, runObservation, runViewportScreenshot, expectedScenarioMinor } from '../scripts/probe.mjs';
 import { createProvider } from './provider.mjs';
 import { createVerifier } from './verifier.mjs';
-import { validateRepair, ALLOWED_FILES } from './agent.mjs';
+import { validateRepair, resolveRepair, applyPatchText, ALLOWED_FILES } from './agent.mjs';
 
 const arg = (name, fallback) => { const i = process.argv.indexOf(name); return i >= 0 ? process.argv[i + 1] : fallback; };
 
@@ -35,13 +35,17 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
   // verdict. Classification (never repair on suspicion alone):
   //   verified-healthy | investigation-incomplete | suspected-unverified | confirmed-issue
   let investigation = null;
+  let repairsCommitted = 0;
   if (!initialFailing.length) {
-    investigation = { state: 'investigation-incomplete', observations: [], verdict: null, turns: 0 };
+    investigation = { state: 'investigation-incomplete', observations: [], verdict: null, turns: 0, tokensUsed: 0, tokenBudget: 30000, coverage: { mixedCart: false, promo: false, quantity: false } };
+    const hasPromoCodes = Object.keys(probe.catalog?.rules?.promoCodes || {}).length > 0;
+    if (!hasPromoCodes) investigation.coverage.promo = true;
+    const coverageComplete = () => investigation.coverage.mixedCart && investigation.coverage.promo && investigation.coverage.quantity;
     const shotPath = path.join(runDir, 'investigation.png');
     await runProbe(root, { screenshot: shotPath });
     let notes = '';
     let extraImages = [];
-    for (let turn = 1; turn <= 8; turn++) {
+    for (let turn = 1; turn <= 6; turn++) {
       investigation.turns = turn;
       const shotBytes = await readFile(shotPath);
       const images = [`data:image/png;base64,${shotBytes.toString('base64')}`, ...extraImages];
@@ -55,22 +59,30 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
           '', 'Canonical catalog:', '```js', catalogText, '```', '',
           notes ? `Investigation so far:\n${notes}` : '',
           'Available typed tools (request ONE per turn):',
-          `Investigation turn ${turn} of 8. Observations completed so far: ${investigation.observations.length}. Once you have 2+ observations, return a verdict on the NEXT turn unless you can name one specific workflow that remains untested and is required for the verdict. On turn 8 you must return a verdict.`,
+          `Investigation turn ${turn} of 6. Observations completed: ${investigation.observations.length}. Coverage so far: ${JSON.stringify(investigation.coverage)} (required before a healthy verdict: a mixed-product cart, a quantity change, and — when the catalog defines promo codes — a promo applied to a MIXED cart, since promo-on-one-product cannot reveal composition-dependent defects). Once coverage is complete, return a verdict on the NEXT turn. On turn 6 you must return a verdict.`,
+          `Token budget for this investigation: ${investigation.tokenBudget} total; used so far: ${investigation.tokensUsed}. Be economical: prefer observations that complete missing coverage.`,
           '{"observationRequest":{"kind":"cart-scenario","items":[{"id":"<product id>","qty":2}],"promoCode":"<optional>"}}',
           '{"observationRequest":{"kind":"quantity-change","items":[{"id":"<product id>","qty":1}],"productId":"<id>","delta":1}}',
           '{"observationRequest":{"kind":"apply-promo","items":[{"id":"<product id>","qty":1}],"promoCode":"<code from catalog>"}}',
           '{"observationRequest":{"kind":"inspect-cart","items":[{"id":"<product id>","qty":1}],"tryCheckout":true}}',
           '{"observationRequest":{"kind":"product-detail","productId":"<id>"}} | {"observationRequest":{"kind":"console-reload"}} | {"observationRequest":{"kind":"viewport","width":360|390|768|1280}}',
           'You must perform at least 2 observations of different kinds, covering cart behaviour and any available promotions, before a healthy verdict.',
-          'When done, return ONE verdict: {"verdict":"healthy","evidenceSummary":"..."} or {"verdict":"suspected","suspectedIssue":"...","evidenceSummary":"..."}.',
+          'When done, return ONE verdict: {"verdict":"healthy","evidenceSummary":"..."} or {"verdict":"suspected","suspectedIssue":"...","evidenceSummary":"...","confirmation":{"kind":"cart-scenario","items":[{"id":"<product id>","qty":1}],"promoCode":"<optional>"}} — the confirmation is a typed scenario the agent will re-run and check deterministically against the catalog; only a confirmed discrepancy can lead to repair.',
           'Do NOT propose code repairs in this phase: an unverified suspicion never modifies code. If your evidence suggests a real issue, mark it suspected and describe exactly what deterministic evidence would confirm it.',
         ].join('\n'),
       });
       await writeFile(path.join(runDir, `investigation-turn${turn}.json`),
         JSON.stringify({ modelInfo: { provider: result.provider, model: result.model, id: result.id, usage: result.usage, rawText: result.rawText }, response: result.parsed }, null, 2));
       const parsed = result.parsed;
+      investigation.tokensUsed += result.usage?.total_tokens || 0;
       if (parsed.observationRequest) {
         const req = parsed.observationRequest;
+        if (coverageComplete()) {
+          notes += '\n[system] Coverage is complete. Observation NOT executed — return a verdict on the next turn.';
+          record('investigation-coverage-complete', { turn });
+          continue;
+        }
+        if (investigation.tokensUsed > investigation.tokenBudget) { record('investigation-token-budget', { tokensUsed: investigation.tokensUsed }); break; }
         let observation = await runObservation(root, req);
         if (req.kind === 'viewport' && !observation.error) {
           const vp = await runViewportScreenshot(root, req.width || 390, path.join(runDir, `investigation-viewport-${req.width || 390}.png`));
@@ -78,14 +90,20 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
           extraImages = [`data:image/png;base64,${(await readFile(path.join(runDir, vp.screenshot))).toString('base64')}`];
         }
         investigation.observations.push({ turn, request: req, observation });
+        const distinctIds = new Set((req.items || []).map((it) => it.id || it.productId));
+        if (distinctIds.size >= 2) investigation.coverage.mixedCart = true;
+        // Promo coverage only counts when a promo is applied to a MIXED cart:
+        // promo-on-single-product cannot reveal composition-dependent defects.
+        if ((req.kind === 'apply-promo' || req.promoCode) && distinctIds.size >= 2) investigation.coverage.promo = true;
+        if (req.kind === 'quantity-change') investigation.coverage.quantity = true;
         receipts.push({ status: 'investigation-observation', request: req, observation, model: { model: result.model, id: result.id, usage: result.usage } });
         record('investigation-observation', { turn, kind: req.kind, result: JSON.stringify(observation).slice(0, 300) });
         notes += `\n[turn ${turn} ${req.kind}] ${JSON.stringify(observation).slice(0, 1500)}`;
         continue;
       }
       if (parsed.verdict === 'healthy') {
-        if (investigation.observations.length >= 2) { investigation.state = 'verified-healthy'; investigation.verdict = parsed; }
-        else { notes += `\n[system] Healthy verdict rejected: only ${investigation.observations.length} observation(s) performed. Investigate at least 2 different workflow kinds first.`; investigation.verdict = parsed; continue; }
+        if (coverageComplete() && investigation.observations.length >= 2) { investigation.state = 'verified-healthy'; investigation.verdict = parsed; }
+        else { notes += `\n[system] Healthy verdict rejected: coverage incomplete ${JSON.stringify(investigation.coverage)} after ${investigation.observations.length} observation(s). Complete the missing coverage first.`; investigation.verdict = parsed; continue; }
       } else if (parsed.verdict === 'suspected' || parsed.verdict === 'issue' || parsed.repair) {
         investigation.state = 'suspected-unverified';
         investigation.verdict = parsed;
@@ -100,9 +118,70 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
     // becomes a confirmed issue and flows into the normal repair loop below.
     probe = await runProbe(root, { screenshot: path.join(runDir, 'before.png'), screenshotDesktop: path.join(runDir, 'before-desktop.png') });
     if (!probe.pass) record('investigation-confirmed', { failing: probe.signals.filter((s) => !s.pass).map((s) => s.id) });
+
+    // CONFIRMATION — a suspected verdict may name a typed confirmation
+    // scenario. The agent re-runs it and checks the outcome deterministically
+    // against the catalog. Only a confirmed discrepancy becomes repairable;
+    // the repair must then pass BOTH the full probe and the scenario.
+    if (probe.pass && investigation.state === 'suspected-unverified') {
+      const spec = investigation.verdict?.confirmation || investigation.verdict?.confirmationScenario;
+      const confirmable = spec && ['cart-scenario', 'apply-promo', 'inspect-cart'].includes(spec.kind);
+      if (confirmable) {
+        const items = (spec.items || []).map((it) => ({ id: it.id || it.productId, qty: it.qty ?? 1 }));
+        const expected = expectedScenarioMinor(probe.catalog, items, spec.promoCode || null);
+        const confirmationObs = await runObservation(root, spec);
+        const observed = confirmationObs?.cart?.totalMinor;
+        investigation.confirmation = { spec, expected, observed, confirmed: typeof observed === 'number' && observed === expected ? false : typeof observed === 'number' };
+        record('confirmation', investigation.confirmation);
+        if (investigation.confirmation.confirmed) {
+          investigation.state = 'confirmed-issue';
+          const files = {};
+          for (const f of [...ALLOWED_FILES, 'catalog.js']) files[f] = await readFile(path.join(root, f), 'utf8').catch(() => '(missing)');
+          const shotB = await readFile(path.join(runDir, 'before.png'));
+          for (let attempt = 1; attempt <= 2; attempt++) {
+            const result = await provider.chatJSON({
+              system: 'You are an autonomous e-commerce repair agent. Reply with ONLY a JSON object, no markdown.',
+              images: [`data:image/png;base64,${shotB.toString('base64')}`],
+              user: [
+                'A commerce defect has been CONFIRMED by deterministic scenario evidence (totals in integer minor units; derive the correct total from the catalog yourself):',
+                JSON.stringify({ suspectedIssue: investigation.verdict.suspectedIssue || investigation.verdict.evidenceSummary, confirmationScenario: spec, observedTotalMinor: observed }, null, 2),
+                '', 'Canonical catalog (READ-ONLY, never edit it, never hardcode its values):', '```js', catalogText, '```', '',
+                ...Object.entries(files).flatMap(([n, c]) => [`--- ${n} ---`, '```', c, '```', '']),
+                'Propose ONE narrowly scoped repair in ONE allowed file. "old" must occur exactly once. No execution/process/shell code.',
+                `Allowed files: ${JSON.stringify(ALLOWED_FILES)}.`,
+                'Return JSON exactly: {"diagnosis":"...","evidenceSummary":"...","file":"<allowed file>","old":"exact substring","new":"replacement substring","rationale":"..."}',
+              ].join('\n'),
+            });
+            const repair = result.parsed;
+            await writeFile(path.join(runDir, `model-decision-confirmed-a${attempt}.json`),
+              JSON.stringify({ modelInfo: { provider: result.provider, model: result.model, id: result.id, usage: result.usage, rawText: result.rawText }, repair, confirmation: investigation.confirmation }, null, 2));
+            const filePath = path.join(root, repair.file || '');
+            const original = ALLOWED_FILES.includes(repair.file) ? await readFile(filePath, 'utf8') : '';
+            const vError = validateRepair(repair, original, { forbiddenLiterals });
+            if (vError) { receipts.push({ status: 'rejected', phase: 'confirmed-repair', error: vError, repair, model: { model: result.model, id: result.id, usage: result.usage } }); record('confirmed-rejected', { attempt, error: vError }); continue; }
+            await writeFile(filePath, applyPatchText(original, repair));
+            const verifyProbe = await runProbe(root);
+            const verifyObs = await runObservation(root, spec);
+            const scenarioOk = verifyObs?.cart?.totalMinor === expected;
+            if (verifyProbe.pass && scenarioOk) {
+              repairsCommitted += 1;
+              investigation.state = 'confirmed-issue-repaired';
+              receipts.push({ status: 'committed', phase: 'confirmed-repair', repair, model: { provider: result.provider, model: result.model, id: result.id, usage: result.usage }, verify: { probePass: true, scenarioTotalMinor: verifyObs.cart.totalMinor, expected } });
+              record('confirmed-committed', { attempt, file: repair.file });
+              probe = verifyProbe;
+              break;
+            }
+            await writeFile(filePath, original); // rollback, byte-for-byte
+            receipts.push({ status: 'rolled-back', phase: 'confirmed-repair', repair, model: { model: result.model, id: result.id, usage: result.usage }, verify: { probePass: verifyProbe.pass, scenarioTotalMinor: verifyObs?.cart?.totalMinor, expected } });
+            record('confirmed-rolled-back', { attempt, probePass: verifyProbe.pass, scenarioOk });
+          }
+          if (investigation.state !== 'confirmed-issue-repaired') investigation.state = 'confirmed-issue-unrepaired';
+          await writeFile(path.join(runDir, 'investigation.json'), JSON.stringify(investigation, null, 2));
+        }
+      }
+    }
   }
 
-  let repairsCommitted = 0;
   for (let round = 1; round <= maxRepairs; round++) {
     const failing = probe.signals.filter((s) => !s.pass);
     if (!failing.length) break;
@@ -158,7 +237,7 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
       const original = ALLOWED_FILES.includes(repair.file) ? await readFile(filePath, 'utf8') : '';
       const error = validateRepair(repair, original, { forbiddenLiterals });
       if (error) { receipts.push({ round, attempt, status: 'rejected', error, repair, model: { model: result.model, id: result.id, usage: result.usage } }); record('rejected', { error }); continue; }
-      await writeFile(filePath, original.replace(repair.old, repair.new));
+      await writeFile(filePath, applyPatchText(original, repair));
       const patchRecord = `file: ${repair.file}\nstatus: PENDING\n--- old ---\n${repair.old}\n--- new ---\n${repair.new}\n`;
       await mkdir(path.join(runDir, 'patches'), { recursive: true });
       await writeFile(path.join(runDir, 'patches', `r${round}-a${attempt}.patch.txt`), patchRecord);
@@ -190,7 +269,7 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
   const state = repairsCommitted > 0
     ? (final.pass ? 'confirmed-issue-repaired' : 'repair-incomplete')
     : (investigation?.state || (final.pass ? 'no-known-failures-incomplete' : 'confirmed-issue'));
-  const summary = { target: path.basename(root), state, investigation: investigation && { state: investigation.state, observations: investigation.observations.length, turns: investigation.turns, verdict: investigation.verdict }, initialFailing, repairsCommitted, finalPass: final.pass, finalFailing: final.signals.filter((s) => !s.pass).map((s) => s.id), receipts, finishedAt: new Date().toISOString() };
+  const summary = { target: path.basename(root), state, investigation: investigation && { state: investigation.state, observations: investigation.observations.length, turns: investigation.turns, verdict: investigation.verdict, confirmation: investigation.confirmation || null, coverage: investigation.coverage, tokensUsed: investigation.tokensUsed }, initialFailing, repairsCommitted, finalPass: final.pass, finalFailing: final.signals.filter((s) => !s.pass).map((s) => s.id), receipts, finishedAt: new Date().toISOString() };
   await writeFile(path.join(runDir, 'verification.json'), JSON.stringify(summary, null, 2));
   await save();
   return summary;
