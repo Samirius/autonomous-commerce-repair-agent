@@ -12,13 +12,19 @@ Built for the Meta Global AI Developer Hackathon (Oct 26–Nov 4, 2026), from sc
 ```bash
 git clone <this repo> && cd autonomous-commerce-repair-agent
 npm install
-cp .env.example .env   # MODEL_API_KEY from the Meta Model API dashboard
-npm test               # 27 tests, no API key needed for most
+cp .env.example .env   # MODEL_API_KEY (Meta) + BASETEN_API_KEY (Baseten, for the reviewer)
+npm test               # 29 tests, no API key needed for most
 npm run check          # deterministic check of the demo storefront
 npm run agent          # guided repair of the demo storefront (Meta model)
 npm run demo           # repeatable demo: pristine broken store -> real Meta repair -> verification
 node eval/run-eval.mjs # internal blind evaluation (6 unseen variants)
 ```
+
+**See it work:** `evidence/` contains curated, sanitized proof (before/after screenshots, repair receipts with both models' response ids, the autonomous-investigation record). Demo storyboard: `docs/STORYBOARD.md`. Project description: `docs/PROJECT.md`. Submission checklist: `docs/RELEASE_CHECKLIST.md`.
+
+**What it proves:** externally-authored blind cases went from 1/3 detected (Mission 005) to 3/3 repaired and oracle-verified (Mission 006); a store that passes every automated check was investigated autonomously — Wonder's own cart/promo exploration exposed a hidden discount defect, confirmed deterministically (expected 19080 vs observed 19910 minor units), repaired, and double-verified; a healthy store was investigated to `verified-healthy` with zero code changes.
+
+**Limitations (exact):** currently an agent for disposable JavaScript storefronts following the fixture contract in `eval/external/README.md` — **not a production WooCommerce integration**; no live store has ever been touched. Details: `docs/SUBMISSION.md`.
 
 External evaluators: see `eval/external/README.md` (bring your own fixture + oracle; they stay outside this repo). Independence audit: `docs/LEAKAGE_AUDIT.md`. Realistic multi-product fixture: `fixtures/realistic-store/`.
 
@@ -26,7 +32,7 @@ External evaluators: see `eval/external/README.md` (bring your own fixture + ora
 
 - **Blind evaluation** (`eval/`): six unseen storefront variants (cookie-bar CTA overlap, 430px fixed-width overflow at 360px, bulk discount applied twice, quantity-squared cart total, subtotal charging an extra unit, displayed price from the wrong catalog product). The agent works on a copied storefront only; the private oracle (`eval/oracles.mjs`) is never shown to it. Discovery mode (`src/discover.mjs`) gets no defect names or expected fixes — only a generic invariant probe (`scripts/probe.mjs`: interactive usability at 390/360/1280, horizontal overflow, displayed-price and cart-total consistency in integer minor units), the screenshot, and the source files. Latest blind run: **6/6 discovered, 6/6 repaired, 1 attempt each, 0 regressions, 17,758 total tokens** (`docs/eval-mission003-summary.json`; full artifacts in `eval/results/`, gitignored).
 - **Real multimodal input**: model requests now include the actual Playwright screenshot as a base64 `image_url` content part alongside structured evidence (previously screenshots were artifacts only). Each run records the screenshot SHA-256 + byte size next to the model response id as proof of what was sent.
-- **Open-weight verifier** (`src/verifier.mjs`): provider-independent adapter for Muse Spark Open on Baseten (`meta-models/muse-spark-open`, `https://inference.baseten.co/v1`). Role: independent review of a committed repair — never the final authority; deterministic browser tests remain decisive. **Blocked**: no `BASETEN_API_KEY` in the environment (endpoint returns 403 unauthenticated); the adapter reports `available:false` and no response is fabricated. Set `BASETEN_API_KEY` and it activates with no code changes.
+- **Open-weight verifier** (`src/verifier.mjs`): provider-independent adapter for Muse Spark Open on Baseten (`meta-models/muse-spark-open`, `https://inference.baseten.co/v1`). Role: independent review of each committed repair (approve / concern / reject, separate from the deterministic status) — never the final authority; deterministic browser tests remain decisive. With `BASETEN_API_KEY` set it performs live reviews (see `evidence/openweight-verifier-live-check.json`); without a key it records `unavailable` and no response is fabricated.
 
 Run the blind evaluation:
 

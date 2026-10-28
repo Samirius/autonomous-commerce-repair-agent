@@ -1,0 +1,194 @@
+{
+  "totals": {
+    "variants": 6,
+    "discovered": 6,
+    "succeeded": 6,
+    "failed": 0,
+    "totalAttempts": 6,
+    "totalTokens": 17758,
+    "totalRegressions": 0,
+    "verifierAvailable": false
+  },
+  "rows": [
+    {
+      "variant": "v1-cookie-overlap",
+      "oracleBeforePass": false,
+      "oracleAfterPass": true,
+      "discovered": true,
+      "success": true,
+      "attempts": 1,
+      "repairsCommitted": 1,
+      "rolledBack": 0,
+      "rejected": 0,
+      "regressions": [],
+      "tokens": 3505,
+      "beforeChecks": {
+        "displayedPriceMatchesCatalog": true,
+        "ctaUsableMobile": false,
+        "blockingBannerStillPresent": true,
+        "cartCountCorrect": true,
+        "cartTotalQty1Correct": true,
+        "cartTotalQty2Correct": true,
+        "pointerClickWorks": false
+      },
+      "afterChecks": {
+        "displayedPriceMatchesCatalog": true,
+        "ctaUsableMobile": true,
+        "blockingBannerStillPresent": true,
+        "cartCountCorrect": true,
+        "cartTotalQty1Correct": true,
+        "cartTotalQty2Correct": true,
+        "pointerClickWorks": true
+      }
+    },
+    {
+      "variant": "v2-small-viewport-overflow",
+      "oracleBeforePass": false,
+      "oracleAfterPass": true,
+      "discovered": true,
+      "success": true,
+      "attempts": 1,
+      "repairsCommitted": 1,
+      "rolledBack": 0,
+      "rejected": 0,
+      "regressions": [],
+      "tokens": 3060,
+      "beforeChecks": {
+        "displayedPriceMatchesCatalog": true,
+        "ctaUsableMobile": false,
+        "cartCountCorrect": true,
+        "cartTotalQty1Correct": true,
+        "cartTotalQty2Correct": true,
+        "noOverflowAt360": false,
+        "ctaFullyVisibleAt360": false,
+        "pointerClickWorks": true
+      },
+      "afterChecks": {
+        "displayedPriceMatchesCatalog": true,
+        "ctaUsableMobile": true,
+        "cartCountCorrect": true,
+        "cartTotalQty1Correct": true,
+        "cartTotalQty2Correct": true,
+        "noOverflowAt360": true,
+        "ctaFullyVisibleAt360": true,
+        "pointerClickWorks": true
+      }
+    },
+    {
+      "variant": "v3-discount-double-applied",
+      "oracleBeforePass": false,
+      "oracleAfterPass": true,
+      "discovered": true,
+      "success": true,
+      "attempts": 1,
+      "repairsCommitted": 1,
+      "rolledBack": 0,
+      "rejected": 0,
+      "regressions": [],
+      "tokens": 3126,
+      "beforeChecks": {
+        "displayedPriceMatchesCatalog": true,
+        "ctaUsableMobile": true,
+        "cartCountCorrect": true,
+        "cartTotalQty1Correct": true,
+        "cartTotalQty2Correct": false,
+        "pointerClickWorks": true
+      },
+      "afterChecks": {
+        "displayedPriceMatchesCatalog": true,
+        "ctaUsableMobile": true,
+        "cartCountCorrect": true,
+        "cartTotalQty1Correct": true,
+        "cartTotalQty2Correct": true,
+        "pointerClickWorks": true
+      }
+    },
+    {
+      "variant": "v4-quantity-squared",
+      "oracleBeforePass": false,
+      "oracleAfterPass": true,
+      "discovered": true,
+      "success": true,
+      "attempts": 1,
+      "repairsCommitted": 1,
+      "rolledBack": 0,
+      "rejected": 0,
+      "regressions": [],
+      "tokens": 2548,
+      "beforeChecks": {
+        "displayedPriceMatchesCatalog": true,
+        "ctaUsableMobile": true,
+        "cartCountCorrect": true,
+        "cartTotalQty1Correct": true,
+        "cartTotalQty2Correct": false,
+        "pointerClickWorks": true
+      },
+      "afterChecks": {
+        "displayedPriceMatchesCatalog": true,
+        "ctaUsableMobile": true,
+        "cartCountCorrect": true,
+        "cartTotalQty1Correct": true,
+        "cartTotalQty2Correct": true,
+        "pointerClickWorks": true
+      }
+    },
+    {
+      "variant": "v5-subtotal-extra-unit",
+      "oracleBeforePass": false,
+      "oracleAfterPass": true,
+      "discovered": true,
+      "success": true,
+      "attempts": 1,
+      "repairsCommitted": 1,
+      "rolledBack": 0,
+      "rejected": 0,
+      "regressions": [],
+      "tokens": 2475,
+      "beforeChecks": {
+        "displayedPriceMatchesCatalog": true,
+        "ctaUsableMobile": true,
+        "cartCountCorrect": true,
+        "cartTotalQty1Correct": false,
+        "cartTotalQty2Correct": false,
+        "pointerClickWorks": true
+      },
+      "afterChecks": {
+        "displayedPriceMatchesCatalog": true,
+        "ctaUsableMobile": true,
+        "cartCountCorrect": true,
+        "cartTotalQty1Correct": true,
+        "cartTotalQty2Correct": true,
+        "pointerClickWorks": true
+      }
+    },
+    {
+      "variant": "v6-wrong-product-price",
+      "oracleBeforePass": false,
+      "oracleAfterPass": true,
+      "discovered": true,
+      "success": true,
+      "attempts": 1,
+      "repairsCommitted": 1,
+      "rolledBack": 0,
+      "rejected": 0,
+      "regressions": [],
+      "tokens": 3044,
+      "beforeChecks": {
+        "displayedPriceMatchesCatalog": false,
+        "ctaUsableMobile": true,
+        "cartCountCorrect": true,
+        "cartTotalQty1Correct": true,
+        "cartTotalQty2Correct": true,
+        "pointerClickWorks": true
+      },
+      "afterChecks": {
+        "displayedPriceMatchesCatalog": true,
+        "ctaUsableMobile": true,
+        "cartCountCorrect": true,
+        "cartTotalQty1Correct": true,
+        "cartTotalQty2Correct": true,
+        "pointerClickWorks": true
+      }
+    }
+  ]
+}
