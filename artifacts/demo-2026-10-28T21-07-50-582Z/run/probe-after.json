@@ -1,0 +1,249 @@
+{
+  "pass": true,
+  "signals": [
+    {
+      "id": "interactive-usable@mobile:add-to-cart",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "mobile",
+          "width": 390,
+          "height": 844
+        },
+        "id": "add-to-cart",
+        "text": "Add to Cart",
+        "box": {
+          "x": 16,
+          "y": 692,
+          "width": 358,
+          "height": 52,
+          "right": 374,
+          "bottom": 744
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "add-to-cart",
+          "className": "add-to-cart",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "no-horizontal-overflow@mobile",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "mobile",
+          "width": 390,
+          "height": 844
+        },
+        "overflowX": false
+      }
+    },
+    {
+      "id": "interactive-usable@small:add-to-cart",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "small",
+          "width": 360,
+          "height": 740
+        },
+        "id": "add-to-cart",
+        "text": "Add to Cart",
+        "box": {
+          "x": 16,
+          "y": 588,
+          "width": 328,
+          "height": 52,
+          "right": 344,
+          "bottom": 640
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "add-to-cart",
+          "className": "add-to-cart",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "no-horizontal-overflow@small",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "small",
+          "width": 360,
+          "height": 740
+        },
+        "overflowX": false
+      }
+    },
+    {
+      "id": "interactive-usable@desktop:add-to-cart",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "desktop",
+          "width": 1280,
+          "height": 800
+        },
+        "id": "add-to-cart",
+        "text": "Add to Cart",
+        "box": {
+          "x": 16,
+          "y": 648,
+          "width": 1248,
+          "height": 52,
+          "right": 1264,
+          "bottom": 700
+        },
+        "inViewport": true,
+        "hitIsSelf": true,
+        "hitElement": {
+          "id": "add-to-cart",
+          "className": "add-to-cart",
+          "tag": "BUTTON"
+        }
+      }
+    },
+    {
+      "id": "no-horizontal-overflow@desktop",
+      "pass": true,
+      "evidence": {
+        "viewport": {
+          "name": "desktop",
+          "width": 1280,
+          "height": 800
+        },
+        "overflowX": false
+      }
+    },
+    {
+      "id": "catalog-products-presented",
+      "pass": true,
+      "evidence": {
+        "presented": [
+          "nova-sneaker"
+        ],
+        "catalogCount": 1
+      }
+    },
+    {
+      "id": "displayed-price-matches-catalog:nova-sneaker",
+      "pass": true,
+      "evidence": {
+        "id": "nova-sneaker",
+        "name": "Nova Everyday Sneaker",
+        "catalogPriceMinor": 8900,
+        "priceMinorAttr": 8900,
+        "priceText": "$89.00",
+        "priceTextMinor": 8900,
+        "addSelector": "#add-to-cart"
+      }
+    },
+    {
+      "id": "displayed-price-matches-catalog",
+      "pass": true,
+      "evidence": {
+        "id": "nova-sneaker",
+        "name": "Nova Everyday Sneaker",
+        "catalogPriceMinor": 8900,
+        "priceMinorAttr": 8900,
+        "priceText": "$89.00",
+        "priceTextMinor": 8900,
+        "addSelector": "#add-to-cart"
+      }
+    },
+    {
+      "id": "cart-total-for-product:nova-sneaker",
+      "pass": true,
+      "evidence": {
+        "product": "nova-sneaker",
+        "qty": 2,
+        "cart": {
+          "count": 2,
+          "totalMinor": 17800
+        },
+        "clickError": null
+      }
+    },
+    {
+      "id": "cart-count-matches-clicks",
+      "pass": true,
+      "evidence": {
+        "after1": {
+          "count": 1,
+          "totalMinor": 8900
+        },
+        "after2": {
+          "count": 2,
+          "totalMinor": 17800
+        }
+      }
+    },
+    {
+      "id": "cart-total-matches-catalog-rules",
+      "pass": true,
+      "evidence": {
+        "after1": {
+          "count": 1,
+          "totalMinor": 8900
+        },
+        "after2": {
+          "count": 2,
+          "totalMinor": 17800
+        },
+        "expectedQty1": 8900,
+        "expectedQty2": 17800,
+        "catalog": {
+          "products": [
+            {
+              "id": "nova-sneaker",
+              "name": "Nova Everyday Sneaker",
+              "priceMinor": 8900,
+              "currency": "USD"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "pointer-purchase-works:featured",
+      "pass": true,
+      "evidence": {
+        "method": "real pointer click on #add-to-cart"
+      }
+    },
+    {
+      "id": "no-console-errors",
+      "pass": true,
+      "evidence": {
+        "errors": []
+      }
+    }
+  ],
+  "presented": [
+    {
+      "id": "nova-sneaker",
+      "name": "Nova Everyday Sneaker",
+      "catalogPriceMinor": 8900,
+      "priceMinorAttr": 8900,
+      "priceText": "$89.00",
+      "priceTextMinor": 8900,
+      "addSelector": "#add-to-cart"
+    }
+  ],
+  "catalog": {
+    "products": [
+      {
+        "id": "nova-sneaker",
+        "name": "Nova Everyday Sneaker",
+        "priceMinor": 8900,
+        "currency": "USD"
+      }
+    ]
+  }
+}

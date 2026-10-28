@@ -34,6 +34,31 @@ export function createVerifier(env = process.env) {
   };
 }
 
+// Separate, explicit review statuses. Deterministic browser tests are the
+// only pass/fail authority; the open-weight review is advisory and can flag
+// human review, never overrule tests and never modify code.
+export function classifyReview({ deterministicPass, openWeight = null, evidenceAfter = null }) {
+  let owStatus = 'unavailable';
+  let owVerdict = openWeight?.parsed?.verdict || null;
+  if (openWeight && !openWeight.error && owVerdict) {
+    if (owVerdict === 'approve') {
+      // Missing post-repair evidence must never silently become an approval.
+      owStatus = evidenceAfter && Object.keys(evidenceAfter).length ? 'approved' : 'concern';
+      if (owStatus === 'concern') owVerdict = 'concern (approval downgraded: no post-repair evidence)';
+    } else if (owVerdict === 'concern') owStatus = 'concern';
+    else if (owVerdict === 'reject') owStatus = 'rejected';
+    else owStatus = 'concern';
+  }
+  const humanReviewRequired = owStatus === 'concern' || owStatus === 'rejected';
+  return {
+    deterministic: deterministicPass ? 'passed' : 'failed',
+    openWeight: owStatus,
+    openWeightVerdict: owVerdict,
+    humanReviewRequired,
+    action: humanReviewRequired ? 'run one bounded additional deterministic verification, then flag for human review' : (owStatus === 'approved' ? 'none' : 'none (review unavailable)'),
+  };
+}
+
 if (process.argv[1]?.endsWith('verifier.mjs')) {
   const v = createVerifier();
   console.log(JSON.stringify(v.available ? { available: true, provider: v.provider, model: v.model, baseUrl: v.baseUrl } : v, null, 2));

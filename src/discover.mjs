@@ -10,7 +10,7 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { runProbe, runObservation, runViewportScreenshot, expectedScenarioMinor } from '../scripts/probe.mjs';
 import { createProvider } from './provider.mjs';
-import { createVerifier } from './verifier.mjs';
+import { createVerifier, classifyReview } from './verifier.mjs';
 import { validateRepair, resolveRepair, applyPatchText, ALLOWED_FILES } from './agent.mjs';
 
 const arg = (name, fallback) => { const i = process.argv.indexOf(name); return i >= 0 ? process.argv[i + 1] : fallback; };
@@ -21,6 +21,27 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
   const receipts = [];
   const record = (step, detail) => { const e = { t: new Date().toISOString(), step, detail }; history.push(e); console.log(`[${step}]`, JSON.stringify(detail).slice(0, 500)); };
   const save = async () => writeFile(path.join(runDir, 'history.json'), JSON.stringify(history, null, 2));
+
+  // Open-weight review wrapper: separate statuses, bounded follow-up.
+  // On concern/reject it schedules ONE additional full deterministic probe
+  // and flags the repair for human review. It never changes pass/fail.
+  const reviewWithStatus = async ({ repair, evidenceBefore, evidenceAfter, deterministicPass }) => {
+    if (!verifier?.available) {
+      return { openWeightVerification: null, review: classifyReview({ deterministicPass, openWeight: null, evidenceAfter }) };
+    }
+    let ow = null;
+    try { ow = await verifier.review({ repair, evidenceBefore, evidenceAfter }); }
+    catch (e) { ow = { error: String(e).slice(0, 300) }; }
+    const review = classifyReview({ deterministicPass, openWeight: ow, evidenceAfter });
+    if (review.humanReviewRequired) {
+      const extra = await runProbe(root);
+      review.additionalVerification = { type: 'full-probe-rerun', probePass: extra.pass, failingSignals: extra.signals.filter((s) => !s.pass).map((s) => s.id) };
+      review.actionTaken = extra.pass ? 'additional deterministic verification passed; repair still flagged for human review' : 'additional deterministic verification FAILED; human review required before trusting this repair';
+      record('review-followup', { openWeight: review.openWeight, additionalProbePass: extra.pass });
+    }
+    record('review', { deterministic: review.deterministic, openWeight: review.openWeight, humanReviewRequired: review.humanReviewRequired });
+    return { openWeightVerification: ow, review };
+  };
 
   let probe = await runProbe(root, { screenshot: path.join(runDir, 'before.png'), screenshotDesktop: path.join(runDir, 'before-desktop.png') });
   await writeFile(path.join(runDir, 'probe-before.json'), JSON.stringify(probe, null, 2));
@@ -166,12 +187,8 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
             if (verifyProbe.pass && scenarioOk) {
               repairsCommitted += 1;
               investigation.state = 'confirmed-issue-repaired';
-              let owVerification = null;
-              if (verifier?.available) {
-                try { owVerification = await verifier.review({ repair, evidenceBefore: investigation.confirmation, evidenceAfter: { scenarioTotalMinor: verifyObs.cart.totalMinor, expected, probePass: true } }); }
-                catch (e) { owVerification = { error: String(e).slice(0, 300) }; }
-              }
-              receipts.push({ status: 'committed', phase: 'confirmed-repair', repair, model: { provider: result.provider, model: result.model, id: result.id, usage: result.usage }, verify: { probePass: true, scenarioTotalMinor: verifyObs.cart.totalMinor, expected }, openWeightVerification: owVerification });
+              const { openWeightVerification, review } = await reviewWithStatus({ repair, evidenceBefore: investigation.confirmation, evidenceAfter: { scenarioTotalMinor: verifyObs.cart.totalMinor, expected, probePass: true }, deterministicPass: true });
+              receipts.push({ status: 'committed', phase: 'confirmed-repair', repair, model: { provider: result.provider, model: result.model, id: result.id, usage: result.usage }, verify: { probePass: true, scenarioTotalMinor: verifyObs.cart.totalMinor, expected }, openWeightVerification, review });
               record('confirmed-committed', { attempt, file: repair.file });
               probe = verifyProbe;
               break;
@@ -252,12 +269,8 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
       if (failingAfter.length < failing.length && !regressions.length) {
         await writeFile(path.join(runDir, 'patches', `r${round}-a${attempt}.patch.txt`), patchRecord.replace('PENDING', 'committed'));
         committed = true; repairsCommitted += 1; probe = after;
-        let verification = null;
-        if (verifier?.available) {
-          try { verification = await verifier.review({ repair, evidenceBefore: { failingSignalsBefore: failing.map((s) => s.id) }, evidenceAfter: { failingSignalsAfter: failingAfter, deterministicProbePassAfter: failingAfter.length === 0 } }); }
-          catch (e) { verification = { error: String(e).slice(0, 300) }; }
-        }
-        receipts.push({ round, attempt, status: 'committed', repair, model: { provider: result.provider, model: result.model, id: result.id, usage: result.usage }, vision, failingAfter, openWeightVerification: verification });
+        const { openWeightVerification: verification, review } = await reviewWithStatus({ repair, evidenceBefore: { failingSignalsBefore: failing.map((s) => s.id) }, evidenceAfter: { failingSignalsAfter: failingAfter, repairVerificationPassed: true, note: 'this repair committed (its signals improved, no regressions); failingSignalsAfter lists unrelated defects still in the queue' }, deterministicPass: true });
+        receipts.push({ round, attempt, status: 'committed', repair, model: { provider: result.provider, model: result.model, id: result.id, usage: result.usage }, vision, failingAfter, openWeightVerification: verification, review });
         record('committed', { round, file: repair.file, failingAfter, openWeight: verification?.parsed || verification?.error || 'unavailable' });
       } else {
         await writeFile(filePath, original); // rollback, byte-for-byte

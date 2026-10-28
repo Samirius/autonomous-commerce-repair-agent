@@ -1,0 +1,99 @@
+[
+  {
+    "t": "2026-10-28T21:06:17.776Z",
+    "step": "probe-before",
+    "detail": {
+      "failing": [
+        "interactive-usable@mobile:add-to-cart",
+        "interactive-usable@small:add-to-cart",
+        "interactive-usable@desktop:add-to-cart",
+        "cart-total-for-product:nova-sneaker",
+        "cart-total-matches-catalog-rules",
+        "pointer-purchase-works:featured"
+      ]
+    }
+  },
+  {
+    "t": "2026-10-28T21:06:43.117Z",
+    "step": "diagnose",
+    "detail": {
+      "round": 1,
+      "attempt": 1,
+      "model": "muse-wonder-1.0",
+      "id": "chatcmpl-01a18456-304d-7413-b88b-9dba2946a13f",
+      "file": "styles.css",
+      "diagnosis": "The fixed Add to Cart button is obscured by the sticky promo bar, making it unclickable",
+      "vision": {
+        "included": true,
+        "screenshot": "round1.png",
+        "sha256": "fa2742e8bdf0f19b30e26f543cb8308f37fcb9a3db9d3f753692ff9ae41c3b80",
+        "bytes": 22522
+      }
+    }
+  },
+  {
+    "t": "2026-10-28T21:06:49.664Z",
+    "step": "review",
+    "detail": {
+      "deterministic": "failed",
+      "openWeight": "approved",
+      "humanReviewRequired": false
+    }
+  },
+  {
+    "t": "2026-10-28T21:06:49.665Z",
+    "step": "committed",
+    "detail": {
+      "round": 1,
+      "file": "styles.css",
+      "failingAfter": [
+        "cart-total-for-product:nova-sneaker",
+        "cart-total-matches-catalog-rules"
+      ],
+      "openWeight": {
+        "verdict": "approve",
+        "rationale": "Repair correctly addresses diagnosed overlap: #add-to-cart (fixed bottom:16px, h52, z10) was obscured by sticky-promo (fixed bottom:0, h84, z20) per hitIsSelf:false at all viewports and screenshot. Moving to bottom:100px = 84px promo +16px gap makes button hit-testable with no overlap, preserving both elements. EvidenceAfter shows 3 interactive-usable failures and pointer-purchase-works fixed, no new regressions; remaining cart-total failures are pre-existing and unrelated to this UI fix."
+      }
+    }
+  },
+  {
+    "t": "2026-10-28T21:07:01.287Z",
+    "step": "diagnose",
+    "detail": {
+      "round": 2,
+      "attempt": 1,
+      "model": "muse-wonder-1.0",
+      "id": "chatcmpl-01a18456-7763-70fa-818e-52d682feb1a3",
+      "file": "app.js",
+      "diagnosis": "Cart total uses a stale legacy unit price instead of the catalog price for nova-sneaker",
+      "vision": {
+        "included": true,
+        "screenshot": "round2.png",
+        "sha256": "c1ec0261e854444c14749777bd16a66be612a0fa3530f26e1fe8f1edfe97de6c",
+        "bytes": 23946
+      }
+    }
+  },
+  {
+    "t": "2026-10-28T21:07:06.842Z",
+    "step": "review",
+    "detail": {
+      "deterministic": "passed",
+      "openWeight": "approved",
+      "humanReviewRequired": false
+    }
+  },
+  {
+    "t": "2026-10-28T21:07:06.842Z",
+    "step": "committed",
+    "detail": {
+      "round": 2,
+      "file": "app.js",
+      "failingAfter": [],
+      "openWeight": {
+        "verdict": "approve",
+        "rationale": "Fix correctly replaces stale LEGACY_CART_PRICE_MINOR (7900) with product.priceMinor from window.CATALOG, aligning cart total with displayed $89.00 (8900) for nova-sneaker. Minimal change avoids hardcoding, uses single source of truth, and is verified by deterministicProbePassAfter true and no remaining failing signals."
+      }
+    }
+  }
+]

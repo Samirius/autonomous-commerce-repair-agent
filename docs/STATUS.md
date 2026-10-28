@@ -11,7 +11,7 @@ Updated: 2026-10-28
 - Tests: 27/27. Main storefront green. Committed locally; NOT pushed (awaiting approval).
 
 ## Ongoing
-- Final submission preparation (demo script/video, README polish) — next mission.
+- Mission 009 done locally (`42127d6`, not pushed): reviewer statuses separated (deterministic / OW approved / concern / rejected / unavailable) with bounded additional verification + human-review flag on concern; approvals downgrade automatically when post-repair evidence is missing. Demo reliability: 4/4 consecutive `npm run demo` successes (details in `docs/SUBMISSION.md`). Submission docs: `docs/DEMO_SCRIPT.md`, `docs/SUBMISSION.md`. Tests 29/29.
 
 ## Blockers
 - None. (Open Weights formerly blocked here — resolved, see below.)
