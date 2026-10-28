@@ -7,19 +7,20 @@ Playwright probes a storefront and reports generic commerce invariants (per-prod
 | Role | Model | Evidence |
 |---|---|---|
 | Diagnosis, investigation, patch proposals | Muse Wonder (`muse-wonder-1.0`) | `artifacts/*/model-decision-*.json`, `investigation-turn*.json` — response ids + token usage per call |
-| Independent repair review | Muse Spark Open (`meta-models/muse-spark-open`) | `openWeightVerification` in each demo/investigation `verification.json`; `artifacts/openweight/verifier-live-check.json` |
+| Independent repair review | Muse Spark Open (`meta-models/muse-spark-open`) | `openWeightVerification` + `review` in **demo-run** `verification.json` files (e.g. `artifacts/demo-*/run/`); the Mission 008 investigation-proof run predates this wiring and has no such receipt — its repair was reviewed separately in `evidence/openweight-verifier-live-check.json` |
 | Pass/fail authority | Deterministic Playwright checks (no model) | `probe-before.json` / `probe-after.json`, external oracles (Missions 005/006) |
 
 ## Reproducible setup
 ```bash
 npm install
+npx playwright install chromium   # one-time, if the browser is not cached
 cp .env.example .env   # MODEL_API_KEY (Meta), BASETEN_API_KEY (Baseten)
 npm test               # 29 tests
 npm run demo           # repeatable end-to-end demo with real Meta calls
 ```
 
 ## Public repository readiness checklist
-- [x] Tracked-file secret scan clean; keys only in env/`.env` (gitignored); one previously exposed Baseten key rotated by the owner (never committed)
+- [x] Tracked-file secret scan clean; keys only in env/`.env` (gitignored). The one Baseten key exposed in chat was never committed; **it has NOT been rotated yet — rotation is a pending owner action**
 - [x] No `.env`, `node_modules`, or eval result bundles tracked; local absolute paths sanitized from artifacts
 - [x] README: purpose, models, installation, demo commands, architecture pointers
 - [x] Continuity docs: `docs/STATUS.md`, `docs/DECISIONS.md` (D1–D14), `docs/LEAKAGE_AUDIT.md`, this file, `docs/DEMO_SCRIPT.md`

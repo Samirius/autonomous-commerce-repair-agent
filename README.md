@@ -3,98 +3,60 @@
 AI system that autonomously detects, repairs and verifies real e-commerce storefront problems:
 **Observe → Diagnose → Plan → Act → Verify → Rollback or Commit → Remember.**
 
-Built for the Meta Global AI Developer Hackathon (Oct 26–Nov 4, 2026), from scratch during the hackathon.
+Built from scratch for the Meta Global AI Developer Hackathon (Oct 26–Nov 4, 2026), Indie Developer track, theme *Build for Your World*.
 
-**Models used:** Muse Wonder (`muse-wonder-1.0`, Meta Model API, multimodal — planner/diagnosis) via a provider-independent layer (`src/provider.mjs`, env-selected). Independent verifier: Muse Spark Open (`meta-models/muse-spark-open`, open weights) via Baseten (`src/verifier.mjs`) — advisory only, live-verified; deterministic Playwright checks are always the final pass/fail authority. Set `BASETEN_API_KEY` to enable it.
+**Models used**
+- **Muse Wonder** (`muse-wonder-1.0`, Meta Model API, multimodal) — diagnosis, autonomous investigation, and patch proposals, via a provider-independent layer (`src/provider.mjs`, selected by env vars).
+- **Muse Spark Open** (`meta-models/muse-spark-open`, Meta open weights via Baseten) — independent review of committed repairs (`src/verifier.mjs`). Advisory only: it can approve, raise a concern (which triggers one bounded additional deterministic verification and a human-review flag), or reject — it can never overrule deterministic tests or modify code. Without `BASETEN_API_KEY` it is recorded as `unavailable`; nothing is ever simulated.
+- **Deterministic Playwright checks** — always the final pass/fail authority. No model judges its own work.
 
-## Installation
+## Install
 
 ```bash
-git clone <this repo> && cd autonomous-commerce-repair-agent
+git clone https://github.com/Samirius/autonomous-commerce-repair-agent.git
+cd autonomous-commerce-repair-agent
 npm install
-cp .env.example .env   # MODEL_API_KEY (Meta) + BASETEN_API_KEY (Baseten, for the reviewer)
-npm test               # 29 tests, no API key needed for most
-npm run check          # deterministic check of the demo storefront
-npm run agent          # guided repair of the demo storefront (Meta model)
-npm run demo           # repeatable demo: pristine broken store -> real Meta repair -> verification
-node eval/run-eval.mjs # internal blind evaluation (6 unseen variants)
-```
-
-**See it work:** `evidence/` contains curated, sanitized proof (before/after screenshots, repair receipts with both models' response ids, the autonomous-investigation record). Demo storyboard: `docs/STORYBOARD.md`. Project description: `docs/PROJECT.md`. Submission checklist: `docs/RELEASE_CHECKLIST.md`.
-
-**What it proves:** externally-authored blind cases went from 1/3 detected (Mission 005) to 3/3 repaired and oracle-verified (Mission 006); a store that passes every automated check was investigated autonomously — Wonder's own cart/promo exploration exposed a hidden discount defect, confirmed deterministically (expected 19080 vs observed 19910 minor units), repaired, and double-verified; a healthy store was investigated to `verified-healthy` with zero code changes.
-
-**Limitations (exact):** currently an agent for disposable JavaScript storefronts following the fixture contract in `eval/external/README.md` — **not a production WooCommerce integration**; no live store has ever been touched. Details: `docs/SUBMISSION.md`.
-
-External evaluators: see `eval/external/README.md` (bring your own fixture + oracle; they stay outside this repo). Independence audit: `docs/LEAKAGE_AUDIT.md`. Realistic multi-product fixture: `fixtures/realistic-store/`.
-
-## Mission 003 — generalization, vision, open-weight verifier
-
-- **Blind evaluation** (`eval/`): six unseen storefront variants (cookie-bar CTA overlap, 430px fixed-width overflow at 360px, bulk discount applied twice, quantity-squared cart total, subtotal charging an extra unit, displayed price from the wrong catalog product). The agent works on a copied storefront only; the private oracle (`eval/oracles.mjs`) is never shown to it. Discovery mode (`src/discover.mjs`) gets no defect names or expected fixes — only a generic invariant probe (`scripts/probe.mjs`: interactive usability at 390/360/1280, horizontal overflow, displayed-price and cart-total consistency in integer minor units), the screenshot, and the source files. Latest blind run: **6/6 discovered, 6/6 repaired, 1 attempt each, 0 regressions, 17,758 total tokens** (`docs/eval-mission003-summary.json`; full artifacts in `eval/results/`, gitignored).
-- **Real multimodal input**: model requests now include the actual Playwright screenshot as a base64 `image_url` content part alongside structured evidence (previously screenshots were artifacts only). Each run records the screenshot SHA-256 + byte size next to the model response id as proof of what was sent.
-- **Open-weight verifier** (`src/verifier.mjs`): provider-independent adapter for Muse Spark Open on Baseten (`meta-models/muse-spark-open`, `https://inference.baseten.co/v1`). Role: independent review of each committed repair (approve / concern / reject, separate from the deterministic status) — never the final authority; deterministic browser tests remain decisive. With `BASETEN_API_KEY` set it performs live reviews (see `evidence/openweight-verifier-live-check.json`); without a key it records `unavailable` and no response is fabricated.
-
-Run the blind evaluation:
-
-```bash
-node eval/run-eval.mjs            # all six variants
-node eval/run-eval.mjs --only=v1,v3
-```
-
-## Mission 001/002 — main demo storefront
-
-
-The storefront now has two independent defects, discovered and queued by severity (critical first):
-
-1. **cta-overlap** (critical) — promo banner obscures the Add to Cart CTA; checked at mobile 390×844 **and** desktop 1280×800.
-2. **price-mismatch** (high) — the cart charges a stale legacy price instead of the canonical catalog price. Canonical prices live in `storefront/catalog.js` (integer minor units, e.g. `priceMinor: 8900`); all money comparisons are integer minor units. `catalog.js` is **read-only** for the agent, and pasting the canonical price into code is rejected — a repair must derive the total from the catalog at runtime.
-
-The agent has **no defect→fix mappings**: for each queued defect the model inspects the evidence and file contents, selects a file from the allowlist (`styles.css`, `app.js`, `index.html`), and proposes one scoped `old`→`new` replacement with its evidence rationale. Generic validation (allowlist, exact-once match, no execution constructs, no hardcoded canonical values) gates every patch. Each repair is verified independently; previously repaired defects are rechecked for regressions; only the failed repair's file is rolled back, and the queue continues.
-
-
-
-A minimal local storefront ships with one intentional defect: at a 390px viewport a fixed promo banner (84px, `z-index:20`) obscures the fixed Add to Cart CTA. The agent:
-
-1. **Observe** — Playwright opens the storefront at 390×844, screenshots it, and collects geometry/hit-test evidence.
-2. **Diagnose + Plan** — a Meta model evaluates the evidence + CSS and returns one narrowly scoped CSS repair as JSON.
-3. **Act** — an execution tool applies the repair only if it touches `storefront/styles.css`, its `old` text occurs exactly once, and it contains no disallowed constructs.
-4. **Verify** — Playwright reloads and runs deterministic checks: CTA in viewport, not obscured (`elementFromPoint`), and a real click increments the cart.
-5. **Rollback or Commit** — failing verification restores the original file byte-for-byte; passing verification writes a verification record.
-6. **Remember** — every run appends to `memory/runs.jsonl` and saves full artifacts under `artifacts/run-<timestamp>/` (screenshots, evidence, model decision, diff, history).
-
-## Setup
-
-```bash
-npm install
-cp .env.example .env   # set MODEL_API_KEY from the Meta Model API dashboard
+npx playwright install chromium   # one-time browser download, if not already cached
+cp .env.example .env              # fill in the keys below
+npm test                          # 29 tests (most need no API key)
 ```
 
 `.env` (never committed):
 
 ```
-MODEL_PROVIDER=meta
-MODEL_NAME=muse-wonder-1.0
-MODEL_API_KEY=...
+MODEL_API_KEY=...        # Meta Model API key (Muse Wonder) — required for live runs
+BASETEN_API_KEY=...      # Baseten key (Muse Spark Open reviewer) — optional but recommended
+# MODEL_PROVIDER=meta  MODEL_NAME=muse-wonder-1.0  MODEL_BASE_URL=https://api.meta.ai/v1
 ```
 
-Swap providers without code changes: set `MODEL_PROVIDER=openai-compatible`, `MODEL_BASE_URL`, `MODEL_NAME`, `MODEL_API_KEY`.
+Swap models/providers with env vars only (`MODEL_PROVIDER=openai-compatible`, `MODEL_BASE_URL`, `MODEL_NAME`) — no code changes.
 
-## Run the demo
+## Two different modes — do not confuse them
+
+**Guided repair** (`npm run agent`, code in `src/agent.mjs`): a deterministic checker names the failing defects on the demo storefront, and the model proposes repairs for that queue. This demonstrates the repair/verify/rollback loop; it is **not** autonomous discovery and is never cited as such (see `docs/LEAKAGE_AUDIT.md`).
+
+**Autonomous discovery + investigation** (`npm run demo`, or `node src/discover.mjs --root <storeDir> --run-dir <outDir>`, code in `src/discover.mjs`): no defect names or expected fixes are given. A generic probe reports commerce invariants; if they fail, the model repairs from evidence. If they all pass, Wonder must actively investigate the store with typed browser tools (mixed carts, quantity changes, promotions, cart/checkout inspection) before any verdict, and a suspicion becomes repairable only after the agent confirms it deterministically. Start here for the real demonstration.
 
 ```bash
-npm run check          # deterministic check only (fails on the broken storefront)
-npm run agent          # full agent loop (Meta model proposes the repair)
-npm test               # unit + rollback tests (rollback uses a temp copy with the defect recreated)
+npm run demo     # pristine broken store copied fresh -> real Meta repairs -> verified outcome
+npm run check    # deterministic check of the demo storefront only
+npm test         # full test suite
 ```
 
-Serve the storefront statically if you want to view it: open `storefront/index.html` in a browser at a 390px-wide viewport.
+## What it has proven (evidence in `evidence/`)
+- Externally authored blind cases: **1/3 detected** in the first external run, then **3/3 repaired and verified by the evaluator's withheld oracles** after a probe-coverage upgrade — no per-defect hardcoded fixes. Internal blind set: 6/6.
+- A store passing every automated check was investigated autonomously: Wonder's mixed-cart + promo exploration exposed a hidden discount defect, the agent confirmed it deterministically (expected 19080 vs observed 19910 minor units), repaired it, and re-verified both the full probe and the exact scenario.
+- A healthy store was investigated to `verified-healthy` with zero code changes — suspicion alone never patches code.
+- Every committed repair carries an audit trail: screenshots (SHA-256 recorded), model response ids, token usage, patches, and — in runs where the reviewer was enabled — a separate Muse Spark Open verdict. Which runs contain which records is stated precisely in `evidence/README.md`.
 
-## Layout
+## Limitations (exact)
+Currently an agent for **disposable JavaScript storefronts** following the fixture contract in `eval/external/README.md` (canonical catalog data, defined cart/price element conventions, money in integer minor units). It is **not a production WooCommerce integration**; no live or client store has ever been touched. Full limitation list: `docs/SUBMISSION.md`.
 
-- `storefront/` — demo store (index.html, styles.css, app.js)
-- `scripts/check.mjs` — deterministic Playwright verification (no AI)
-- `src/provider.mjs` — provider-independent model layer
-- `src/agent.mjs` — the agent loop + repair validation/rollback
-- `tests/agent.test.mjs` — validation + rollback tests
-- `artifacts/` — per-run proof (screenshots, evidence, diffs, decisions)
-- `docs/STATUS.md`, `docs/DECISIONS.md` — project continuity
+## Documentation
+- `docs/STORYBOARD.md` — three-minute demo storyboard & narration
+- `docs/PROJECT.md` — hackathon project description (Indie track)
+- `docs/SUBMISSION.md` — architecture, which model did what, reliability results
+- `docs/RELEASE_CHECKLIST.md` — what remains before submission (owner actions)
+- `docs/LEAKAGE_AUDIT.md` — what the model is and is not shown, and why
+- `docs/DECISIONS.md`, `docs/STATUS.md` — architecture decisions and project status
+- `eval/external/README.md` — bring-your-own-fixture external evaluation interface

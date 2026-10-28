@@ -3,8 +3,8 @@
 Engineering is done. Everything below is an owner action; nothing here may be automated without Samir's explicit approval.
 
 ## Verified by engineering (2026-10-28)
-- [x] Private repo pushed: `Samirius/autonomous-commerce-repair-agent` @ `e7dff21` (remote HEAD == local HEAD, visibility PRIVATE)
-- [x] Clean-clone test: fresh clone → `npm install` → `npm test` **29/29 pass** → `npm run demo` completed with real Meta calls (2 repairs, verified) using only documented env vars
+- [x] Private repo pushed: `Samirius/autonomous-commerce-repair-agent` @ `f246765` (remote HEAD == local HEAD, visibility PRIVATE). Later documentation-only commits are local until push is approved.
+- [x] Clean-clone test: fresh clone → `npm install` → `npx playwright install chromium` (one-time, if not cached) → `npm test` **29/29 pass** → `npm run demo` completed with real Meta calls (2 repairs, verified) using only documented env vars
 - [x] Tracked-file secret/sensitive scan clean; old exposed Baseten key not present anywhere in the repo
 - [x] Curated public evidence in `evidence/` (sanitized, indexed)
 - [x] Demo storyboard + narration: `docs/STORYBOARD.md`; project description: `docs/PROJECT.md`
@@ -14,7 +14,7 @@ Engineering is done. Everything below is an owner action; nothing here may be au
 |---|---|---|
 | `MODEL_API_KEY` | Muse Wonder planner/investigator (Meta Model API) | Meta Model API dashboard |
 | `MODEL_PROVIDER` / `MODEL_NAME` / `MODEL_BASE_URL` | Optional provider/model selection (defaults: meta / muse-wonder-1.0) | — |
-| `BASETEN_API_KEY` | Muse Spark Open reviewer — without it the agent still works and records the review as `unavailable` | Baseten dashboard (rotate the previously exposed key) |
+| `BASETEN_API_KEY` | Muse Spark Open reviewer — without it the agent still works and records the review as `unavailable` | Baseten dashboard. **The previously exposed key has NOT been rotated yet — rotation is a pending owner action** |
 
 ## Remaining owner actions before submission
 1. [ ] Rotate the exposed Baseten API key (dashboard), put the replacement in local `.env` only

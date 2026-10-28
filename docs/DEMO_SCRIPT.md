@@ -1,8 +1,10 @@
 # 3-minute demo sequence (for recording / live judging)
 
-Setup once: `npm install`, `.env` with `MODEL_API_KEY` (Meta), `BASETEN_API_KEY` (Baseten, optional but recommended). Everything below runs from the repo root and needs no other preparation.
+> Superseded for presentation purposes by `docs/STORYBOARD.md` (Mission 012), which makes the autonomous investigation the centerpiece. This file remains the operational runbook. Note: `npm run demo` runs **autonomous discovery** (`src/discover.mjs`), not the guided defect-queue flow (`npm run agent`, `src/agent.mjs`).
 
-## Minute 1 — the broken store (guided discovery + repair)
+Setup once: `npm install`, `npx playwright install chromium` (one-time, if not cached), `.env` with `MODEL_API_KEY` (Meta), `BASETEN_API_KEY` (Baseten, optional but recommended). Everything below runs from the repo root and needs no other preparation.
+
+## Minute 1 — the broken store (discovery + repair)
 Run: `npm run demo`
 - On screen: the pristine broken fixture is copied fresh (CTA covered by the promo bar; cart charges a stale price).
 - The agent shows probe failures at 3 viewports, sends Wonder screenshots + evidence, applies 2 patches (`bottom: 16px -> 100px`; legacy price -> catalog-derived), each deterministically verified.
