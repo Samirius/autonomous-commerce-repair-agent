@@ -21,6 +21,7 @@ export function createProvider(env = process.env) {
   return {
     provider,
     model,
+    baseUrl,
     async chatJSON({ system, user }) {
       const res = await fetch(`${baseUrl}/chat/completions`, {
         method: 'POST',

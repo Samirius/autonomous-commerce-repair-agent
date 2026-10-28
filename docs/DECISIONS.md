@@ -9,5 +9,14 @@ Pass/fail is decided solely by Playwright geometry/hit-test/click checks (`scrip
 ## D3 — Static file storefront, no build step / no server (2026-10-28)
 The demo store is plain HTML/CSS/JS loaded via `file://` in Playwright. Rationale: smallest verifiable slice; removes server/build failure modes from the hackathon demo.
 
+## D5 — Multi-defect queue with per-defect verify/rollback (2026-10-28, Mission 002)
+Checks return a defect list with severity ranks. The agent repairs one defect at a time in rank order; verification of a repair requires (a) its own defect passing and (b) every previously repaired defect still passing. Failure rolls back only that defect's file; the queue continues. Rationale: independent proof per defect and no cross-defect collateral damage.
+
+## D6 — Canonical data is read-only; hardcoding it is a rejected repair (2026-10-28)
+`storefront/catalog.js` is the source of truth and is outside the patch allowlist. Validation also rejects any patch whose replacement text contains the canonical price (minor or formatted) for the price-mismatch defect. Rationale: changing the catalog to match buggy code, or pasting `8900` into the cart, would fake the repair; the cart must derive totals from the catalog at runtime.
+
+## D7 — No defect→fix mappings (2026-10-28)
+The agent loop contains no per-defect solution logic. The model picks the file and the exact replacement from evidence + file contents; code only enforces generic scope/safety rules and deterministic verification. Two model attempts per defect, with validation/verification failure fed back, before the defect is left unrepaired and the queue moves on.
+
 ## D4 — Run artifacts as the memory (2026-10-28)
 Each run writes `artifacts/run-<ts>/` (screenshots, evidence, model decision, diff, verification, history) and appends a summary line to `memory/runs.jsonl`. Rationale: judges and future agents can audit exactly what the model decided and what the tests returned — no fabricated history.

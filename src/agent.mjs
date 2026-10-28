@@ -1,114 +1,159 @@
-// Autonomous Commerce Repair Agent — Mission 001 vertical slice.
-// Observe -> Diagnose -> Plan -> Act -> Verify -> Rollback or Commit -> Remember
+// Autonomous Commerce Repair Agent — Mission 002: multi-defect repair.
+// Observe -> Discover -> Prioritize -> (Diagnose -> Plan -> Act -> Verify ->
+// Rollback or Commit) per defect -> Regression recheck -> Remember
+// The model selects the file and the patch. There are NO defect->fix mappings
+// in this file: validation is generic (allowlist, exact-once, safety,
+// anti-hardcoding of canonical values), verification is deterministic.
 import { readFile, writeFile, mkdir, appendFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
-import { runCheck } from '../scripts/check.mjs';
+import { runAllChecks } from '../scripts/check.mjs';
 import { createProvider } from './provider.mjs';
 
-const ALLOWED_FILE = 'styles.css'; // repairs may only touch the storefront stylesheet
+// Files the model may repair. catalog.js is deliberately NOT here: it is the
+// canonical source of truth and must never be edited to match buggy code.
+export const ALLOWED_FILES = ['styles.css', 'app.js', 'index.html'];
+const READ_ONLY_FILES = ['catalog.js'];
+const MAX_ATTEMPTS = 2;
 
-export function validateRepair(repair, css) {
+export function validateRepair(repair, content, opts = {}) {
   if (!repair || typeof repair !== 'object') return 'repair is not an object';
-  if (repair.file !== ALLOWED_FILE) return `repair.file must be "${ALLOWED_FILE}", got "${repair.file}"`;
+  const allowed = opts.allowedFiles || ALLOWED_FILES;
+  if (!allowed.includes(repair.file)) return `repair.file "${repair.file}" is not in the allowlist ${JSON.stringify(allowed)} (catalog.js is read-only)`;
   if (!repair.old || !repair.new || repair.old === repair.new) return 'repair.old/new missing or identical';
   if (repair.new.length > 2000 || repair.old.length > 2000) return 'repair snippet too large';
-  if (/expression\(|javascript:|<\/|@import\s+url/i.test(repair.new)) return 'repair.new contains a disallowed construct';
-  const occurrences = css.split(repair.old).length - 1;
-  if (occurrences !== 1) return `repair.old must occur exactly once in styles.css (found ${occurrences})`;
+  if (/expression\(|javascript:|<\/script|eval\s*\(|Function\s*\(|child_process|process\.|require\s*\(|import\s*\(|execSync|spawn\s*\(/i.test(repair.new)) {
+    return 'repair.new contains a disallowed construct (no code execution / process access)';
+  }
+  for (const lit of opts.forbiddenLiterals || []) {
+    if (lit && repair.new.includes(lit)) return `repair.new hardcodes canonical value "${lit}" — derive it from the canonical data instead`;
+  }
+  const occurrences = content.split(repair.old).length - 1;
+  if (occurrences !== 1) return `repair.old must occur exactly once in ${repair.file} (found ${occurrences})`;
   return null;
 }
 
-// Apply a repair, verify deterministically, roll back on failure.
-export async function applyAndVerify({ root, repair, runDir }) {
-  const cssPath = path.join(root, 'styles.css');
-  const original = await readFile(cssPath, 'utf8');
-  const error = validateRepair(repair, original);
+// Backwards-compatible name from Mission 001.
+export const validatePatch = validateRepair;
+
+function gitDiff(file) {
+  try {
+    return execFileSync('git', ['diff', '--', `storefront/${file}`], { cwd: process.cwd(), encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+  } catch { return '(git diff unavailable)'; }
+}
+
+// Apply ONE repair to ONE file, verify the target defect + all previously
+// repaired defects (regression), roll back only this file on any failure.
+export async function applyAndVerify({ root, repair, defectId, priorDefectIds = [], checkFn = runAllChecks, forbiddenLiterals = [], runDir = null }) {
+  const filePath = path.join(root, repair.file);
+  const original = await readFile(filePath, 'utf8');
+  const error = validateRepair(repair, original, { forbiddenLiterals });
   if (error) return { status: 'rejected', error, diff: '' };
-  const patched = original.replace(repair.old, repair.new);
-  await writeFile(cssPath, patched);
-  let diff = '';
-  try { diff = execFileSync('git', ['diff', '--', 'storefront/styles.css'], { cwd: path.resolve(root, '..'), encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }); } catch { diff = '(git diff unavailable)'; }
-  if (runDir) await writeFile(path.join(runDir, 'repair.diff'), diff);
-  const after = await runCheck(root, { screenshot: runDir ? path.join(runDir, 'after.png') : undefined });
-  if (!after.pass) {
-    await writeFile(cssPath, original); // ROLLBACK
-    return { status: 'rolled-back', diff, after };
+  await writeFile(filePath, original.replace(repair.old, repair.new));
+  const diff = gitDiff(repair.file);
+  if (runDir) await writeFile(path.join(runDir, `repair-${defectId}.diff`), diff);
+  const result = await checkFn(root);
+  const byId = Object.fromEntries(result.defects.map((d) => [d.id, d]));
+  const targetPass = !!byId[defectId]?.pass;
+  const regressions = priorDefectIds.filter((id) => !byId[id]?.pass);
+  if (!targetPass || regressions.length) {
+    await writeFile(filePath, original); // ROLLBACK — this file only
+    return { status: 'rolled-back', diff, after: result, targetPass, regressions };
   }
-  return { status: 'committed', diff, after };
+  return { status: 'committed', diff, after: result, targetPass, regressions: [] };
+}
+
+async function proposeRepair(provider, { defect, files, catalogText, feedback }) {
+  const result = await provider.chatJSON({
+    system: 'You are the repair planner for an autonomous e-commerce repair agent. Reply with ONLY a JSON object, no markdown.',
+    user: [
+      `Defect to repair: ${defect.id} — ${defect.title} (severity: ${defect.severity})`,
+      'Deterministic evidence (integer minor currency units where money is involved):',
+      JSON.stringify(defect, null, 2),
+      '',
+      'Canonical catalog (READ-ONLY evidence — never propose editing catalog.js, and never hardcode its values into code; fixed code must derive values from this data at runtime):',
+      '```js', catalogText, '```',
+      '',
+      ...Object.entries(files).flatMap(([name, content]) => [`--- ${name} ---`, '```', content, '```', '']),
+      feedback ? `Previous attempt failed: ${feedback}\nPropose a different, corrected repair.` : '',
+      'Select the ONE file that causes this defect and propose ONE narrowly scoped replacement.',
+      `Allowed files: ${JSON.stringify(ALLOWED_FILES)}. "old" must be an exact substring occurring exactly once in that file.`,
+      'Do not hide or remove the CTA, the promo, the price, or the cart. Do not add any execution/process/shell code.',
+      'Return JSON exactly: {"diagnosis":"...","evidenceSummary":"which evidence supports this","file":"<allowed file>","old":"exact substring","new":"replacement substring","rationale":"..."}',
+    ].join('\n'),
+  });
+  return result;
 }
 
 async function main() {
   if (existsSync('.env')) process.loadEnvFile('.env');
-  const forceBad = process.argv.includes('--force-bad-repair');
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
   const runDir = path.resolve('artifacts', `run-${stamp}`);
   await mkdir(runDir, { recursive: true });
   const root = path.resolve('storefront');
   const history = [];
-  const record = (step, detail) => { const e = { t: new Date().toISOString(), step, detail }; history.push(e); console.log(`[${step}]`, typeof detail === 'string' ? detail : JSON.stringify(detail)); };
+  const record = (step, detail) => { const e = { t: new Date().toISOString(), step, detail }; history.push(e); console.log(`[${step}]`, typeof detail === 'string' ? detail : JSON.stringify(detail).slice(0, 600)); };
+  const saveHistory = () => writeFile(path.join(runDir, 'history.json'), JSON.stringify(history, null, 2));
 
-  // OBSERVE
-  const before = await runCheck(root, { screenshot: path.join(runDir, 'before.png') });
+  // OBSERVE + DISCOVER
+  const before = await runAllChecks(root, { screenshot: path.join(runDir, 'before.png') });
   await writeFile(path.join(runDir, 'evidence-before.json'), JSON.stringify(before, null, 2));
-  record('observe', { pass: before.pass, checks: before.checks, hitElement: before.hitElement, cta: before.cta });
-  if (before.pass) { record('done', 'storefront already passes; nothing to repair'); await save(); return; }
+  record('observe', before.defects.map((d) => ({ id: d.id, pass: d.pass })));
 
-  // DIAGNOSE + PLAN (Meta model via provider layer)
-  const css = await readFile(path.join(root, 'styles.css'), 'utf8');
-  let repair, modelInfo;
-  if (forceBad) {
-    repair = { file: 'styles.css', old: 'bottom: 16px;', new: 'bottom: 8px;', diagnosis: 'FORCED BAD REPAIR (rollback test)', rationale: 'Moves CTA down, still obscured — verification must fail and roll back.' };
-    modelInfo = { provider: 'none', model: 'none', note: 'forced bad repair, no model call made' };
-    record('plan', repair);
-  } else {
-    const provider = createProvider();
-    const result = await provider.chatJSON({
-      system: 'You are the repair planner for an autonomous e-commerce repair agent. Reply with ONLY a JSON object, no markdown.',
-      user: [
-        'A mobile storefront check FAILED at viewport 390x844. Evidence:',
-        JSON.stringify(before, null, 2),
-        '',
-        'Current storefront/styles.css:',
-        '```css', css, '```',
-        '',
-        'Propose ONE narrowly scoped CSS repair so the Add to Cart CTA is fully visible, not overlapped by any other element, and clickable.',
-        'Rules: only change styles.css; "old" must be an exact substring occurring once; keep the promo banner visible; do not hide/remove the CTA or promo; prefer moving the CTA above the fixed promo or reserving space.',
-        'Return JSON exactly: {"diagnosis":"...","file":"styles.css","old":"exact substring","new":"replacement substring","rationale":"..."}',
-      ].join('\n'),
-    });
-    modelInfo = { provider: result.provider, model: result.model, id: result.id, usage: result.usage, rawText: result.rawText };
-    repair = result.parsed;
-    record('diagnose', { model: result.model, diagnosis: repair.diagnosis });
-    record('plan', repair);
+  // PRIORITIZE (severity rank from the checks; no fix knowledge here)
+  const queue = before.defects.filter((d) => !d.pass).sort((a, b) => a.severityRank - b.severityRank);
+  record('queue', queue.map((d) => `${d.id} (${d.severity})`));
+  if (!queue.length) { record('done', 'all checks pass; nothing to repair'); await saveHistory(); return; }
+
+  const catalogText = await readFile(path.join(root, 'catalog.js'), 'utf8');
+  const catalogPrice = before.defects.find((d) => d.id === 'price-mismatch')?.evidence?.catalog?.priceMinor;
+  const provider = createProvider();
+  record('provider', { provider: provider.provider, model: provider.model, baseUrl: provider.baseUrl });
+
+  const repaired = [];
+  const receipts = [];
+  for (const defect of queue) {
+    // Anti-hardcoding guard for commerce values: a repair may not paste in
+    // the canonical price (or its formatted form) — it must read the catalog.
+    const forbiddenLiterals = defect.id === 'price-mismatch' && catalogPrice
+      ? [String(catalogPrice), (catalogPrice / 100).toFixed(2)] : [];
+    let outcome = null, lastFeedback = null;
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS && outcome?.status !== 'committed'; attempt++) {
+      const files = {};
+      for (const f of [...ALLOWED_FILES, ...READ_ONLY_FILES]) files[f] = await readFile(path.join(root, f), 'utf8');
+      const result = await proposeRepair(provider, { defect, files, catalogText, feedback: lastFeedback });
+      const repair = result.parsed;
+      record('diagnose', { defect: defect.id, attempt, model: result.model, file: repair.file, diagnosis: repair.diagnosis });
+      await writeFile(path.join(runDir, `model-decision-${defect.id}-attempt${attempt}.json`),
+        JSON.stringify({ modelInfo: { provider: result.provider, model: result.model, id: result.id, usage: result.usage, rawText: result.rawText }, repair }, null, 2));
+      outcome = await applyAndVerify({ root, repair, defectId: defect.id, priorDefectIds: repaired, forbiddenLiterals, runDir });
+      record('verify', { defect: defect.id, attempt, status: outcome.status, error: outcome.error || undefined, regressions: outcome.regressions });
+      if (outcome.status === 'rejected') lastFeedback = `Patch rejected by validation: ${outcome.error}`;
+      else if (outcome.status === 'rolled-back') lastFeedback = `Patch applied but deterministic verification still failed for ${defect.id}${outcome.regressions?.length ? `; regressions: ${outcome.regressions.join(',')}` : ''}. Rolled back.`;
+      receipts.push({ defect: defect.id, attempt, status: outcome.status, file: repair.file, model: { provider: result.provider, model: result.model, id: result.id, usage: result.usage }, repair, error: outcome.error || null });
+    }
+    if (outcome?.status === 'committed') repaired.push(defect.id);
+    else record('continue', `${defect.id} not repaired (${outcome?.status}); continuing with remaining queue when safe`);
   }
-  await writeFile(path.join(runDir, 'model-decision.json'), JSON.stringify({ modelInfo, repair }, null, 2));
 
-  // ACT + VERIFY + ROLLBACK/COMMIT
-  const outcome = await applyAndVerify({ root, repair, runDir });
-  record('verify', { status: outcome.status, after: outcome.after ?? outcome.error });
-  await writeFile(path.join(runDir, 'evidence-after.json'), JSON.stringify(outcome.after ?? { error: outcome.error }, null, 2));
-
-  // REMEMBER
-  const verification = {
-    run: path.basename(runDir), status: outcome.status, beforePass: before.pass,
-    afterPass: outcome.after?.pass ?? false, checks: outcome.after?.checks ?? null,
-    model: modelInfo, repair, verifiedAt: new Date().toISOString(),
+  // FINAL RECHECK (all defects, both viewports) + REMEMBER
+  const after = await runAllChecks(root, { screenshot: path.join(runDir, 'after.png') });
+  await writeFile(path.join(runDir, 'evidence-after.json'), JSON.stringify(after, null, 2));
+  const summary = {
+    run: path.basename(runDir), queue: queue.map((d) => d.id), repaired,
+    finalPass: after.pass, defectsAfter: after.defects.map((d) => ({ id: d.id, pass: d.pass })),
+    receipts, verifiedAt: new Date().toISOString(),
   };
-  await writeFile(path.join(runDir, 'verification.json'), JSON.stringify(verification, null, 2));
+  await writeFile(path.join(runDir, 'verification.json'), JSON.stringify(summary, null, 2));
   await mkdir('memory', { recursive: true });
-  await appendFile(path.join('memory', 'runs.jsonl'), JSON.stringify(verification) + '\n');
-  record('remember', `memory/runs.jsonl + ${runDir}`);
-  await save();
-  console.log(`RESULT: ${outcome.status}`);
-  process.exitCode = outcome.status === 'committed' ? 0 : 1;
-
-  async function save() {
-    await writeFile(path.join(runDir, 'history.json'), JSON.stringify(history, null, 2));
-  }
+  await appendFile(path.join('memory', 'runs.jsonl'), JSON.stringify(summary) + '\n');
+  record('remember', `finalPass=${after.pass} repaired=${repaired.join(',')}`);
+  await saveHistory();
+  console.log(`RESULT: ${after.pass ? 'all defects repaired' : 'INCOMPLETE'} (${repaired.join(', ')})`);
+  process.exitCode = after.pass ? 0 : 1;
 }
 
-if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}` || process.argv[1]?.endsWith('agent.mjs')) {
-  if (!process.env.AGENT_LIB_ONLY) await main();
+if (process.argv[1]?.endsWith('agent.mjs') && !process.env.AGENT_LIB_ONLY) {
+  await main();
 }

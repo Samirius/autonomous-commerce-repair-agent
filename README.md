@@ -5,7 +5,16 @@ AI system that autonomously detects, repairs and verifies real e-commerce storef
 
 Built for the Meta Global AI Developer Hackathon (Oct 26–Nov 4, 2026). Core intelligence is Meta-powered (Meta Model API — Muse Wonder / Muse Spark); the model layer is provider-independent.
 
-## Mission 001 — vertical slice
+## Mission 002 — multi-defect repair
+
+The storefront now has two independent defects, discovered and queued by severity (critical first):
+
+1. **cta-overlap** (critical) — promo banner obscures the Add to Cart CTA; checked at mobile 390×844 **and** desktop 1280×800.
+2. **price-mismatch** (high) — the cart charges a stale legacy price instead of the canonical catalog price. Canonical prices live in `storefront/catalog.js` (integer minor units, e.g. `priceMinor: 8900`); all money comparisons are integer minor units. `catalog.js` is **read-only** for the agent, and pasting the canonical price into code is rejected — a repair must derive the total from the catalog at runtime.
+
+The agent has **no defect→fix mappings**: for each queued defect the model inspects the evidence and file contents, selects a file from the allowlist (`styles.css`, `app.js`, `index.html`), and proposes one scoped `old`→`new` replacement with its evidence rationale. Generic validation (allowlist, exact-once match, no execution constructs, no hardcoded canonical values) gates every patch. Each repair is verified independently; previously repaired defects are rechecked for regressions; only the failed repair's file is rolled back, and the queue continues.
+
+
 
 A minimal local storefront ships with one intentional defect: at a 390px viewport a fixed promo banner (84px, `z-index:20`) obscures the fixed Add to Cart CTA. The agent:
 

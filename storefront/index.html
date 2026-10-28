@@ -11,12 +11,13 @@
 <main class="product">
   <div class="product-media" aria-hidden="true">NOVA</div>
   <h1>Nova Everyday Sneaker</h1>
-  <p class="price">$89.00</p>
+  <p class="price" id="product-price" data-price-minor="">$—</p>
   <p class="desc">Lightweight demo product used only by the Autonomous Commerce Repair Agent test storefront.</p>
-  <p class="cart-status">Cart: <span id="cart-count">0</span> item(s)</p>
+  <p class="cart-status">Cart: <span id="cart-count">0</span> item(s) — Total: <span id="cart-total" data-total-minor="0">$0.00</span></p>
   <button id="add-to-cart" class="add-to-cart" type="button">Add to Cart</button>
 </main>
 <div class="sticky-promo" id="sticky-promo">Free shipping today — no code needed</div>
+<script src="catalog.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
