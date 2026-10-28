@@ -51,6 +51,7 @@ export async function runAllChecks(rootDir, opts = {}) {
     let clickOk = false;
     try { await page.click('#add-to-cart', { timeout: 3000 }); clickOk = (await page.textContent('#cart-count')).trim() === '1'; } catch { clickOk = false; }
     if (vp.name === 'mobile' && (opts.screenshot || screenshotPath)) {
+      await page.evaluate(() => window.scrollTo(0, 0));
       const shot = opts.screenshot || screenshotPath;
       await mkdir(path.dirname(path.resolve(shot)), { recursive: true });
       await page.screenshot({ path: shot });

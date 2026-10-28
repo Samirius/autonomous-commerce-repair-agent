@@ -27,5 +27,8 @@ Audit of Mission 001/002 found the model received text-only payloads. The provid
 ## D10 — Open-weight verifier is advisory only (2026-10-28)
 Muse Spark Open (Baseten) is integrated behind `src/verifier.mjs` to independently review committed repairs. It cannot override deterministic browser checks. Without `BASETEN_API_KEY` it reports unavailable; fabricating a verifier response is forbidden.
 
+## D11 — External evaluator interface (2026-10-28, Mission 004)
+Blind scenarios must be authored outside this repo. `eval/external/run-external.mjs` takes a fixture (and optionally the evaluator's own oracle module) from an external path, copies the fixture to a neutral `target/` dir, runs the agent as a subprocess that never receives the oracle path, and emits a results bundle (pristine/target, model decisions, patches, diffs, oracle before/after, manifest). Probe `expectedQty*` values are withheld from model prompts (audit finding L3); the stale "intentional defect" source comment was removed from the main storefront (L4). Probe interactives are now scrolled into view before hit-testing so multi-section realistic pages are not falsely flagged.
+
 ## D4 — Run artifacts as the memory (2026-10-28)
 Each run writes `artifacts/run-<ts>/` (screenshots, evidence, model decision, diff, verification, history) and appends a summary line to `memory/runs.jsonl`. Rationale: judges and future agents can audit exactly what the model decided and what the tests returned — no fabricated history.

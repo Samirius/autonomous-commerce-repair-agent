@@ -28,9 +28,11 @@ export async function runProbe(rootDir, opts = {}) {
   for (const vp of viewports) {
     const page = await browser.newPage({ viewport: { width: vp.width, height: vp.height } });
     await page.goto(url);
-    const ev = await page.evaluate(() => {
+    const ev = await page.evaluate(async () => {
       const out = { viewport: { width: innerWidth, height: innerHeight }, overflowX: document.documentElement.scrollWidth > innerWidth, interactives: [] };
       for (const el of document.querySelectorAll('button, a, input, select')) {
+        el.scrollIntoView({ block: 'center' });
+        await new Promise((r) => setTimeout(r, 30));
         const r = el.getBoundingClientRect();
         if (!r.width || !r.height) continue;
         const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
@@ -45,6 +47,7 @@ export async function runProbe(rootDir, opts = {}) {
       return out;
     });
     if (vp.name === 'mobile' && opts.screenshot) {
+      await page.evaluate(() => window.scrollTo(0, 0));
       await mkdir(path.dirname(path.resolve(opts.screenshot)), { recursive: true });
       await page.screenshot({ path: opts.screenshot });
       screenshotTaken = opts.screenshot;

@@ -3,7 +3,23 @@
 AI system that autonomously detects, repairs and verifies real e-commerce storefront problems:
 **Observe → Diagnose → Plan → Act → Verify → Rollback or Commit → Remember.**
 
-Built for the Meta Global AI Developer Hackathon (Oct 26–Nov 4, 2026). Core intelligence is Meta-powered (Meta Model API — Muse Wonder / Muse Spark); the model layer is provider-independent.
+Built for the Meta Global AI Developer Hackathon (Oct 26–Nov 4, 2026), from scratch during the hackathon.
+
+**Models used:** Muse Wonder (`muse-wonder-1.0`, Meta Model API, multimodal — planner/diagnosis) via a provider-independent layer (`src/provider.mjs`, env-selected). Optional independent verifier: Muse Spark Open (`meta-models/muse-spark-open`) via Baseten (`src/verifier.mjs`) — advisory only, currently blocked on `BASETEN_API_KEY` in our environment. Deterministic Playwright checks are always the final pass/fail authority.
+
+## Installation
+
+```bash
+git clone <this repo> && cd autonomous-commerce-repair-agent
+npm install
+cp .env.example .env   # MODEL_API_KEY from the Meta Model API dashboard
+npm test               # 16 tests, no API key needed for most
+npm run check          # deterministic check of the demo storefront
+npm run agent          # guided repair of the demo storefront (Meta model)
+node eval/run-eval.mjs # internal blind evaluation (6 unseen variants)
+```
+
+External evaluators: see `eval/external/README.md` (bring your own fixture + oracle; they stay outside this repo). Independence audit: `docs/LEAKAGE_AUDIT.md`. Realistic multi-product fixture: `fixtures/realistic-store/`.
 
 ## Mission 003 — generalization, vision, open-weight verifier
 

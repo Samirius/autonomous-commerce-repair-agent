@@ -5,9 +5,7 @@ const priceEl = document.getElementById('product-price');
 priceEl.textContent = formatMinor(product.priceMinor);
 priceEl.dataset.priceMinor = String(product.priceMinor);
 
-// Intentional Mission 002 defect: the cart charges a stale legacy unit
-// price instead of the canonical catalog price, so cart totals disagree
-// with the product page and the catalog.
+// Stale legacy unit price kept as a named constant in the cart module.
 const LEGACY_CART_PRICE_MINOR = 7900;
 
 let count = 0;

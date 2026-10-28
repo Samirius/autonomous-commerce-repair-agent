@@ -7,7 +7,7 @@
   "scripts": {
     "check": "node scripts/check.mjs",
     "agent": "node src/agent.mjs",
-    "test": "node --test tests/agent.test.mjs tests/verifier.test.mjs"
+    "test": "node --test tests/agent.test.mjs tests/verifier.test.mjs tests/realistic.test.mjs"
   },
   "devDependencies": {
     "playwright": "1.64.1"

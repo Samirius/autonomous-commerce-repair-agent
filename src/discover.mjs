@@ -41,16 +41,20 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
     probe = await runProbe(root, { screenshot: shotPath });
     const shotBytes = await readFile(shotPath);
     const imageDataUrl = `data:image/png;base64,${shotBytes.toString('base64')}`;
-    const vision = { included: true, screenshot: shotPath, sha256: createHash('sha256').update(shotBytes).digest('hex'), bytes: shotBytes.length };
+    const vision = { included: true, screenshot: path.basename(shotPath), sha256: createHash('sha256').update(shotBytes).digest('hex'), bytes: shotBytes.length };
 
     let committed = false;
     for (let attempt = 1; attempt <= 2 && !committed; attempt++) {
+      const modelSignals = failing.map(({ evidence, ...rest }) => {
+        const { expectedQty1, expectedQty2, ...observed } = evidence || {};
+        return { ...rest, evidence: observed };
+      });
       const result = await provider.chatJSON({
         system: 'You are an autonomous e-commerce repair agent inspecting an unfamiliar storefront. Reply with ONLY a JSON object, no markdown.',
         images: [imageDataUrl],
         user: [
-          'A screenshot of the storefront (mobile) is attached. Generic invariant probe results (no defect list — diagnose the underlying issue yourself):',
-          JSON.stringify(probe.signals.filter((s) => !s.pass), null, 2),
+          'A screenshot of the storefront (mobile) is attached. Generic invariant probe results (no defect list — diagnose the underlying issue yourself; expected totals are deliberately withheld, derive them from the catalog):',
+          JSON.stringify(modelSignals, null, 2),
           '', 'Canonical catalog (READ-ONLY, never edit it, never hardcode its values into code):', '```js', catalogText, '```', '',
           ...Object.entries(files).flatMap(([n, c]) => [`--- ${n} ---`, '```', c, '```', '']),
           'Identify ONE underlying problem supported by the visual and structured evidence, select ONE file to fix it, and propose ONE narrowly scoped replacement.',
@@ -68,10 +72,14 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
       const error = validateRepair(repair, original, { forbiddenLiterals });
       if (error) { receipts.push({ round, attempt, status: 'rejected', error, repair, model: { model: result.model, id: result.id, usage: result.usage } }); record('rejected', { error }); continue; }
       await writeFile(filePath, original.replace(repair.old, repair.new));
+      const patchRecord = `file: ${repair.file}\nstatus: PENDING\n--- old ---\n${repair.old}\n--- new ---\n${repair.new}\n`;
+      await mkdir(path.join(runDir, 'patches'), { recursive: true });
+      await writeFile(path.join(runDir, 'patches', `r${round}-a${attempt}.patch.txt`), patchRecord);
       const after = await runProbe(root, { screenshot: path.join(runDir, `round${round}-after.png`) });
       const failingAfter = after.signals.filter((s) => !s.pass).map((s) => s.id);
       const regressions = after.signals.filter((s) => !s.pass && passingBefore.has(s.id)).map((s) => s.id);
       if (failingAfter.length < failing.length && !regressions.length) {
+        await writeFile(path.join(runDir, 'patches', `r${round}-a${attempt}.patch.txt`), patchRecord.replace('PENDING', 'committed'));
         committed = true; repairsCommitted += 1; probe = after;
         let verification = null;
         if (verifier?.available) {
@@ -82,6 +90,7 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
         record('committed', { round, file: repair.file, failingAfter, openWeight: verification?.parsed || verification?.error || 'unavailable' });
       } else {
         await writeFile(filePath, original); // rollback, byte-for-byte
+        await writeFile(path.join(runDir, 'patches', `r${round}-a${attempt}.patch.txt`), patchRecord.replace('PENDING', 'rolled-back'));
         receipts.push({ round, attempt, status: 'rolled-back', repair, model: { model: result.model, id: result.id, usage: result.usage }, vision, failingAfter, regressions });
         record('rolled-back', { round, failingAfter, regressions });
       }
@@ -91,7 +100,7 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
 
   const final = await runProbe(root, { screenshot: path.join(runDir, 'after.png') });
   await writeFile(path.join(runDir, 'probe-after.json'), JSON.stringify(final, null, 2));
-  const summary = { root, initialFailing, repairsCommitted, finalPass: final.pass, finalFailing: final.signals.filter((s) => !s.pass).map((s) => s.id), receipts, finishedAt: new Date().toISOString() };
+  const summary = { target: path.basename(root), initialFailing, repairsCommitted, finalPass: final.pass, finalFailing: final.signals.filter((s) => !s.pass).map((s) => s.id), receipts, finishedAt: new Date().toISOString() };
   await writeFile(path.join(runDir, 'verification.json'), JSON.stringify(summary, null, 2));
   await save();
   return summary;
