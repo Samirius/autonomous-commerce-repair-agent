@@ -1,0 +1,10 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; color: #17202a; background: #f7f8fa; }
+.site-header { padding: 16px 20px; font-weight: 700; background: #fff; border-bottom: 1px solid #dde3ea; }
+.product { max-width: 680px; margin: 0 auto; padding: 24px 20px 40px; }
+.product-media { display: grid; place-items: center; height: 220px; border-radius: 16px; background: #dbeafe; font-size: 42px; font-weight: 800; }
+.price { font-size: 24px; font-weight: 700; }
+.cart-status { margin: 16px 0; }
+
+.product { width: 430px; }
+.add-to-cart { display: block; width: 100%; padding: 16px; border: 0; border-radius: 12px; background: #14532d; color: #fff; font-size: 17px; font-weight: 700; }

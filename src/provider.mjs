@@ -22,7 +22,10 @@ export function createProvider(env = process.env) {
     provider,
     model,
     baseUrl,
-    async chatJSON({ system, user }) {
+    async chatJSON({ system, user, images = [] }) {
+      const userContent = images.length
+        ? [{ type: 'text', text: user }, ...images.map((url) => ({ type: 'image_url', image_url: { url } }))]
+        : user;
       const res = await fetch(`${baseUrl}/chat/completions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
@@ -31,7 +34,7 @@ export function createProvider(env = process.env) {
           temperature: 0,
           messages: [
             { role: 'system', content: system },
-            { role: 'user', content: user },
+            { role: 'user', content: userContent },
           ],
         }),
       });

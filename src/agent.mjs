@@ -64,9 +64,10 @@ export async function applyAndVerify({ root, repair, defectId, priorDefectIds = 
   return { status: 'committed', diff, after: result, targetPass, regressions: [] };
 }
 
-async function proposeRepair(provider, { defect, files, catalogText, feedback }) {
+async function proposeRepair(provider, { defect, files, catalogText, feedback, imageDataUrl = null }) {
   const result = await provider.chatJSON({
     system: 'You are the repair planner for an autonomous e-commerce repair agent. Reply with ONLY a JSON object, no markdown.',
+    images: imageDataUrl ? [imageDataUrl] : [],
     user: [
       `Defect to repair: ${defect.id} — ${defect.title} (severity: ${defect.severity})`,
       'Deterministic evidence (integer minor currency units where money is involved):',
@@ -107,6 +108,9 @@ async function main() {
   if (!queue.length) { record('done', 'all checks pass; nothing to repair'); await saveHistory(); return; }
 
   const catalogText = await readFile(path.join(root, 'catalog.js'), 'utf8');
+  const screenshotDataUrl = async () => {
+    try { const b = await readFile(path.join(runDir, 'before.png')); return `data:image/png;base64,${b.toString('base64')}`; } catch { return null; }
+  };
   const catalogPrice = before.defects.find((d) => d.id === 'price-mismatch')?.evidence?.catalog?.priceMinor;
   const provider = createProvider();
   record('provider', { provider: provider.provider, model: provider.model, baseUrl: provider.baseUrl });
@@ -122,7 +126,7 @@ async function main() {
     for (let attempt = 1; attempt <= MAX_ATTEMPTS && outcome?.status !== 'committed'; attempt++) {
       const files = {};
       for (const f of [...ALLOWED_FILES, ...READ_ONLY_FILES]) files[f] = await readFile(path.join(root, f), 'utf8');
-      const result = await proposeRepair(provider, { defect, files, catalogText, feedback: lastFeedback });
+      const result = await proposeRepair(provider, { defect, files, catalogText, feedback: lastFeedback, imageDataUrl: await screenshotDataUrl() });
       const repair = result.parsed;
       record('diagnose', { defect: defect.id, attempt, model: result.model, file: repair.file, diagnosis: repair.diagnosis });
       await writeFile(path.join(runDir, `model-decision-${defect.id}-attempt${attempt}.json`),
