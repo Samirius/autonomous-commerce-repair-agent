@@ -1,0 +1,86 @@
+[
+  {
+    "t": "2026-10-28T15:26:14.666Z",
+    "step": "observe",
+    "detail": {
+      "pass": false,
+      "checks": {
+        "ctaInViewport": true,
+        "ctaNotObscured": false,
+        "ctaClickableIncrementsCart": false
+      },
+      "hitElement": {
+        "id": "sticky-promo",
+        "className": "sticky-promo",
+        "tag": "DIV"
+      },
+      "cta": {
+        "x": 16,
+        "y": 776,
+        "width": 358,
+        "height": 52,
+        "bottom": 828,
+        "text": "Add to Cart"
+      }
+    }
+  },
+  {
+    "t": "2026-10-28T15:26:22.963Z",
+    "step": "diagnose",
+    "detail": {
+      "model": "muse-wonder-1.0",
+      "diagnosis": "Sticky promo (84px high, z-index 20, fixed at bottom) overlaps Add to Cart CTA (fixed bottom 16px, z-index 10), so hit test hits promo not CTA"
+    }
+  },
+  {
+    "t": "2026-10-28T15:26:22.963Z",
+    "step": "plan",
+    "detail": {
+      "diagnosis": "Sticky promo (84px high, z-index 20, fixed at bottom) overlaps Add to Cart CTA (fixed bottom 16px, z-index 10), so hit test hits promo not CTA",
+      "file": "styles.css",
+      "old": "bottom: 16px;",
+      "new": "bottom: 100px;",
+      "rationale": "Moves CTA to 84px promo height + 16px gap above promo, keeping both fully visible in viewport and CTA clickable"
+    }
+  },
+  {
+    "t": "2026-10-28T15:26:23.704Z",
+    "step": "verify",
+    "detail": {
+      "status": "committed",
+      "after": {
+        "pass": true,
+        "checks": {
+          "ctaInViewport": true,
+          "ctaNotObscured": true,
+          "ctaClickableIncrementsCart": true
+        },
+        "cartCount": "1",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "cta": {
+          "x": 16,
+          "y": 692,
+          "width": 358,
+          "height": 52,
+          "bottom": 744,
+          "text": "Add to Cart"
+        },
+        "hitElement": {
+          "id": "add-to-cart",
+          "className": "add-to-cart",
+          "tag": "BUTTON"
+        },
+        "hitIsCta": true,
+        "ctaInViewport": true
+      }
+    }
+  },
+  {
+    "t": "2026-10-28T15:26:23.719Z",
+    "step": "remember",
+    "detail": "memory/runs.jsonl + C:\\Users\\Samir PC\\autonomous-commerce-repair-agent\\artifacts\\run-2026-10-28T15-26-11-133Z"
+  }
+]

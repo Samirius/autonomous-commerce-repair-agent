@@ -1,0 +1,28 @@
+{
+  "pass": false,
+  "checks": {
+    "ctaInViewport": true,
+    "ctaNotObscured": false,
+    "ctaClickableIncrementsCart": false
+  },
+  "cartCount": null,
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "cta": {
+    "x": 16,
+    "y": 776,
+    "width": 358,
+    "height": 52,
+    "bottom": 828,
+    "text": "Add to Cart"
+  },
+  "hitElement": {
+    "id": "sticky-promo",
+    "className": "sticky-promo",
+    "tag": "DIV"
+  },
+  "hitIsCta": false,
+  "ctaInViewport": true
+}

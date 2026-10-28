@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, cp, readFile } from 'node:fs/promises';
+import { mkdtemp, cp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { validateRepair, applyAndVerify } from '../src/agent.mjs';
@@ -21,7 +21,11 @@ test('a repair that still fails verification is rolled back', async () => {
   const dir = await mkdtemp(path.join(tmpdir(), 'acra-'));
   const root = path.join(dir, 'storefront');
   await cp(path.resolve('storefront'), root, { recursive: true });
-  const before = await readFile(path.join(root, 'styles.css'), 'utf8');
+  // Recreate the broken baseline regardless of the live storefront's current state
+  const cssPath = path.join(root, 'styles.css');
+  const broken = (await readFile(cssPath, 'utf8')).replace(/bottom: \d+px;(\s*\n\s*z-index: 10;)/, 'bottom: 16px;$1');
+  await writeFile(cssPath, broken);
+  const before = await readFile(cssPath, 'utf8');
   // bottom:8px keeps the CTA under the 84px promo — deterministic check must fail
   const outcome = await applyAndVerify({ root, repair: { file: 'styles.css', old: 'bottom: 16px;', new: 'bottom: 8px;' } });
   assert.equal(outcome.status, 'rolled-back');

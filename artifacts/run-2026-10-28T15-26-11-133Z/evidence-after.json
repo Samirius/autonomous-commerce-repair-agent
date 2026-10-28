@@ -1,0 +1,28 @@
+{
+  "pass": true,
+  "checks": {
+    "ctaInViewport": true,
+    "ctaNotObscured": true,
+    "ctaClickableIncrementsCart": true
+  },
+  "cartCount": "1",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "cta": {
+    "x": 16,
+    "y": 692,
+    "width": 358,
+    "height": 52,
+    "bottom": 744,
+    "text": "Add to Cart"
+  },
+  "hitElement": {
+    "id": "add-to-cart",
+    "className": "add-to-cart",
+    "tag": "BUTTON"
+  },
+  "hitIsCta": true,
+  "ctaInViewport": true
+}

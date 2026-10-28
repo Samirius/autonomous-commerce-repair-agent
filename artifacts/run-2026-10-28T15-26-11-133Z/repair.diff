@@ -1,0 +1,13 @@
+diff --git a/storefront/styles.css b/storefront/styles.css
+index ed91926..fa1b535 100644
+--- a/storefront/styles.css
++++ b/storefront/styles.css
+@@ -8,7 +8,7 @@ body { margin: 0; font-family: system-ui, sans-serif; color: #17202a; background
+   position: fixed;
+   left: 16px;
+   right: 16px;
+-  bottom: 16px;
++  bottom: 100px;
+   z-index: 10;
+   padding: 16px;
+   border: 0;

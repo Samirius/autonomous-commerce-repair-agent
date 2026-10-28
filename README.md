@@ -38,8 +38,7 @@ Swap providers without code changes: set `MODEL_PROVIDER=openai-compatible`, `MO
 ```bash
 npm run check          # deterministic check only (fails on the broken storefront)
 npm run agent          # full agent loop (Meta model proposes the repair)
-npm run agent -- --force-bad-repair   # rollback demo: no model call, forces a failing repair
-npm test               # unit + rollback tests
+npm test               # unit + rollback tests (rollback uses a temp copy with the defect recreated)
 ```
 
 Serve the storefront statically if you want to view it: open `storefront/index.html` in a browser at a 390px-wide viewport.
