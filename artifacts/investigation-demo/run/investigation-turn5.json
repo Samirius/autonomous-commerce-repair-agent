@@ -1,0 +1,25 @@
+{
+  "modelInfo": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "id": "chatcmpl-01a183af-bf96-76df-985b-0170f3082235",
+    "usage": {
+      "completion_tokens": 2141,
+      "prompt_tokens": 1975,
+      "total_tokens": 4116,
+      "completion_tokens_details": {
+        "reasoning_tokens": 2116
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 1012
+      }
+    },
+    "rawText": "{\"observationRequest\":{\"kind\":\"product-detail\",\"productId\":\"canvas-tote\"}}"
+  },
+  "response": {
+    "observationRequest": {
+      "kind": "product-detail",
+      "productId": "canvas-tote"
+    }
+  }
+}

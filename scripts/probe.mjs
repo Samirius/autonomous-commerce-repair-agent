@@ -226,13 +226,12 @@ export async function runProbe(rootDir, opts = {}) {
     await pg.close();
   }
 
-  // --- promo codes from the catalog, if the UI supports applying one ---
+  // --- every promo code from the catalog, if the UI supports applying one ---
   const promoCodes = Object.entries(catalog.rules?.promoCodes || {});
-  {
+  for (const [code, pct] of promoCodes) {
     const pg = await freshPage(browser, url, errors);
     const hasPromoUI = await pg.evaluate(() => !!document.getElementById('promo-code') && !!document.getElementById('apply-promo'));
-    if (hasPromoUI && promoCodes.length && featured?.addSelector) {
-      const [code, pct] = promoCodes[0];
+    if (hasPromoUI && featured?.addSelector) {
       await domClick(pg, featured.addSelector, 1);
       await pg.fill('#promo-code', code);
       await pg.click('#apply-promo');
@@ -260,38 +259,104 @@ export async function runProbe(rootDir, opts = {}) {
 // Safe, allowlisted observations the MODEL may request mid-diagnosis.
 // No arbitrary code: only these scenario shapes, validated against the catalog.
 export async function runObservation(rootDir, request) {
-  const kinds = ['cart-scenario', 'product-detail', 'console-reload'];
+  const kinds = ['cart-scenario', 'product-detail', 'console-reload', 'quantity-change', 'apply-promo', 'inspect-cart', 'viewport'];
   if (!request || !kinds.includes(request.kind)) return { error: `observation kind must be one of ${kinds.join(', ')}` };
   const url = pathToFileURL(path.join(rootDir, 'index.html')).href;
   const browser = await chromium.launch();
   const errors = [];
   const page = await freshPage(browser, url, errors);
   const catalog = await page.evaluate(() => window.CATALOG);
-  let result;
-  if (request.kind === 'console-reload') {
-    result = { kind: request.kind, errors };
-  } else if (request.kind === 'product-detail') {
-    const presented = await page.evaluate(presentedProductsJS);
-    result = { kind: request.kind, product: presented.find((p) => p.id === request.productId) || null, presented };
-  } else {
-    const items = (request.items || []).filter((it) => catalog.products.some((p) => p.id === it.id) && it.qty >= 1 && it.qty <= 5).slice(0, 4);
-    if (!items.length) { await browser.close(); return { error: 'cart-scenario needs items [{productId|id, qty 1..5}] using catalog product ids' }; }
+  // Normalize items: accept {id, qty} or {productId, qty}
+  const normItems = (raw) => (raw || []).map((it) => ({ id: it.id || it.productId, qty: it.qty ?? 1 }))
+    .filter((it) => catalog.products.some((p) => p.id === it.id) && it.qty >= 1 && it.qty <= 5).slice(0, 4);
+  const addItems = async (items) => {
     const presented = await page.evaluate(presentedProductsJS);
     for (const it of items) {
-      const p = presented.find((x) => x.id === (it.id || it.productId));
-      if (!p?.addSelector) { await browser.close(); return { error: `product ${it.id || it.productId} is not presented/purchasable on the page` }; }
+      const p = presented.find((x) => x.id === it.id);
+      if (!p?.addSelector) throw new Error(`product ${it.id} is not presented/purchasable on the page`);
       await domClick(page, p.addSelector, it.qty);
     }
-    let promoApplied = null;
-    if (request.promoCode && catalog.rules?.promoCodes?.[request.promoCode]) {
+  };
+  let result;
+  if (request.kind === 'console-reload') {
+    const beforeReload = errors.length;
+    await page.reload();
+    await page.waitForTimeout(150);
+    result = { kind: request.kind, reloaded: true, reloadErrors: errors.slice(beforeReload), allErrors: errors };
+  } else if (request.kind === 'viewport') {
+    const allowed = [360, 390, 768, 1280];
+    const width = allowed.includes(request.width) ? request.width : 390;
+    await page.setViewportSize({ width, height: Math.round(width * 1.8) });
+    await page.waitForTimeout(100);
+    const summary = await page.evaluate(() => ({
+      viewport: { width: innerWidth, height: innerHeight },
+      overflowX: document.documentElement.scrollWidth > innerWidth,
+      title: document.title,
+    }));
+    result = { kind: request.kind, ...summary, screenshotRequested: true, width };
+  } else if (request.kind === 'product-detail') {
+    const presented = await page.evaluate(presentedProductsJS);
+    result = { kind: request.kind, product: presented.find((p) => p.id === (request.productId || request.id)) || null, presented };
+  } else {
+    const items = normItems(request.items);
+    if (!items.length) { await browser.close(); return { error: 'observation needs items [{id|productId, qty 1..5}] using catalog product ids' }; }
+    try { await addItems(items); } catch (e) { await browser.close(); return { error: String(e).slice(0, 200) }; }
+    if (request.kind === 'cart-scenario' && request.promoCode && catalog.rules?.promoCodes?.[request.promoCode]) {
       const hasUI = await page.evaluate(() => !!document.getElementById('promo-code'));
-      if (hasUI) { await page.fill('#promo-code', request.promoCode); await page.click('#apply-promo'); promoApplied = request.promoCode; }
+      if (hasUI) { await page.fill('#promo-code', request.promoCode); await page.click('#apply-promo'); }
+    }
+    if (request.kind === 'apply-promo') {
+      const code = request.promoCode;
+      if (!code || !catalog.rules?.promoCodes?.[code]) { await browser.close(); return { error: `promoCode must be one of ${Object.keys(catalog.rules?.promoCodes || {}).join(', ')}` }; }
+      const hasUI = await page.evaluate(() => !!document.getElementById('promo-code') && !!document.getElementById('apply-promo'));
+      if (!hasUI) { await browser.close(); return { error: 'promo UI not present on this page' }; }
+      await page.fill('#promo-code', code);
+      await page.click('#apply-promo');
+    }
+    if (request.kind === 'quantity-change') {
+      const target = request.productId || request.id || items[0].id;
+      const beforeQty = await readCart(page);
+      const delta = request.delta === -1 ? -1 : 1;
+      const selector = delta === 1 ? `[data-inc="${target}"]` : `[data-dec="${target}"]`;
+      const hasControl = await page.evaluate((sel) => !!document.querySelector(sel), selector);
+      if (!hasControl) { await browser.close(); return { error: `quantity control ${selector} not present after adding items` }; }
+      await page.evaluate((sel) => document.querySelector(sel).click(), selector);
+      const afterQty = await readCart(page);
+      result = { kind: request.kind, target, delta, beforeQty, afterQty, errors };
+      await browser.close();
+      return result;
     }
     const cart = await readCart(page);
-    result = { kind: request.kind, items, promoApplied, cart, catalogRuleSummary: catalog.rules || null, errors };
+    const cartState = await page.evaluate(() => ({
+      lines: [...document.querySelectorAll('#cart-lines, .cart-line, [data-cart-line]')].map((el) => el.textContent.trim().slice(0, 160)).slice(0, 8),
+      subtotalMinor: Number(document.getElementById('cart-subtotal')?.dataset.subtotalMinor ?? NaN),
+      discountMinor: Number(document.getElementById('cart-discount')?.dataset.discountMinor ?? NaN),
+      promoStatus: document.getElementById('promo-status')?.textContent ?? null,
+      checkoutText: document.getElementById('checkout')?.textContent ?? null,
+    }));
+    result = { kind: request.kind, items, cart, cartState, catalogRuleSummary: catalog.rules || null, errors };
+    if (request.kind === 'inspect-cart' && request.tryCheckout) {
+      const hasCheckout = await page.evaluate(() => !!document.getElementById('checkout'));
+      if (hasCheckout) {
+        await page.click('#checkout');
+        result.checkoutStatus = await page.evaluate(() => document.getElementById('checkout-status')?.textContent ?? null);
+      }
+    }
   }
   await browser.close();
   return result;
+}
+
+export async function runViewportScreenshot(rootDir, width, outPath) {
+  const allowed = [360, 390, 768, 1280];
+  const w = allowed.includes(width) ? width : 390;
+  const browser = await chromium.launch();
+  const page = await browser.newPage({ viewport: { width: w, height: Math.round(w * 1.8) } });
+  await page.goto(pathToFileURL(path.join(rootDir, 'index.html')).href);
+  await mkdir(path.dirname(path.resolve(outPath)), { recursive: true });
+  await page.screenshot({ path: outPath });
+  await browser.close();
+  return { width: w, screenshot: path.basename(outPath) };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

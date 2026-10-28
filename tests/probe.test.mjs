@@ -41,6 +41,26 @@ test('probe v2: console errors are captured as a failing signal', async () => {
   assert.ok(failingIds(probe).includes('no-console-errors'));
 });
 
+test('probe v2: every catalog promo code is exercised, not just the first', async () => {
+  const probe = await runProbe(path.resolve('fixtures/realistic-store'));
+  const promoSignals = probe.signals.filter((s) => s.id.startsWith('promo-code-applies-correctly:'));
+  assert.deepEqual(promoSignals.map((s) => s.id).sort(), ['promo-code-applies-correctly:SAVE10', 'promo-code-applies-correctly:WELCOME15']);
+  assert.ok(promoSignals.every((s) => s.pass));
+});
+
+test('runObservation: productId form works, console-reload really reloads', async () => {
+  const root = path.resolve('fixtures/realistic-store');
+  const viaProductId = await runObservation(root, { kind: 'cart-scenario', items: [{ productId: 'canvas-tote', qty: 2 }] });
+  assert.equal(viaProductId.cart.count, 2);
+  assert.equal(viaProductId.cart.totalMinor, 9800);
+  const reloaded = await runObservation(root, { kind: 'console-reload' });
+  assert.equal(reloaded.reloaded, true);
+  assert.deepEqual(reloaded.reloadErrors, []);
+  const qty = await runObservation(root, { kind: 'quantity-change', items: [{ id: 'trail-runner', qty: 1 }], productId: 'trail-runner', delta: 1 });
+  assert.equal(qty.beforeQty.count, 1);
+  assert.equal(qty.afterQty.count, 2);
+});
+
 test('runObservation: only allowlisted kinds, validated against the catalog', async () => {
   const root = path.resolve('fixtures/realistic-store');
   assert.match((await runObservation(root, { kind: 'run-arbitrary-js' })).error, /kind/);

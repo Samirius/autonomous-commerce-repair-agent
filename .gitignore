@@ -2,3 +2,4 @@ node_modules/
 .env
 artifacts/before/
 eval/results/
+artifacts/investigation-demo/target/

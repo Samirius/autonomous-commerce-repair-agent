@@ -1,0 +1,31 @@
+{
+  "modelInfo": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "id": "chatcmpl-01a183af-1f99-749d-9ca7-055392745d08",
+    "usage": {
+      "completion_tokens": 1096,
+      "prompt_tokens": 1681,
+      "total_tokens": 2777,
+      "completion_tokens_details": {
+        "reasoning_tokens": 1055
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 756
+      }
+    },
+    "rawText": "{\"observationRequest\":{\"kind\":\"apply-promo\",\"items\":[{\"id\":\"insulated-bottle\",\"qty\":1}],\"promoCode\":\"WELCOME15\"}}"
+  },
+  "response": {
+    "observationRequest": {
+      "kind": "apply-promo",
+      "items": [
+        {
+          "id": "insulated-bottle",
+          "qty": 1
+        }
+      ],
+      "promoCode": "WELCOME15"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "modelInfo": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "id": "chatcmpl-01a183b0-22c2-764d-b4f4-5cf3beb17d33",
+    "usage": {
+      "completion_tokens": 646,
+      "prompt_tokens": 2294,
+      "total_tokens": 2940,
+      "completion_tokens_details": {
+        "reasoning_tokens": 492
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 1012
+      }
+    },
+    "rawText": "{\"verdict\":\"healthy\",\"evidenceSummary\":\"All probes passed across mobile/small/desktop with no overflow or console errors. Mixed cart (2x Trail Runner + 1x Canvas Tote) gave count 3, subtotal 30700, SAVE10 discount 3070, total 27630 as per catalog. WELCOME15 on Insulated Bottle gave subtotal 3400, discount 510, total 2890. Quantity +1 increased 12900 to 25800 and -1 removed item to count 0/total 0. Inspect-cart showed correct line pricing and demo checkout message, product-detail for Canvas Tote matched catalog $49.00, and console-reload produced no errors.\"}"
+  },
+  "response": {
+    "verdict": "healthy",
+    "evidenceSummary": "All probes passed across mobile/small/desktop with no overflow or console errors. Mixed cart (2x Trail Runner + 1x Canvas Tote) gave count 3, subtotal 30700, SAVE10 discount 3070, total 27630 as per catalog. WELCOME15 on Insulated Bottle gave subtotal 3400, discount 510, total 2890. Quantity +1 increased 12900 to 25800 and -1 removed item to count 0/total 0. Inspect-cart showed correct line pricing and demo checkout message, product-detail for Canvas Tote matched catalog $49.00, and console-reload produced no errors."
+  }
+}

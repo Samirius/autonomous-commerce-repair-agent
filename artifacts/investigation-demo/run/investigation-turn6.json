@@ -1,0 +1,24 @@
+{
+  "modelInfo": {
+    "provider": "meta",
+    "model": "muse-wonder-1.0",
+    "id": "chatcmpl-01a183af-e5fe-7021-b0e7-67ca5b9e8f84",
+    "usage": {
+      "completion_tokens": 808,
+      "prompt_tokens": 2214,
+      "total_tokens": 3022,
+      "completion_tokens_details": {
+        "reasoning_tokens": 789
+      },
+      "prompt_tokens_details": {
+        "cached_tokens": 1140
+      }
+    },
+    "rawText": "{\"observationRequest\":{\"kind\":\"console-reload\"}}"
+  },
+  "response": {
+    "observationRequest": {
+      "kind": "console-reload"
+    }
+  }
+}

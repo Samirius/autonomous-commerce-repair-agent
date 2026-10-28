@@ -1,0 +1,261 @@
+{
+  "state": "verified-healthy",
+  "observations": [
+    {
+      "turn": 1,
+      "request": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 2
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          }
+        ],
+        "promoCode": "SAVE10"
+      },
+      "observation": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 2
+          },
+          {
+            "id": "canvas-tote",
+            "qty": 1
+          }
+        ],
+        "cart": {
+          "count": 3,
+          "totalMinor": 27630
+        },
+        "cartState": {
+          "lines": [
+            "Trail Runner Shoes\n      −\n      2\n      +\n      $258.00Canvas Tote Bag\n      −\n      1\n      +\n      $49.00"
+          ],
+          "subtotalMinor": 30700,
+          "discountMinor": 3070,
+          "promoStatus": "SAVE10 applied: 10% off",
+          "checkoutText": "Checkout"
+        },
+        "catalogRuleSummary": {
+          "promoCodes": {
+            "SAVE10": 10,
+            "WELCOME15": 15
+          }
+        },
+        "errors": []
+      }
+    },
+    {
+      "turn": 2,
+      "request": {
+        "kind": "apply-promo",
+        "items": [
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "promoCode": "WELCOME15"
+      },
+      "observation": {
+        "kind": "apply-promo",
+        "items": [
+          {
+            "id": "insulated-bottle",
+            "qty": 1
+          }
+        ],
+        "cart": {
+          "count": 1,
+          "totalMinor": 2890
+        },
+        "cartState": {
+          "lines": [
+            "Insulated Bottle 1L\n      −\n      1\n      +\n      $34.00"
+          ],
+          "subtotalMinor": 3400,
+          "discountMinor": 510,
+          "promoStatus": "WELCOME15 applied: 15% off",
+          "checkoutText": "Checkout"
+        },
+        "catalogRuleSummary": {
+          "promoCodes": {
+            "SAVE10": 10,
+            "WELCOME15": 15
+          }
+        },
+        "errors": []
+      }
+    },
+    {
+      "turn": 3,
+      "request": {
+        "kind": "quantity-change",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          }
+        ],
+        "productId": "trail-runner",
+        "delta": -1
+      },
+      "observation": {
+        "kind": "quantity-change",
+        "target": "trail-runner",
+        "delta": -1,
+        "beforeQty": {
+          "count": 1,
+          "totalMinor": 12900
+        },
+        "afterQty": {
+          "count": 0,
+          "totalMinor": 0
+        },
+        "errors": []
+      }
+    },
+    {
+      "turn": 4,
+      "request": {
+        "kind": "inspect-cart",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          }
+        ],
+        "tryCheckout": true
+      },
+      "observation": {
+        "kind": "inspect-cart",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          }
+        ],
+        "cart": {
+          "count": 1,
+          "totalMinor": 12900
+        },
+        "cartState": {
+          "lines": [
+            "Trail Runner Shoes\n      −\n      1\n      +\n      $129.00"
+          ],
+          "subtotalMinor": 12900,
+          "discountMinor": 0,
+          "promoStatus": "",
+          "checkoutText": "Checkout"
+        },
+        "catalogRuleSummary": {
+          "promoCodes": {
+            "SAVE10": 10,
+            "WELCOME15": 15
+          }
+        },
+        "errors": [],
+        "checkoutStatus": "Demo checkout — no payment taken."
+      }
+    },
+    {
+      "turn": 5,
+      "request": {
+        "kind": "product-detail",
+        "productId": "canvas-tote"
+      },
+      "observation": {
+        "kind": "product-detail",
+        "product": {
+          "id": "canvas-tote",
+          "name": "Canvas Tote Bag",
+          "catalogPriceMinor": 4900,
+          "priceMinorAttr": 4900,
+          "priceText": "$49.00",
+          "priceTextMinor": 4900,
+          "addSelector": "[data-add=\"canvas-tote\"]"
+        },
+        "presented": [
+          {
+            "id": "trail-runner",
+            "name": "Trail Runner Shoes",
+            "catalogPriceMinor": 12900,
+            "priceMinorAttr": 12900,
+            "priceText": "$129.00",
+            "priceTextMinor": 12900,
+            "addSelector": "[data-add=\"trail-runner\"]"
+          },
+          {
+            "id": "canvas-tote",
+            "name": "Canvas Tote Bag",
+            "catalogPriceMinor": 4900,
+            "priceMinorAttr": 4900,
+            "priceText": "$49.00",
+            "priceTextMinor": 4900,
+            "addSelector": "[data-add=\"canvas-tote\"]"
+          },
+          {
+            "id": "insulated-bottle",
+            "name": "Insulated Bottle 1L",
+            "catalogPriceMinor": 3400,
+            "priceMinorAttr": 3400,
+            "priceText": "$34.00",
+            "priceTextMinor": 3400,
+            "addSelector": "[data-add=\"insulated-bottle\"]"
+          }
+        ]
+      }
+    },
+    {
+      "turn": 6,
+      "request": {
+        "kind": "console-reload"
+      },
+      "observation": {
+        "kind": "console-reload",
+        "reloaded": true,
+        "reloadErrors": [],
+        "allErrors": []
+      }
+    },
+    {
+      "turn": 7,
+      "request": {
+        "kind": "quantity-change",
+        "items": [
+          {
+            "id": "trail-runner",
+            "qty": 1
+          }
+        ],
+        "productId": "trail-runner",
+        "delta": 1
+      },
+      "observation": {
+        "kind": "quantity-change",
+        "target": "trail-runner",
+        "delta": 1,
+        "beforeQty": {
+          "count": 1,
+          "totalMinor": 12900
+        },
+        "afterQty": {
+          "count": 2,
+          "totalMinor": 25800
+        },
+        "errors": []
+      }
+    }
+  ],
+  "verdict": {
+    "verdict": "healthy",
+    "evidenceSummary": "All probes passed across mobile/small/desktop with no overflow or console errors. Mixed cart (2x Trail Runner + 1x Canvas Tote) gave count 3, subtotal 30700, SAVE10 discount 3070, total 27630 as per catalog. WELCOME15 on Insulated Bottle gave subtotal 3400, discount 510, total 2890. Quantity +1 increased 12900 to 25800 and -1 removed item to count 0/total 0. Inspect-cart showed correct line pricing and demo checkout message, product-detail for Canvas Tote matched catalog $49.00, and console-reload produced no errors."
+  },
+  "turns": 8
+}
