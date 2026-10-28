@@ -8,7 +8,7 @@ import { readFile, writeFile, mkdir, appendFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
-import { runProbe } from '../scripts/probe.mjs';
+import { runProbe, runObservation } from '../scripts/probe.mjs';
 import { createProvider } from './provider.mjs';
 import { createVerifier } from './verifier.mjs';
 import { validateRepair, ALLOWED_FILES } from './agent.mjs';
@@ -49,23 +49,38 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
         const { expectedQty1, expectedQty2, ...observed } = evidence || {};
         return { ...rest, evidence: observed };
       });
-      const result = await provider.chatJSON({
-        system: 'You are an autonomous e-commerce repair agent inspecting an unfamiliar storefront. Reply with ONLY a JSON object, no markdown.',
-        images: [imageDataUrl],
-        user: [
-          'A screenshot of the storefront (mobile) is attached. Generic invariant probe results (no defect list — diagnose the underlying issue yourself; expected totals are deliberately withheld, derive them from the catalog):',
-          JSON.stringify(modelSignals, null, 2),
-          '', 'Canonical catalog (READ-ONLY, never edit it, never hardcode its values into code):', '```js', catalogText, '```', '',
-          ...Object.entries(files).flatMap(([n, c]) => [`--- ${n} ---`, '```', c, '```', '']),
-          'Identify ONE underlying problem supported by the visual and structured evidence, select ONE file to fix it, and propose ONE narrowly scoped replacement.',
-          `Allowed files: ${JSON.stringify(ALLOWED_FILES)}. "old" must occur exactly once. Do not remove/hide storefront elements or features. No execution/process/shell code.`,
-          'Return JSON exactly: {"diagnosis":"...","evidenceSummary":"...","file":"<allowed file>","old":"exact substring","new":"replacement substring","rationale":"..."}',
-        ].join('\n'),
-      });
-      const repair = result.parsed;
+      // The model may first request up to 2 safe observations (allowlisted
+      // kinds only — see runObservation) before proposing a repair.
+      let repair = null, result = null, observationNotes = '';
+      for (let obsStep = 0; obsStep <= 2 && !repair; obsStep++) {
+        result = await provider.chatJSON({
+          system: 'You are an autonomous e-commerce repair agent inspecting an unfamiliar storefront. Reply with ONLY a JSON object, no markdown.',
+          images: [imageDataUrl],
+          user: [
+            'A screenshot of the storefront (mobile) is attached. Generic invariant probe results (no defect list — diagnose the underlying issue yourself; expected totals are deliberately withheld, derive them from the catalog):',
+            JSON.stringify(modelSignals, null, 2),
+            observationNotes ? `\nAdditional observations you requested:\n${observationNotes}` : '',
+            '', 'Canonical catalog (READ-ONLY, never edit it, never hardcode its values into code):', '```js', catalogText, '```', '',
+            ...Object.entries(files).flatMap(([n, c]) => [`--- ${n} ---`, '```', c, '```', '']),
+            'Identify ONE underlying problem supported by the visual and structured evidence, select ONE file to fix it, and propose ONE narrowly scoped replacement.',
+            `Allowed files: ${JSON.stringify(ALLOWED_FILES)}. "old" must occur exactly once. Do not remove/hide storefront elements or features. No execution/process/shell code.`,
+            'Return JSON exactly: {"diagnosis":"...","evidenceSummary":"...","file":"<allowed file>","old":"exact substring","new":"replacement substring","rationale":"..."}',
+            'OR, if evidence is insufficient, request ONE safe observation instead: {"observationRequest":{"kind":"cart-scenario","items":[{"id":"<catalog product id>","qty":2}],"promoCode":"<optional catalog promo code>"},"reason":"..."} — other kinds: {"kind":"product-detail","productId":"..."} or {"kind":"console-reload"}. You may request at most 2 observations, then you must propose a repair.',
+          ].join('\n'),
+        });
+        const parsed = result.parsed;
+        await writeFile(path.join(runDir, `model-decision-r${round}-a${attempt}${obsStep ? `-obs${obsStep}` : ''}.json`),
+          JSON.stringify({ modelInfo: { provider: result.provider, model: result.model, id: result.id, usage: result.usage, rawText: result.rawText }, vision, response: parsed }, null, 2));
+        if (parsed.observationRequest && obsStep < 2) {
+          const observation = await runObservation(root, parsed.observationRequest);
+          receipts.push({ round, attempt, status: 'observation', request: parsed.observationRequest, observation, model: { model: result.model, id: result.id, usage: result.usage } });
+          record('observation', { round, attempt, kind: parsed.observationRequest.kind, result: JSON.stringify(observation).slice(0, 300) });
+          observationNotes += `\n[${parsed.observationRequest.kind}] ${JSON.stringify(observation).slice(0, 1500)}`;
+          continue;
+        }
+        repair = parsed;
+      }
       record('diagnose', { round, attempt, model: result.model, id: result.id, file: repair.file, diagnosis: repair.diagnosis, vision });
-      await writeFile(path.join(runDir, `model-decision-r${round}-a${attempt}.json`),
-        JSON.stringify({ modelInfo: { provider: result.provider, model: result.model, id: result.id, usage: result.usage, rawText: result.rawText }, vision, repair }, null, 2));
 
       const filePath = path.join(root, repair.file || '');
       const original = ALLOWED_FILES.includes(repair.file) ? await readFile(filePath, 'utf8') : '';
