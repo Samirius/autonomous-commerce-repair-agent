@@ -51,7 +51,9 @@ async function runEvaluatorOracle(label) {
 }
 if (oraclePath) oracle = { before: await runEvaluatorOracle('before') };
 
-// Agent subprocess: scrubbed env (model keys only), no oracle information.
+// Agent subprocess: inherits the parent environment (model keys, PATH,
+// browser cache) minus ORACLE_PATH. The oracle is never in argv or env, and
+// the model only ever sees prompt content built from the target copy.
 const env = { ...process.env };
 delete env.ORACLE_PATH;
 const child = spawnSync(process.execPath, [path.resolve('src/discover.mjs'), '--root', targetDir, '--run-dir', agentDir],
@@ -81,6 +83,7 @@ const manifest = {
   fixtureFileHashes: beforeHashes,
   agentExitCode: child.status,
   agentSummary: agentSummary && {
+    state: agentSummary.state, investigation: agentSummary.investigation,
     repairsCommitted: agentSummary.repairsCommitted, finalPass: agentSummary.finalPass,
     attempts: agentSummary.receipts?.length ?? null,
     tokens: agentSummary.receipts?.reduce((n, r) => n + (r.model?.usage?.total_tokens || 0), 0),

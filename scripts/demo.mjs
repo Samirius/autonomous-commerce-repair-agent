@@ -11,6 +11,14 @@ import { createProvider } from '../src/provider.mjs';
 import { createVerifier } from '../src/verifier.mjs';
 
 if (existsSync('.env')) process.loadEnvFile('.env');
+// Fail fast, before creating any artifact folder, and point keyless viewers
+// (e.g. judges) at the recorded runs instead of a stack trace.
+let provider;
+try { provider = createProvider(); } catch (e) {
+  console.error(`Live demo needs a Meta Model API key: ${e.message}`);
+  console.error('Without a key, replay the recorded runs instead:  npm run replay');
+  process.exit(2);
+}
 const stamp = new Date().toISOString().replace(/[:.]/g, '-');
 const demoRoot = path.resolve('artifacts', `demo-${stamp}`);
 const target = path.join(demoRoot, 'target');
@@ -22,7 +30,7 @@ console.log('=== Autonomous Commerce Repair Agent — demo ===');
 console.log(`Pristine broken fixture copied to a fresh target (fixture untouched).`);
 console.log(`Artifacts: ${demoRoot}\n--- agent run (real Meta API calls) ---`);
 const started = Date.now();
-const summary = await discoverAndRepair({ root: target, runDir, provider: createProvider(), verifier: createVerifier() });
+const summary = await discoverAndRepair({ root: target, runDir, provider, verifier: createVerifier() });
 const elapsedS = Math.round((Date.now() - started) / 1000);
 
 const tokens = summary.receipts.reduce((n, r) => n + (r.model?.usage?.total_tokens || 0), 0);

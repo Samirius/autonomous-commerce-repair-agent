@@ -9,11 +9,13 @@ export function createVerifier(env = process.env) {
   const baseUrl = (env.BASETEN_BASE_URL || 'https://inference.baseten.co/v1').replace(/\/$/, '');
   const model = env.VERIFIER_MODEL || 'meta-models/muse-spark-open';
   if (!apiKey) return { available: false, provider: 'baseten', model, baseUrl, reason: 'BASETEN_API_KEY not set' };
+  const timeoutMs = Number(env.MODEL_TIMEOUT_MS) || 120_000;
   return {
     available: true, provider: 'baseten', model, baseUrl,
     async review({ repair, evidenceBefore, evidenceAfter }) {
       const res = await fetch(`${baseUrl}/chat/completions`, {
         method: 'POST',
+        signal: AbortSignal.timeout(timeoutMs),
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({
           model, temperature: 0,

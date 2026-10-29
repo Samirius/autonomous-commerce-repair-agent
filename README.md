@@ -18,7 +18,8 @@ cd autonomous-commerce-repair-agent
 npm install
 npx playwright install chromium   # one-time browser download, if not already cached
 cp .env.example .env              # fill in the keys below
-npm test                          # 29 tests (most need no API key)
+npm test                          # 31 tests, no API key needed
+npm run replay                    # no key? replay the recorded runs (no model calls)
 ```
 
 `.env` (never committed):
@@ -41,16 +42,19 @@ Swap models/providers with env vars only (`MODEL_PROVIDER=openai-compatible`, `M
 npm run demo     # pristine broken store copied fresh -> real Meta repairs -> verified outcome
 npm run check    # deterministic check of the demo storefront only
 npm test         # full test suite
+npm run replay   # keyless: print the recorded evidence trails (no model calls)
+npm run eval:fresh   # live: pre-registered fresh-store evaluation, one run per store
 ```
 
 ## What it has proven (evidence in `evidence/`)
-- Externally authored blind cases: **1/3 detected** in the first external run, then **3/3 repaired and verified by the evaluator's withheld oracles** after a probe-coverage upgrade — no per-defect hardcoded fixes. Internal blind set: 6/6.
+- Fresh-store evaluation (2026-10-30): 3 new hidden-defect stores + 1 healthy control, authored after the harness was frozen, one live run each, rules pre-registered in `eval/fresh-2026-10-30/PREREGISTRATION.md`. Results, including misses: `evidence/fresh-2026-10-30/RESULTS.md` (run with `npm run eval:fresh`).
+- Earlier outside cases written outside this repo by ChatGPT acting as external reviewer: **1/3 detected** in the first run; after the probe was widened in response to that result, **3/3 repaired and verified by the reviewer's own withheld oracles**. Because the probe changed after those cases were seen, the 3/3 is a re-test, not a blind result; the bundles are not in this repo. Internal blind set: 6/6 (same author as the probe).
 - A store passing every automated check was investigated autonomously: Wonder's mixed-cart + promo exploration exposed a hidden discount defect, the agent confirmed it deterministically (expected 19080 vs observed 19910 minor units), repaired it, and re-verified both the full probe and the exact scenario.
 - A healthy store was investigated to `verified-healthy` with zero code changes — suspicion alone never patches code.
 - Every committed repair carries an audit trail: screenshots (SHA-256 recorded), model response ids, token usage, patches, and — in runs where the reviewer was enabled — a separate Muse Spark Open verdict. Which runs contain which records is stated precisely in `evidence/README.md`.
 
 ## Limitations (exact)
-Currently an agent for **disposable JavaScript storefronts** following the fixture contract in `eval/external/README.md` (canonical catalog data, defined cart/price element conventions, money in integer minor units). It is **not a production WooCommerce integration**; no live or client store has ever been touched. Full limitation list: `docs/SUBMISSION.md`.
+Currently an agent for **disposable JavaScript storefronts** following the fixture contract in `eval/external/README.md` (canonical catalog data, defined cart/price element conventions, money in integer minor units). It is **not a production WooCommerce integration**; no live or client store has ever been touched. Patch safety is an allowlist of files plus a blocklist of obvious execution constructs; it is not a sandbox, which is acceptable only because targets are disposable copies. Full limitation list: `docs/SUBMISSION.md`.
 
 ## Documentation
 - `docs/STORYBOARD.md` — three-minute demo storyboard & narration

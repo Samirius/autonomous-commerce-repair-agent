@@ -32,4 +32,6 @@ Discovery is **genuinely model-driven but not raw-evidence-only**. The model is 
 
 - Claim: "The agent diagnoses and repairs from probe evidence, screenshots and source inspection, verified by deterministic tests." — supported.
 - Do not claim: "The agent discovers defects from raw screenshots alone" or cite the known-defect queue flow as discovery.
+- Investigation-phase prompts contain no source files (screenshot, catalog, presented products and observation results only); source is given only for the repair after deterministic confirmation (verified 2026-10-30, `src/discover.mjs`).
+- L11 (2026-10-30): the coverage rule "promo applied to a MIXED cart" was added after a miss on the Mission 008 target, so that target is not a blind test of the final harness. Addressed by the pre-registered fresh-store evaluation (`eval/fresh-2026-10-30/`).
 - Strongest remaining proof would be ChatGPT's externally authored scenarios run through `eval/external/run-external.mjs` with ChatGPT's own oracle kept outside this repo.

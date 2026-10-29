@@ -1,0 +1,21 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; color: #17202a; background: #f7f8fa; }
+.site-header { display: flex; justify-content: space-between; padding: 16px 20px; background: #fff; border-bottom: 1px solid #dde3ea; position: sticky; top: 0; }
+main { max-width: 1080px; margin: 0 auto; padding: 20px; }
+.hero { padding: 12px 0 20px; }
+.product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; }
+.thumb { display: grid; place-items: center; height: 120px; border-radius: 10px; background: #d1fae5; font-weight: 800; letter-spacing: .1em; }
+.tag { color: #2563eb; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+.price { font-size: 20px; font-weight: 700; }
+.add-btn { width: 100%; padding: 12px; border: 0; border-radius: 10px; background: #14532d; color: #fff; font-weight: 700; cursor: pointer; }
+.cart { margin-top: 28px; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; }
+.line { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid #eef2f7; }
+.totals div { display: flex; justify-content: space-between; padding: 4px 0; }
+input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; }
+button { cursor: pointer; }
+#apply-promo, #checkout { padding: 10px 14px; border: 0; border-radius: 8px; background: #1d4ed8; color: #fff; font-weight: 600; margin-top: 8px; }
+@media (max-width: 700px) {
+  .product-grid { grid-template-columns: 1fr; }
+  .site-header { flex-wrap: wrap; gap: 6px; }
+}

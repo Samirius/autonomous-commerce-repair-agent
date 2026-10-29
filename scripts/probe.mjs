@@ -32,6 +32,14 @@ export function expectedCartMinor(catalog, items) {
   return subtotal;
 }
 
+// The ONE normalisation used both to execute a scenario in the browser and to
+// compute its expected total: {id|productId, qty}, catalog ids only, qty 1..5,
+// at most 4 lines. Expected and observed must describe the same basket.
+export function normalizeScenarioItems(catalog, raw) {
+  return (raw || []).map((it) => ({ id: it.id || it.productId, qty: it.qty ?? 1 }))
+    .filter((it) => catalog.products.some((p) => p.id === it.id) && it.qty >= 1 && it.qty <= 5).slice(0, 4);
+}
+
 export function expectedScenarioMinor(catalog, items, promoCode = null) {
   // items: [{id, qty}] — bulk rule first (expectedCartMinor), then promo % off
   let total = expectedCartMinor(catalog, items);
@@ -274,9 +282,7 @@ export async function runObservation(rootDir, request) {
   const errors = [];
   const page = await freshPage(browser, url, errors);
   const catalog = await page.evaluate(() => window.CATALOG);
-  // Normalize items: accept {id, qty} or {productId, qty}
-  const normItems = (raw) => (raw || []).map((it) => ({ id: it.id || it.productId, qty: it.qty ?? 1 }))
-    .filter((it) => catalog.products.some((p) => p.id === it.id) && it.qty >= 1 && it.qty <= 5).slice(0, 4);
+  const normItems = (raw) => normalizeScenarioItems(catalog, raw);
   const addItems = async (items) => {
     const presented = await page.evaluate(presentedProductsJS);
     for (const it of items) {
@@ -309,9 +315,11 @@ export async function runObservation(rootDir, request) {
     const items = normItems(request.items);
     if (!items.length) { await browser.close(); return { error: 'observation needs items [{id|productId, qty 1..5}] using catalog product ids' }; }
     try { await addItems(items); } catch (e) { await browser.close(); return { error: String(e).slice(0, 200) }; }
+    let promoApplied = null;
     if (request.kind === 'cart-scenario' && request.promoCode && catalog.rules?.promoCodes?.[request.promoCode]) {
-      const hasUI = await page.evaluate(() => !!document.getElementById('promo-code'));
+      const hasUI = await page.evaluate(() => !!document.getElementById('promo-code') && !!document.getElementById('apply-promo'));
       if (hasUI) { await page.fill('#promo-code', request.promoCode); await page.click('#apply-promo'); }
+      promoApplied = hasUI ? request.promoCode : null;
     }
     if (request.kind === 'apply-promo') {
       const code = request.promoCode;
@@ -320,6 +328,7 @@ export async function runObservation(rootDir, request) {
       if (!hasUI) { await browser.close(); return { error: 'promo UI not present on this page' }; }
       await page.fill('#promo-code', code);
       await page.click('#apply-promo');
+      promoApplied = code;
     }
     if (request.kind === 'quantity-change') {
       const target = request.productId || request.id || items[0].id;
@@ -342,7 +351,7 @@ export async function runObservation(rootDir, request) {
       promoStatus: document.getElementById('promo-status')?.textContent ?? null,
       checkoutText: document.getElementById('checkout')?.textContent ?? null,
     }));
-    result = { kind: request.kind, items, cart, cartState, catalogRuleSummary: catalog.rules || null, errors };
+    result = { kind: request.kind, items, promoApplied, cart, cartState, catalogRuleSummary: catalog.rules || null, errors };
     if (request.kind === 'inspect-cart' && request.tryCheckout) {
       const hasCheckout = await page.evaluate(() => !!document.getElementById('checkout'));
       if (hasCheckout) {

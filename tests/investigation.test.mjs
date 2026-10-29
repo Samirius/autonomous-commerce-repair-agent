@@ -54,6 +54,22 @@ test('investigation: suspected + confirmed scenario discrepancy is repaired and 
   assert.equal(summary.investigation.confirmation.expected, 16020);
 });
 
+test('investigation: an out-of-range confirmation basket on a HEALTHY store is never a confirmed defect', async () => {
+  const { root, runDir } = await copyFixture();
+  const before = await readFile(path.join(root, 'app.js'), 'utf8');
+  const provider = stubProvider([
+    // qty 6 is clamped out by the observation layer; the expected total must
+    // describe the same (normalised) basket, so the healthy store matches.
+    { verdict: 'suspected', suspectedIssue: 'large quantities', confirmation: { kind: 'cart-scenario', items: [{ id: 'trail-runner', qty: 6 }, { id: 'canvas-tote', qty: 1 }], promoCode: 'SAVE10' } },
+  ]);
+  const summary = await discoverAndRepair({ root, runDir, provider });
+  assert.equal(summary.investigation.confirmation.confirmed, false);
+  assert.deepEqual(summary.investigation.confirmation.normalizedItems, [{ id: 'canvas-tote', qty: 1 }]);
+  assert.equal(summary.state, 'suspected-unverified');
+  assert.equal(summary.repairsCommitted, 0);
+  assert.equal(await readFile(path.join(root, 'app.js'), 'utf8'), before);
+});
+
 test('investigation: a bare repair proposal on a passing store is suspicion, never a patch', async () => {
   const { root, runDir } = await copyFixture();
   const before = await readFile(path.join(root, 'app.js'), 'utf8');

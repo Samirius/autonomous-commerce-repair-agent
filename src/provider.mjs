@@ -17,6 +17,8 @@ export function createProvider(env = process.env) {
   const baseUrl = (env.MODEL_BASE_URL || cfg.baseUrl).replace(/\/$/, '');
   const model = env.MODEL_NAME || cfg.model;
   if (!apiKey) throw new Error(`No API key: set MODEL_API_KEY (provider=${provider})`);
+  // A hung call must fail the run, not stall it forever (MODEL_TIMEOUT_MS).
+  const timeoutMs = Number(env.MODEL_TIMEOUT_MS) || 120_000;
 
   return {
     provider,
@@ -28,6 +30,7 @@ export function createProvider(env = process.env) {
         : user;
       const res = await fetch(`${baseUrl}/chat/completions`, {
         method: 'POST',
+        signal: AbortSignal.timeout(timeoutMs),
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
         body: JSON.stringify({
           model,

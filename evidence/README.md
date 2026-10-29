@@ -11,4 +11,5 @@ Selected run records, safe for a public repository: no credentials, no local pat
 | `investigation-before.png` | The investigation target — a store that looks and probes healthy |
 | `healthy-investigation-verification.json` | A healthy store investigated to `verified-healthy` with zero code changes (suspicion never patches) |
 | `openweight-verifier-live-check.json` | Standalone live Muse Spark Open review of the investigation-proof repair (`meta-models/muse-spark-open` via Baseten) — recorded separately from that run, not inside it |
-| `blind-eval-mission003-summary.json` | Internal blind evaluation: 6/6 unseen variants repaired (Mission 005→006 external results, 1/3 → 3/3 oracle-verified, are described in `docs/STATUS.md`; the external bundles are held by the evaluator) |
+| `blind-eval-mission003-summary.json` | Internal blind evaluation: 6/6 unseen variants repaired (Mission 005→006 outside-authored results, 1/3 then 3/3 after a probe change — a re-test, not blind — are described in `docs/STATUS.md`; those bundles are not in this repo) |
+| `fresh-2026-10-30/` | Pre-registered fresh-store evaluation: 3 hidden-defect stores + 1 healthy control, one live run each, `RESULTS.md` as produced (appears after `npm run eval:fresh`) |

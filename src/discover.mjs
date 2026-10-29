@@ -8,7 +8,7 @@ import { readFile, writeFile, mkdir, appendFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
-import { runProbe, runObservation, runViewportScreenshot, expectedScenarioMinor } from '../scripts/probe.mjs';
+import { runProbe, runObservation, runViewportScreenshot, expectedScenarioMinor, normalizeScenarioItems } from '../scripts/probe.mjs';
 import { createProvider } from './provider.mjs';
 import { createVerifier, classifyReview } from './verifier.mjs';
 import { validateRepair, resolveRepair, applyPatchText, ALLOWED_FILES } from './agent.mjs';
@@ -148,11 +148,15 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
       const spec = investigation.verdict?.confirmation || investigation.verdict?.confirmationScenario;
       const confirmable = spec && ['cart-scenario', 'apply-promo', 'inspect-cart'].includes(spec.kind);
       if (confirmable) {
-        const items = (spec.items || []).map((it) => ({ id: it.id || it.productId, qty: it.qty ?? 1 }));
-        const expected = expectedScenarioMinor(probe.catalog, items, spec.promoCode || null);
+        // Expected is computed for the basket the browser actually built
+        // (same normalisation, promo only if it was really applied), so a
+        // clamped quantity or a missing promo UI can never look like a defect.
         const confirmationObs = await runObservation(root, spec);
+        const items = normalizeScenarioItems(probe.catalog, spec.items);
+        const expected = items.length ? expectedScenarioMinor(probe.catalog, items, confirmationObs?.promoApplied || null) : null;
         const observed = confirmationObs?.cart?.totalMinor;
-        investigation.confirmation = { spec, expected, observed, confirmed: typeof observed === 'number' && observed === expected ? false : typeof observed === 'number' };
+        const comparable = !confirmationObs?.error && Number.isFinite(observed) && Number.isFinite(expected);
+        investigation.confirmation = { spec, normalizedItems: items, promoApplied: confirmationObs?.promoApplied ?? null, expected, observed, confirmed: comparable && observed !== expected, ...(comparable ? {} : { notComparable: confirmationObs?.error || 'scenario produced no comparable total' }) };
         record('confirmation', investigation.confirmation);
         if (investigation.confirmation.confirmed) {
           investigation.state = 'confirmed-issue';

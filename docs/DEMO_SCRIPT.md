@@ -18,7 +18,7 @@ Say: "No failing test told it where to look. It investigated like a commerce eng
 
 ## Minute 3 — independent open-weight review + generalization
 - Open any demo `verification.json`: each Wonder repair carries a Muse Spark Open review (approve/concern) with response ids and token usage; concerns trigger an extra deterministic probe and a human-review flag — the open-weight model can flag, never overrule.
-- Show `docs/eval-mission003-summary.json` (internal blind set 6/6) and quote Mission 005→006 (external cases 1/3 → 3/3 oracle-verified).
+- Show `docs/eval-mission003-summary.json` (internal blind set 6/6) and show `evidence/fresh-2026-10-30/RESULTS.md` (fresh stores, one run each, misses included). If quoting Mission 005→006, say it was a re-test after the probe changed.
 Say: "Two Meta models with separate jobs — Wonder repairs, Spark Open reviews — and deterministic tests remain the final authority."
 
 Fallback if the network fails mid-demo: replay from committed artifacts (`artifacts/demo-*/`, `artifacts/investigation-proof/run/`, investigation turns + screenshots are all on disk).

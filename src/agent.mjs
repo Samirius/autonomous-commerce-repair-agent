@@ -34,7 +34,9 @@ export function resolveRepair(repair, content) {
 
 export function applyPatchText(content, repair) {
   const effective = resolveRepair(repair, content) || repair;
-  return content.replace(effective.old, effective.new);
+  // Function replacer: model text is literal. A string replacement would
+  // interpret `$$`, `$&`, `$'` and corrupt e.g. `$${price}` money labels.
+  return content.replace(effective.old, () => effective.new);
 }
 
 export function validateRepair(repair, content, opts = {}) {

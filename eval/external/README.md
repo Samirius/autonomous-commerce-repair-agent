@@ -44,6 +44,6 @@ Oracle module contract: an `.mjs` file exporting `async function runOracle(rootD
 
 ## Notes / limits
 
-- If the fixture already passes every probe invariant, the agent makes **zero model calls** and the bundle records that.
+- If the fixture already passes every probe invariant, the agent does not stop: it runs the investigation phase (typed observations, coverage matrix, deterministic confirmation before any repair — see `docs/DECISIONS.md` D13–D14).
 - The probe assumes the fixture contract above (single featured product for price/cart invariants; all interactives are checked at 390/360/1280 widths). An evaluator whose fixture deliberately departs from the contract should rely on their own oracle and treat agent repairs as proposals to assess.
 - Do not place fixtures or oracles inside `eval/variants/` for a blind run — that directory is our own (Mission 003) test set, not the external one.

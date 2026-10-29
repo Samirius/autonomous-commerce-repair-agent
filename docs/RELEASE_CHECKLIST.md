@@ -1,29 +1,32 @@
 # Release checklist — before submitting to the Meta Global AI Developer Hackathon
 
-Engineering is done. Everything below is an owner action; nothing here may be automated without Samir's explicit approval.
+Deadline: **Wed 2026-11-04 21:00 EST = Thu 2026-11-05 04:00 Cairo.** Target: submit by Tue 2026-11-03.
+Everything below marked *owner* needs Samir; nothing here may be automated without his explicit approval.
 
-## Verified by engineering (2026-10-28)
-- [x] Private repo pushed: `Samirius/autonomous-commerce-repair-agent` @ `f246765` (remote HEAD == local HEAD, visibility PRIVATE). Later documentation-only commits are local until push is approved.
-- [x] Clean-clone test: fresh clone → `npm install` → `npx playwright install chromium` (one-time, if not cached) → `npm test` **29/29 pass** → `npm run demo` completed with real Meta calls (2 repairs, verified) using only documented env vars
-- [x] Tracked-file secret/sensitive scan clean; old exposed Baseten key not present anywhere in the repo
-- [x] Curated public evidence in `evidence/` (sanitized, indexed)
-- [x] Demo storyboard + narration: `docs/STORYBOARD.md`; project description: `docs/PROJECT.md`
+## Verified by engineering (2026-10-30, branch `audit-fixes-2026-10-30`)
+- [x] Fresh clone → `npm ci` → `npx playwright install chromium` → `npm test` **31/31 pass** (no key needed)
+- [x] Full-history secret scan (`git log -p --all`, key/token patterns): no credentials found
+- [x] `LICENSE` (MIT) added
+- [x] `npm run replay` works without a key; `npm run demo` without a key exits cleanly with that hint
+- [x] Fresh-store fixtures validated offline (`node eval/fresh-2026-10-30/validate-fixtures.mjs`: 4/4 VALID); runner dry-run tested against a local stub model (results discarded)
+- [ ] Live `npm run demo` re-run after the fixes — not done (no key available to engineering)
 
 ## Required environment variables (documented in `.env.example`, never committed)
 | Variable | Required for | Source |
 |---|---|---|
 | `MODEL_API_KEY` | Muse Wonder planner/investigator (Meta Model API) | Meta Model API dashboard |
-| `MODEL_PROVIDER` / `MODEL_NAME` / `MODEL_BASE_URL` | Optional provider/model selection (defaults: meta / muse-wonder-1.0) | — |
-| `BASETEN_API_KEY` | Muse Spark Open reviewer — without it the agent still works and records the review as `unavailable` | Baseten dashboard. **The previously exposed key has NOT been rotated yet — rotation is a pending owner action** |
+| `MODEL_PROVIDER` / `MODEL_NAME` / `MODEL_BASE_URL` / `MODEL_TIMEOUT_MS` | Optional (defaults: meta / muse-wonder-1.0 / api.meta.ai / 120000) | — |
+| `BASETEN_API_KEY` | Muse Spark Open reviewer — without it reviews are recorded as `unavailable` | Baseten dashboard. **The previously exposed key has NOT been rotated yet** |
 
-## Remaining owner actions before submission
-1. [ ] Rotate the exposed Baseten API key (dashboard), put the replacement in local `.env` only
-2. [ ] Approve making the GitHub repository **public** (currently private; submission links must be accessible without authentication)
-3. [ ] After going public, verify the repo URL and `evidence/` render correctly while logged out
-4. [ ] Record the three-minute video following `docs/STORYBOARD.md` (upload to the platform the submission form requires; keep the link unlisted/public as the form specifies)
-5. [ ] Complete the hackathon submission form: Indie Developer track, theme *Build for Your World*, project description from `docs/PROJECT.md`, repo + video links
-6. [ ] Final logged-out check: repo link, video link, and any demo links all open without authentication
-7. [ ] Submit before the November 4, 2026 deadline
+## Remaining actions, in order
+1. [ ] *owner* Rotate the exposed Baseten key; put the new one in local `.env` only
+2. [ ] *owner* Review and merge `audit-fixes-2026-10-30` into `main`
+3. [ ] *owner* `.env` with `MODEL_API_KEY` (+ `BASETEN_API_KEY`); run `npm run demo` once (sanity) and `npm run eval:fresh` **once**; commit `evidence/fresh-2026-10-30/` exactly as produced
+4. [ ] *owner* Decide on the historical local path (commit `e661e16`): accept, or rewrite history before public release
+5. [ ] *owner* Approve making the repository **public**; then check repo, `evidence/` and README render while logged out
+6. [ ] *owner* Record the three-minute video following `docs/STORYBOARD.md` — include the fresh-store table, misses included
+7. [ ] *owner* Submission form: Indie Developer track, theme *Build for Your World*, description from `docs/PROJECT.md`, repo + video links
+8. [ ] *owner* Final logged-out check of every link, then submit
 
 ## Blockers
-- None technical. Submission readiness depends only on the owner actions above (public-release approval, video, form).
+- None technical. Items 1, 3 (live runs) and 5–8 need Samir.

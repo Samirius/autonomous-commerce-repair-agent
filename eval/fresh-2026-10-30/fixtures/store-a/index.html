@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlas Coffee Roasters</title>
+<link rel="stylesheet" href="styles.css"></head>
+<body>
+<header class="site-header"><strong>Atlas Coffee Roasters</strong><span>Cart: <span id="cart-count">0</span> item(s)</span></header>
+<main>
+  <section class="hero"><h1>Fresh roasts, shipped weekly</h1><p>Disposable test fixture — not a real store.</p></section>
+  <section id="product-grid" class="product-grid" aria-label="Products"></section>
+  <section class="cart" aria-label="Cart">
+    <h2>Your cart</h2>
+    <div id="cart-lines"></div>
+    <label>Promo code <input id="promo-code" type="text" placeholder="Code"></label>
+    <button id="apply-promo" type="button">Apply promo</button>
+    <p id="promo-status"></p>
+    <dl class="totals">
+      <div><dt>Subtotal</dt><dd id="cart-subtotal" data-subtotal-minor="0">$0.00</dd></div>
+      <div><dt>Discount</dt><dd id="cart-discount" data-discount-minor="0">−$0.00</dd></div>
+      <div><dt>Total</dt><dd id="cart-total" data-total-minor="0">$0.00</dd></div>
+    </dl>
+    <button id="checkout" type="button">Checkout</button>
+    <p id="checkout-status"></p>
+  </section>
+</main>
+<script src="catalog.js"></script>
+<script src="app.js"></script>
+</body></html>

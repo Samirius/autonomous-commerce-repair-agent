@@ -22,6 +22,13 @@ test('resolveRepair tolerates LF patch against CRLF file content', async () => {
   const multiLf = { file: 'app.js', old: 'a();\nb();', new: 'a();\nc();' };
   assert.equal(applyPatchText('a();\r\nb();\r\n', multiLf), 'a();\r\nc();\r\n');
 });
+test('applyPatchText writes `$` sequences literally (money labels survive)', async () => {
+  const { applyPatchText } = await import('../src/agent.mjs');
+  const src = 'const a = 1;\n';
+  for (const n of ['const label = `$${a}`;', "const s = '$&' + \"$'\" + '$1';"]) {
+    assert.equal(applyPatchText(src, { file: 'app.js', old: 'const a = 1;', new: n }), `${n}\n`);
+  }
+});
 test('validateRepair rejects the read-only canonical catalog', () => {
   assert.match(validateRepair({ file: 'catalog.js', old: '8900', new: '7900' }, '8900'), /allowlist/);
 });
