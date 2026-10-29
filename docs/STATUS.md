@@ -27,7 +27,7 @@ Updated: 2026-10-30 (audit fixes + fresh-store evaluation harness, branch `audit
 ## Pending owner actions
 1. ~~Rotate the exposed Baseten key~~ — not needed: that key has expired (owner-confirmed 2026-10-30). Any current key goes in local `.env` only.
 2. ~~Merge `audit-fixes-2026-10-30`~~ — done 2026-10-30.
-3. Put `MODEL_API_KEY` (+ `BASETEN_API_KEY`) in `.env`, run `npm run eval:fresh` once, commit `evidence/fresh-2026-10-30/`.
+3. ~~Run `npm run eval:fresh`~~ — done 2026-10-30 on GLM 5.3 via Hermes (`MODEL_PROVIDER=hermes`); results committed as produced.
 4. Local Windows path in commit `e661e16` (removed in `e5784df`, still in history): **decided 2026-10-30, keep history as is.** It reveals only the Windows username; rewriting would change every commit id the docs and evidence cite.
 5. ~~Make the repository public~~ — done 2026-10-30. Record the video (`docs/STORYBOARD.md`); submit the form before 2026-11-04 21:00 EST (2026-11-05 04:00 Cairo).
 

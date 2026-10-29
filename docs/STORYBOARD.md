@@ -16,7 +16,7 @@ Show: observations → confirmation (expected 19080 vs observed 19910) → the o
 ## 2:15–3:00 — A second Meta model checks the work + why it generalizes
 Show a demo-run `verification.json` (e.g. under `artifacts/demo-*/run/`; those runs carry `openWeightVerification` receipts).
 **Narration:** "In our demo runs, every repair Muse Wonder makes is independently reviewed by a second Meta model — Muse Spark Open, running on open weights. It can approve, or raise a concern, which triggers extra testing and flags a human to look. It cannot overrule the automated tests, and it can't touch the code. Two Meta models, separate jobs, proof neither can fake. And we tested it honestly: three brand-new stores with hidden bugs, written after the agent was frozen, one run each. Here is what it found — and what it missed."
-Show: open-weight verdict entries (approve/concern, response ids) → the table in `evidence/fresh-2026-10-30/muse-wonder-1.0/RESULTS.md` (read the misses out loud too).
+Show: open-weight verdict entries (approve/concern, response ids) → the table in `evidence/fresh-2026-10-30/glm-5.3/RESULTS.md` (read the misses out loud too).
 
 **Accuracy note for the presenter:** the centerpiece investigation run (Mission 008) was recorded before the open-weight review was wired into that path, so its receipts contain no Spark Open verdict; the same repair was reviewed separately (`evidence/openweight-verifier-live-check.json`), and the demo runs in segment 3 do carry in-process reviews. Do not claim otherwise.
 
