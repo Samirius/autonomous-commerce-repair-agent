@@ -45,5 +45,8 @@ External audit before submission found and reproduced: (1) `applyPatchText` used
 ## D16 — Pre-registered fresh-store evaluation (2026-10-30)
 The Mission 008 coverage rule was introduced after a miss on its own target, so that target cannot show the final harness generalises. `eval/fresh-2026-10-30/` adds 3 hidden-defect stores (bulk threshold off-by-one; 4th product dropped from subtotal; stale multi-buy price) and 1 healthy control, written after D15 and validated offline, with hand-computed oracles independent of `scripts/probe.mjs`. One live run per store, harness frozen, results committed as produced — see its `PREREGISTRATION.md`.
 
+## D17 — Non-Meta provider runs, clearly separated (2026-10-30)
+Meta API credits ran out on 2026-10-30. The public event page asks participants to use Meta models but does not prohibit others; the binding Official Rules were not available to check. Decision: the Oct 28 recorded runs with real Meta models remain the entry's core evidence. New live runs may use another OpenAI-compatible provider (owner chose GLM 5.3 via z.ai) and are stored per model and labelled "not the entry's result". `MODEL_IMAGES=off` supports text-only models without falsely recording vision input.
+
 ## D4 — Run artifacts as the memory (2026-10-28)
 Each run writes `artifacts/run-<ts>/` (screenshots, evidence, model decision, diff, verification, history) and appends a summary line to `memory/runs.jsonl`. Rationale: judges and future agents can audit exactly what the model decided and what the tests returned — no fabricated history.

@@ -3,8 +3,8 @@
 Updated: 2026-10-30 (audit fixes + fresh-store evaluation harness, branch `audit-fixes-2026-10-30`)
 
 ## Current state
-- Repository: `Samirius/autonomous-commerce-repair-agent` (**PRIVATE**). `main` is at `1327dcd` (Mission 012). The audit work is on branch `audit-fixes-2026-10-30` pending Samir's merge.
-- Tests: **31/31** (`npm test`, no API key needed), verified from a fresh clone on 2026-10-30.
+- Repository: `Samirius/autonomous-commerce-repair-agent`, **public since 2026-10-30** (owner-approved). The audit work (PR #1) was fast-forwarded into `main` on 2026-10-30.
+- Tests: **32/32** (`npm test`, no API key needed), verified from a fresh clone on 2026-10-30.
 - Licence: MIT (`LICENSE`).
 - Keyless viewing: `npm run replay` prints the recorded evidence trails; `npm run demo` without a key now exits with that hint instead of a stack trace.
 
@@ -26,10 +26,10 @@ Updated: 2026-10-30 (audit fixes + fresh-store evaluation harness, branch `audit
 
 ## Pending owner actions
 1. ~~Rotate the exposed Baseten key~~ — not needed: that key has expired (owner-confirmed 2026-10-30). Any current key goes in local `.env` only.
-2. Review and merge branch `audit-fixes-2026-10-30`.
+2. ~~Merge `audit-fixes-2026-10-30`~~ — done 2026-10-30.
 3. Put `MODEL_API_KEY` (+ `BASETEN_API_KEY`) in `.env`, run `npm run eval:fresh` once, commit `evidence/fresh-2026-10-30/`.
 4. Local Windows path in commit `e661e16` (removed in `e5784df`, still in history): **decided 2026-10-30, keep history as is.** It reveals only the Windows username; rewriting would change every commit id the docs and evidence cite.
-5. Approve making the repository public; record the video (`docs/STORYBOARD.md`); submit the form before 2026-11-04 21:00 EST (2026-11-05 04:00 Cairo).
+5. ~~Make the repository public~~ — done 2026-10-30. Record the video (`docs/STORYBOARD.md`); submit the form before 2026-11-04 21:00 EST (2026-11-05 04:00 Cairo).
 
 ## Known limitations
 - Disposable JavaScript storefronts under the documented fixture contract only — not a production WooCommerce integration; no live store ever touched.

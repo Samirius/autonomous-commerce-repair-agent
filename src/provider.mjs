@@ -19,12 +19,17 @@ export function createProvider(env = process.env) {
   if (!apiKey) throw new Error(`No API key: set MODEL_API_KEY (provider=${provider})`);
   // A hung call must fail the run, not stall it forever (MODEL_TIMEOUT_MS).
   const timeoutMs = Number(env.MODEL_TIMEOUT_MS) || 120_000;
+  // MODEL_IMAGES=off for text-only models: screenshots are then not sent, and
+  // run records say so (vision.included=false) instead of claiming vision.
+  const supportsImages = String(env.MODEL_IMAGES || 'on').toLowerCase() !== 'off';
 
   return {
     provider,
     model,
     baseUrl,
+    supportsImages,
     async chatJSON({ system, user, images = [] }) {
+      if (!supportsImages) images = [];
       const userContent = images.length
         ? [{ type: 'text', text: user }, ...images.map((url) => ({ type: 'image_url', image_url: { url } }))]
         : user;

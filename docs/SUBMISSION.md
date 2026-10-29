@@ -15,7 +15,7 @@ Playwright probes a storefront and reports generic commerce invariants (per-prod
 npm install
 npx playwright install chromium   # one-time, if the browser is not cached
 cp .env.example .env   # MODEL_API_KEY (Meta), BASETEN_API_KEY (Baseten)
-npm test               # 31 tests
+npm test               # 32 tests
 npm run replay         # keyless replay of recorded runs
 npm run demo           # repeatable end-to-end demo with real Meta calls
 ```

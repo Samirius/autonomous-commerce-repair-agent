@@ -218,7 +218,7 @@ export async function discoverAndRepair({ root, runDir, provider, verifier = nul
     probe = await runProbe(root, { screenshot: shotPath });
     const shotBytes = await readFile(shotPath);
     const imageDataUrl = `data:image/png;base64,${shotBytes.toString('base64')}`;
-    const vision = { included: true, screenshot: path.basename(shotPath), sha256: createHash('sha256').update(shotBytes).digest('hex'), bytes: shotBytes.length };
+    const vision = { included: provider.supportsImages !== false, screenshot: path.basename(shotPath), sha256: createHash('sha256').update(shotBytes).digest('hex'), bytes: shotBytes.length };
 
     let committed = false;
     for (let attempt = 1; attempt <= 2 && !committed; attempt++) {

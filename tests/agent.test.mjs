@@ -44,6 +44,18 @@ test('validateRepair rejects hardcoding the canonical price', () => {
     { forbiddenLiterals: ['8900', '89.00'] });
   assert.match(err, /hardcodes canonical/);
 });
+test('provider: MODEL_IMAGES=off sends text only and says so', async () => {
+  const bodies = [];
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (_url, init) => { bodies.push(JSON.parse(init.body)); return new Response(JSON.stringify({ choices: [{ message: { content: '{"ok":true}' } }] })); };
+  try {
+    const p = createProvider({ MODEL_PROVIDER: 'openai-compatible', MODEL_API_KEY: 'k', MODEL_IMAGES: 'off' });
+    assert.equal(p.supportsImages, false);
+    await p.chatJSON({ system: 's', user: 'u', images: ['data:image/png;base64,AAAA'] });
+    assert.equal(bodies[0].messages[1].content, 'u');
+    assert.equal(createProvider({ MODEL_API_KEY: 'k' }).supportsImages, true);
+  } finally { globalThis.fetch = realFetch; }
+});
 
 async function brokenCopy() {
   const dir = await mkdtemp(path.join(tmpdir(), 'acra-'));
