@@ -25,7 +25,7 @@ Updated: 2026-10-30 (audit fixes + fresh-store evaluation harness, branch `audit
 `eval/fresh-2026-10-30/`: 3 hidden-defect stores + 1 healthy control, authored after the harness fixes, validated offline (`node eval/fresh-2026-10-30/validate-fixtures.mjs`: all 4 VALID), rules in `PREREGISTRATION.md`. Needs one live run: `npm run eval:fresh` with `MODEL_API_KEY` in `.env`. Results land in `evidence/fresh-2026-10-30/` and are committed as produced.
 
 ## Pending owner actions
-1. Rotate the previously exposed Baseten API key — still pending. Replacement key only in local `.env`.
+1. ~~Rotate the exposed Baseten key~~ — not needed: that key has expired (owner-confirmed 2026-10-30). Any current key goes in local `.env` only.
 2. Review and merge branch `audit-fixes-2026-10-30`.
 3. Put `MODEL_API_KEY` (+ `BASETEN_API_KEY`) in `.env`, run `npm run eval:fresh` once, commit `evidence/fresh-2026-10-30/`.
 4. Decide on the local Windows path that commit `e661e16` (Mission 001) added to `artifacts/run-2026-10-28T15-26-11-133Z/history.json` (removed in `e5784df`, still in history): accept it, or rewrite history before going public.

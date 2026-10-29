@@ -21,7 +21,7 @@ npm run demo           # repeatable end-to-end demo with real Meta calls
 ```
 
 ## Public repository readiness checklist
-- [x] Tracked-file secret scan clean; keys only in env/`.env` (gitignored). The one Baseten key exposed in chat was never committed; **it has NOT been rotated yet — rotation is a pending owner action**
+- [x] Tracked-file secret scan clean; keys only in env/`.env` (gitignored). The one Baseten key exposed in chat was never committed; it has since expired (owner-confirmed 2026-10-30), so no rotation is needed
 - [x] No `.env`, `node_modules`, or eval result bundles tracked; local absolute paths sanitized from artifacts
 - [x] README: purpose, models, installation, demo commands, architecture pointers
 - [x] Continuity docs: `docs/STATUS.md`, `docs/DECISIONS.md` (D1–D14), `docs/LEAKAGE_AUDIT.md`, this file, `docs/DEMO_SCRIPT.md`

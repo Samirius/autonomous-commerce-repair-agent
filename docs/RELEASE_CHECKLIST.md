@@ -16,10 +16,10 @@ Everything below marked *owner* needs Samir; nothing here may be automated witho
 |---|---|---|
 | `MODEL_API_KEY` | Muse Wonder planner/investigator (Meta Model API) | Meta Model API dashboard |
 | `MODEL_PROVIDER` / `MODEL_NAME` / `MODEL_BASE_URL` / `MODEL_TIMEOUT_MS` | Optional (defaults: meta / muse-wonder-1.0 / api.meta.ai / 120000) | — |
-| `BASETEN_API_KEY` | Muse Spark Open reviewer — without it reviews are recorded as `unavailable` | Baseten dashboard. **The previously exposed key has NOT been rotated yet** |
+| `BASETEN_API_KEY` | Muse Spark Open reviewer — without it reviews are recorded as `unavailable` | Baseten dashboard. The key exposed in chat earlier has expired (owner-confirmed 2026-10-30); a live run needs a current key |
 
 ## Remaining actions, in order
-1. [ ] *owner* Rotate the exposed Baseten key; put the new one in local `.env` only
+1. [x] Previously exposed Baseten key: expired, no rotation needed (owner-confirmed 2026-10-30). Any current key goes in local `.env` only
 2. [ ] *owner* Review and merge `audit-fixes-2026-10-30` into `main`
 3. [ ] *owner* `.env` with `MODEL_API_KEY` (+ `BASETEN_API_KEY`); run `npm run demo` once (sanity) and `npm run eval:fresh` **once**; commit `evidence/fresh-2026-10-30/` exactly as produced
 4. [ ] *owner* Decide on the historical local path (commit `e661e16`): accept, or rewrite history before public release
