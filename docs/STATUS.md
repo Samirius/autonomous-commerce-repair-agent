@@ -22,13 +22,13 @@ Updated: 2026-10-30 (audit fixes + fresh-store evaluation harness, branch `audit
 - Muse Spark Open performs real in-process reviews of committed repairs in demo runs. The Mission 008 investigation-proof run predates that wiring; its repair was reviewed separately (`evidence/openweight-verifier-live-check.json`).
 
 ## Fresh-store evaluation (ready, not yet run)
-`eval/fresh-2026-10-30/`: 3 hidden-defect stores + 1 healthy control, authored after the harness fixes, validated offline (`node eval/fresh-2026-10-30/validate-fixtures.mjs`: all 4 VALID), rules in `PREREGISTRATION.md`. Needs one live run: `npm run eval:fresh` with `MODEL_API_KEY` in `.env`. Results land in `evidence/fresh-2026-10-30/` and are committed as produced.
+`eval/fresh-2026-10-30/`: 3 hidden-defect stores + 1 healthy control, authored after the harness fixes, validated offline (`node eval/fresh-2026-10-30/validate-fixtures.mjs`: all 4 VALID), rules in `PREREGISTRATION.md`. Needs one live run: `npm run eval:fresh` with `MODEL_API_KEY` in `.env`. Results land in `evidence/fresh-2026-10-30/<model>/` and are committed as produced. Meta API credits ran out on 2026-10-30, so the Meta run is blocked until credits are restored; a run with another provider is only a labelled harness check.
 
 ## Pending owner actions
 1. ~~Rotate the exposed Baseten key~~ — not needed: that key has expired (owner-confirmed 2026-10-30). Any current key goes in local `.env` only.
 2. Review and merge branch `audit-fixes-2026-10-30`.
 3. Put `MODEL_API_KEY` (+ `BASETEN_API_KEY`) in `.env`, run `npm run eval:fresh` once, commit `evidence/fresh-2026-10-30/`.
-4. Decide on the local Windows path that commit `e661e16` (Mission 001) added to `artifacts/run-2026-10-28T15-26-11-133Z/history.json` (removed in `e5784df`, still in history): accept it, or rewrite history before going public.
+4. Local Windows path in commit `e661e16` (removed in `e5784df`, still in history): **decided 2026-10-30, keep history as is.** It reveals only the Windows username; rewriting would change every commit id the docs and evidence cite.
 5. Approve making the repository public; record the video (`docs/STORYBOARD.md`); submit the form before 2026-11-04 21:00 EST (2026-11-05 04:00 Cairo).
 
 ## Known limitations

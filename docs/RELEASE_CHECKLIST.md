@@ -21,8 +21,8 @@ Everything below marked *owner* needs Samir; nothing here may be automated witho
 ## Remaining actions, in order
 1. [x] Previously exposed Baseten key: expired, no rotation needed (owner-confirmed 2026-10-30). Any current key goes in local `.env` only
 2. [ ] *owner* Review and merge `audit-fixes-2026-10-30` into `main`
-3. [ ] *owner* `.env` with `MODEL_API_KEY` (+ `BASETEN_API_KEY`); run `npm run demo` once (sanity) and `npm run eval:fresh` **once**; commit `evidence/fresh-2026-10-30/` exactly as produced
-4. [ ] *owner* Decide on the historical local path (commit `e661e16`): accept, or rewrite history before public release
+3. [ ] *owner* `.env` with `MODEL_API_KEY` (+ `BASETEN_API_KEY`); run `npm run demo` once (sanity) and `npm run eval:fresh` **once**; commit `evidence/fresh-2026-10-30/muse-wonder-1.0/` exactly as produced. Meta credits ran out on 2026-10-30; a GLM run is allowed only as a separately labelled harness check
+4. [x] Historical local path (commit `e661e16`): keep history as is (decided 2026-10-30; only the Windows username, and rewriting would break cited commit ids)
 5. [ ] *owner* Approve making the repository **public**; then check repo, `evidence/` and README render while logged out
 6. [ ] *owner* Record the three-minute video following `docs/STORYBOARD.md` — include the fresh-store table, misses included
 7. [ ] *owner* Submission form: Indie Developer track, theme *Build for Your World*, description from `docs/PROJECT.md`, repo + video links

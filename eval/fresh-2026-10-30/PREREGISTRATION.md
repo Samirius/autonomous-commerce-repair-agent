@@ -19,12 +19,12 @@ Validity is checked offline by `validate-fixtures.mjs` (no model calls): probe p
 
 ## Procedure
 1. Commit everything; record the harness commit SHA (the runner records it and flags uncommitted harness changes).
-2. Run `npm run eval:fresh` **once**. Each store gets exactly one live run of `src/discover.mjs` via `eval/external/run-external.mjs`; the oracle never reaches the agent.
-3. Commit `evidence/fresh-2026-10-30/` exactly as produced. No re-runs to improve numbers. If a run crashes for infrastructure reasons (HTTP error, timeout), it may be re-run once and the crash is reported alongside.
+2. Run `npm run eval:fresh` **once per model**. The entry's result is the Meta model run (`muse-wonder-1.0`). A run with any other provider (e.g. GLM via an OpenAI-compatible endpoint) goes to its own folder `evidence/fresh-2026-10-30/<model>/`, is labelled "not the entry's result", and is never presented as the Meta agent's performance. Each store gets exactly one live run of `src/discover.mjs` via `eval/external/run-external.mjs`; the oracle never reaches the agent.
+3. Commit `evidence/fresh-2026-10-30/<model>/` exactly as produced. No re-runs to improve numbers. If a run crashes for infrastructure reasons (HTTP error, timeout), it may be re-run once and the crash is reported alongside.
 
 ## Outcome classes (decided by agent state + oracle only)
 Buggy stores: `FOUND+REPAIRED` (confirmed, repaired, oracle passes after) · `REPAIRED-BUT-ORACLE-FAILS` · `FOUND-NOT-REPAIRED` · `SUSPECTED-NOT-CONFIRMED` · `MISSED (false healthy)` · `MISSED (other state)`.
 Control store: `CORRECT-HEALTHY` · `NO-FALSE-ALARM (other state)` · `FALSE-ALARM (code changed)`.
 
 ## What we will claim
-Exactly the table in `evidence/fresh-2026-10-30/RESULTS.md`, as "n = 3 defect stores + 1 control, one run each". No rates, no generalisation beyond that. Misses are reported in the README and the video with the same prominence as successes.
+Exactly the table in `evidence/fresh-2026-10-30/muse-wonder-1.0/RESULTS.md`, as "n = 3 defect stores + 1 control, one run each". No rates, no generalisation beyond that. Misses are reported in the README and the video with the same prominence as successes.

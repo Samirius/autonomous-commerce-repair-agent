@@ -10,7 +10,8 @@ import path from 'node:path';
 import { createProvider } from '../../src/provider.mjs';
 
 if (existsSync('.env')) process.loadEnvFile('.env');
-try { createProvider(); } catch (e) { console.error(`${e.message}\nThis evaluation makes live Meta Model API calls; put MODEL_API_KEY in .env first.`); process.exit(2); }
+let provider;
+try { provider = createProvider(); } catch (e) { console.error(`${e.message}\nThis evaluation makes live Meta Model API calls; put MODEL_API_KEY in .env first.`); process.exit(2); }
 
 const base = 'eval/fresh-2026-10-30';
 const stores = [
@@ -23,7 +24,10 @@ const harnessCommit = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'ut
 const dirty = execFileSync('git', ['status', '--porcelain', '--', 'src', 'scripts', 'eval/external', base], { encoding: 'utf8' }).trim();
 const stamp = new Date().toISOString().replace(/[:.]/g, '-');
 const outRoot = path.resolve('eval', 'results', `fresh-${stamp}`);
-const evidenceDir = path.join('evidence', 'fresh-2026-10-30');
+// One evidence folder per model: a run with any non-default model can never
+// be mixed up with (or overwrite) the Meta model's pre-registered results.
+const modelSlug = provider.model.replace(/[^A-Za-z0-9.-]+/g, '-');
+const evidenceDir = path.join('evidence', 'fresh-2026-10-30', modelSlug);
 await mkdir(evidenceDir, { recursive: true });
 
 // Pre-registered outcome classes (PREREGISTRATION.md). Decided only from the
@@ -63,10 +67,11 @@ for (const store of stores) {
   });
 }
 
-const report = { evaluation: 'fresh-stores-2026-10-30', harnessCommit, harnessDirty: !!dirty, ranAt: new Date().toISOString(), model: process.env.MODEL_NAME || 'muse-wonder-1.0', bundles: path.relative(process.cwd(), outRoot).split(path.sep).join('/'), rows };
+const report = { evaluation: 'fresh-stores-2026-10-30', harnessCommit, harnessDirty: !!dirty, ranAt: new Date().toISOString(), provider: provider.provider, model: provider.model, bundles: path.relative(process.cwd(), outRoot).split(path.sep).join('/'), rows };
 await writeFile(path.join(evidenceDir, 'results.json'), JSON.stringify(report, null, 2));
 const md = [
-  '# Fresh-store evaluation — results (one live run per store)',
+  `# Fresh-store evaluation — results for ${report.model} (one live run per store)`,
+  ...(report.model === 'muse-wonder-1.0' ? [] : ['', `> **Not the entry's result.** This run used \`${report.provider}/${report.model}\`, not Meta's Muse Wonder. It only shows the harness running on another provider.`]),
   '',
   `Harness commit \`${harnessCommit}\`${dirty ? ' (WARNING: uncommitted harness changes at run time)' : ''}; model \`${report.model}\`; run ${report.ranAt}.`,
   'Rules fixed in advance: `eval/fresh-2026-10-30/PREREGISTRATION.md`. Nothing below was re-run or edited.',
@@ -77,7 +82,7 @@ const md = [
   '',
   ...rows.map((r) => `- **${r.store}** verdict: ${(r.verdict?.suspectedIssue || r.verdict?.evidenceSummary || 'none').replace(/\s+/g, ' ').slice(0, 300)}${r.confirmation ? ` — confirmation expected ${r.confirmation.expected}, observed ${r.confirmation.observed}` : ''}`),
   '',
-  `Full bundles (gitignored): \`${report.bundles}\`. Replay: \`npm run replay -- evidence/fresh-2026-10-30/store-a-verification.json\`.`,
+  `Full bundles (gitignored): \`${report.bundles}\`. Replay: \`npm run replay -- ${evidenceDir.split(path.sep).join('/')}/store-a-verification.json\`.`,
 ].join('\n');
 await writeFile(path.join(evidenceDir, 'RESULTS.md'), md + '\n');
 console.log(`\n${md}`);
