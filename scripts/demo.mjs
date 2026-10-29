@@ -28,7 +28,7 @@ await cp(path.resolve('fixtures/demo-broken'), target, { recursive: true });
 
 console.log('=== Autonomous Commerce Repair Agent — demo ===');
 console.log(`Pristine broken fixture copied to a fresh target (fixture untouched).`);
-console.log(`Artifacts: ${demoRoot}\n--- agent run (real Meta API calls) ---`);
+console.log(`Artifacts: ${demoRoot}\n--- agent run (live model calls: ${provider.provider}/${provider.model}) ---`);
 const started = Date.now();
 const summary = await discoverAndRepair({ root: target, runDir, provider, verifier: createVerifier() });
 const elapsedS = Math.round((Date.now() - started) / 1000);
