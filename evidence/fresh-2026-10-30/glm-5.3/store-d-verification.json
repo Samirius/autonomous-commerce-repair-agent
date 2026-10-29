@@ -1,0 +1,127 @@
+{
+  "target": "target",
+  "state": "verified-healthy",
+  "investigation": {
+    "state": "verified-healthy",
+    "observations": 2,
+    "turns": 3,
+    "verdict": {
+      "verdict": "healthy",
+      "evidenceSummary": "Mixed-product cart (2×desk-lamp + monitor-arm + cable-tray, qty 4) produced subtotal 22600 minor matching catalog rules; DESK15 applied 15% discount of 3390 for a correct 19210 total; independent quantity-change scenario (+1 desk-lamp) raised count 2→3 and total 8300→14200, exactly +5900; all displayed prices match catalog; no console errors."
+    },
+    "confirmation": null,
+    "coverage": {
+      "mixedCart": true,
+      "promo": true,
+      "quantity": true
+    },
+    "tokensUsed": 0
+  },
+  "initialFailing": [],
+  "repairsCommitted": 0,
+  "finalPass": true,
+  "finalFailing": [],
+  "receipts": [
+    {
+      "status": "investigation-observation",
+      "request": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "desk-lamp",
+            "qty": 2
+          },
+          {
+            "id": "monitor-arm",
+            "qty": 1
+          },
+          {
+            "id": "cable-tray",
+            "qty": 1
+          }
+        ],
+        "promoCode": "DESK15"
+      },
+      "observation": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "desk-lamp",
+            "qty": 2
+          },
+          {
+            "id": "monitor-arm",
+            "qty": 1
+          },
+          {
+            "id": "cable-tray",
+            "qty": 1
+          }
+        ],
+        "promoApplied": "DESK15",
+        "cart": {
+          "count": 4,
+          "totalMinor": 19210
+        },
+        "cartState": {
+          "lines": [
+            "Arc Desk Lamp\n      −\n      2\n      +\n      $118.00Monitor Arm Pro\n      −\n      1\n      +\n      $89.00Under-desk Cable Tray\n      −\n      1\n      +\n      $19.0"
+          ],
+          "subtotalMinor": 22600,
+          "discountMinor": 3390,
+          "promoStatus": "DESK15 applied: 15% off",
+          "checkoutText": "Checkout"
+        },
+        "catalogRuleSummary": {
+          "promoCodes": {
+            "DESK15": 15
+          }
+        },
+        "errors": []
+      },
+      "model": {
+        "model": "glm-5.3",
+        "id": null,
+        "usage": null
+      }
+    },
+    {
+      "status": "investigation-observation",
+      "request": {
+        "kind": "quantity-change",
+        "items": [
+          {
+            "id": "wrist-rest",
+            "qty": 1
+          },
+          {
+            "id": "desk-lamp",
+            "qty": 1
+          }
+        ],
+        "productId": "desk-lamp",
+        "delta": 1
+      },
+      "observation": {
+        "kind": "quantity-change",
+        "target": "desk-lamp",
+        "delta": 1,
+        "beforeQty": {
+          "count": 2,
+          "totalMinor": 8300
+        },
+        "afterQty": {
+          "count": 3,
+          "totalMinor": 14200
+        },
+        "errors": []
+      },
+      "model": {
+        "model": "glm-5.3",
+        "id": null,
+        "usage": null
+      }
+    }
+  ],
+  "finishedAt": "2026-10-29T23:52:19.147Z"
+}

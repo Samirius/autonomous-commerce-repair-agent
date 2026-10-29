@@ -1,0 +1,212 @@
+{
+  "target": "target",
+  "state": "confirmed-issue-repaired",
+  "investigation": {
+    "state": "confirmed-issue-repaired",
+    "observations": 2,
+    "turns": 3,
+    "verdict": {
+      "verdict": "suspected",
+      "suspectedIssue": "Bulk discount (minQty 4, 10% off) appears not to be applied independently of the promo code. In turn 1 the cart had 4 items (2×house-blend, 1×single-origin, 1×cold-brew-kit, subtotal $90.00), which meets the bulkDiscount minQty of 4, yet the only discount shown was $9.00 attributed to BREW10 (total $81.00). If bulk and promo stack, the total should be $72.90; more importantly, if the bulk rule applies at all on its own, a 4-item cart with NO promo code must total $81.00, not $90.00. The single observation cannot distinguish 'bulk silently skipped' from 'intentionally non-stacking', so confirmation requires the same cart without any promo code.",
+      "evidenceSummary": "Turn 1 mixed cart (qty 4, subtotal 9000 minor) with BREW10 showed discountMinor 900 and promoStatus 'BREW10 applied: 10% off' — no separate line or evidence of the catalog's bulkDiscount rule (minQty 4, 10% off) being applied even though the cart quantity threshold was met. Turn 2 quantity change behaved correctly (1450→2900 for qty 1→2). Price display and cart-count checks all passed.",
+      "confirmation": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "house-blend",
+            "qty": 2
+          },
+          {
+            "id": "single-origin",
+            "qty": 1
+          },
+          {
+            "id": "cold-brew-kit",
+            "qty": 1
+          }
+        ]
+      }
+    },
+    "confirmation": {
+      "spec": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "house-blend",
+            "qty": 2
+          },
+          {
+            "id": "single-origin",
+            "qty": 1
+          },
+          {
+            "id": "cold-brew-kit",
+            "qty": 1
+          }
+        ]
+      },
+      "normalizedItems": [
+        {
+          "id": "house-blend",
+          "qty": 2
+        },
+        {
+          "id": "single-origin",
+          "qty": 1
+        },
+        {
+          "id": "cold-brew-kit",
+          "qty": 1
+        }
+      ],
+      "promoApplied": null,
+      "expected": 8100,
+      "observed": 9000,
+      "confirmed": true
+    },
+    "coverage": {
+      "mixedCart": true,
+      "promo": true,
+      "quantity": true
+    },
+    "tokensUsed": 0
+  },
+  "initialFailing": [],
+  "repairsCommitted": 1,
+  "finalPass": true,
+  "finalFailing": [],
+  "receipts": [
+    {
+      "status": "investigation-observation",
+      "request": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "house-blend",
+            "qty": 2
+          },
+          {
+            "id": "single-origin",
+            "qty": 1
+          },
+          {
+            "id": "cold-brew-kit",
+            "qty": 1
+          }
+        ],
+        "promoCode": "BREW10"
+      },
+      "observation": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "house-blend",
+            "qty": 2
+          },
+          {
+            "id": "single-origin",
+            "qty": 1
+          },
+          {
+            "id": "cold-brew-kit",
+            "qty": 1
+          }
+        ],
+        "promoApplied": "BREW10",
+        "cart": {
+          "count": 4,
+          "totalMinor": 8100
+        },
+        "cartState": {
+          "lines": [
+            "House Blend 250g\n      −\n      2\n      +\n      $29.00Single Origin Ethiopia\n      −\n      1\n      +\n      $22.00Cold Brew Kit\n      −\n      1\n      +\n      $39."
+          ],
+          "subtotalMinor": 9000,
+          "discountMinor": 900,
+          "promoStatus": "BREW10 applied: 10% off",
+          "checkoutText": "Checkout"
+        },
+        "catalogRuleSummary": {
+          "bulkDiscount": {
+            "minQty": 4,
+            "percentOff": 10
+          },
+          "promoCodes": {
+            "BREW10": 10
+          }
+        },
+        "errors": []
+      },
+      "model": {
+        "model": "glm-5.3",
+        "id": null,
+        "usage": null
+      }
+    },
+    {
+      "status": "investigation-observation",
+      "request": {
+        "kind": "quantity-change",
+        "items": [
+          {
+            "id": "house-blend",
+            "qty": 1
+          }
+        ],
+        "productId": "house-blend",
+        "delta": 1
+      },
+      "observation": {
+        "kind": "quantity-change",
+        "target": "house-blend",
+        "delta": 1,
+        "beforeQty": {
+          "count": 1,
+          "totalMinor": 1450
+        },
+        "afterQty": {
+          "count": 2,
+          "totalMinor": 2900
+        },
+        "errors": []
+      },
+      "model": {
+        "model": "glm-5.3",
+        "id": null,
+        "usage": null
+      }
+    },
+    {
+      "status": "committed",
+      "phase": "confirmed-repair",
+      "repair": {
+        "diagnosis": "Off-by-one in the bulk discount threshold in totals(): the condition uses count > bulkDiscount.minQty, so a cart of exactly 4 items never qualifies. The rule requires minQty 4 (i.e., 4 or more), so bulk discount is silently skipped for the confirmed 4-item cart.",
+        "evidenceSummary": "Cart 2×house-blend (2×1450) + 1×single-origin (2200) + 1×cold-brew-kit (3900) = subtotal 9000 minor, count = 4. With promoPercent 0 the code path afterBulk = bulk && count > 4 ? ... : subtotal evaluates false, so discount = 0 and total = 9000, matching observedTotalMinor 9000. Correct total per catalog rule is 9000 × 0.9 = 8100.",
+        "file": "app.js",
+        "old": "count > bulk.minQty",
+        "new": "count >= bulk.minQty",
+        "rationale": "Single-token fix aligning the comparison with the rule's minimum-quantity semantics (minQty 4 means ≥ 4). With the fix and no promo code, the confirmed scenario totals 8100 ($81.00); with BREW10 it stacks correctly (9000 − 900 bulk − 810 promo = 7290). Only allowed pricing file app.js is touched; 'old' occurs exactly once; no execution/process/shell code; catalog values are not hardcoded (rule still read from window.CATALOG)."
+      },
+      "model": {
+        "provider": "hermes/zai",
+        "model": "glm-5.3",
+        "id": null,
+        "usage": null
+      },
+      "verify": {
+        "probePass": true,
+        "scenarioTotalMinor": 8100,
+        "expected": 8100
+      },
+      "openWeightVerification": null,
+      "review": {
+        "deterministic": "passed",
+        "openWeight": "unavailable",
+        "openWeightVerdict": null,
+        "humanReviewRequired": false,
+        "action": "none (review unavailable)"
+      }
+    }
+  ],
+  "finishedAt": "2026-10-29T23:46:46.694Z"
+}

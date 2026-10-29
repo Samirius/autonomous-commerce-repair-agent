@@ -1,0 +1,115 @@
+{
+  "target": "target",
+  "state": "verified-healthy",
+  "investigation": {
+    "state": "verified-healthy",
+    "observations": 2,
+    "turns": 3,
+    "verdict": {
+      "verdict": "healthy",
+      "evidenceSummary": "All required commerce workflows actively verified against the catalog. (1) Mixed cart: 2x Arc Desk Lamp ($118.00) + 1x Felt Wrist Rest ($24.00) = subtotal 14200 minor, matching catalog 2*5900+2400. (2) Promo DESK15 on the mixed cart: discount 2130 minor = exactly 15% of 14200, total 12070 minor, promo status rendered correctly. (3) Quantity change: Monitor Arm Pro qty 1->2 grew count 1->2 and total 8900->17800 minor (8900 each), no off-by-unit or rounding defects. Cart count matched clicks, promo/checkout/CTA interactions usable across mobile/small/desktop, no console errors, displayed prices match catalog for all 4 products. Arithmetic is consistent across every scenario; no discrepancy found."
+    },
+    "confirmation": null,
+    "coverage": {
+      "mixedCart": true,
+      "promo": true,
+      "quantity": true
+    },
+    "tokensUsed": 0
+  },
+  "initialFailing": [],
+  "repairsCommitted": 0,
+  "finalPass": true,
+  "finalFailing": [],
+  "receipts": [
+    {
+      "status": "investigation-observation",
+      "request": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "desk-lamp",
+            "qty": 2
+          },
+          {
+            "id": "wrist-rest",
+            "qty": 1
+          }
+        ],
+        "promoCode": "DESK15"
+      },
+      "observation": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "desk-lamp",
+            "qty": 2
+          },
+          {
+            "id": "wrist-rest",
+            "qty": 1
+          }
+        ],
+        "promoApplied": "DESK15",
+        "cart": {
+          "count": 3,
+          "totalMinor": 12070
+        },
+        "cartState": {
+          "lines": [
+            "Arc Desk Lamp\n      −\n      2\n      +\n      $118.00Felt Wrist Rest\n      −\n      1\n      +\n      $24.00"
+          ],
+          "subtotalMinor": 14200,
+          "discountMinor": 2130,
+          "promoStatus": "DESK15 applied: 15% off",
+          "checkoutText": "Checkout"
+        },
+        "catalogRuleSummary": {
+          "promoCodes": {
+            "DESK15": 15
+          }
+        },
+        "errors": []
+      },
+      "model": {
+        "model": "glm-5.3",
+        "id": null,
+        "usage": null
+      }
+    },
+    {
+      "status": "investigation-observation",
+      "request": {
+        "kind": "quantity-change",
+        "items": [
+          {
+            "id": "monitor-arm",
+            "qty": 1
+          }
+        ],
+        "productId": "monitor-arm",
+        "delta": 1
+      },
+      "observation": {
+        "kind": "quantity-change",
+        "target": "monitor-arm",
+        "delta": 1,
+        "beforeQty": {
+          "count": 1,
+          "totalMinor": 8900
+        },
+        "afterQty": {
+          "count": 2,
+          "totalMinor": 17800
+        },
+        "errors": []
+      },
+      "model": {
+        "model": "glm-5.3",
+        "id": null,
+        "usage": null
+      }
+    }
+  ],
+  "finishedAt": "2026-10-29T23:48:31.816Z"
+}

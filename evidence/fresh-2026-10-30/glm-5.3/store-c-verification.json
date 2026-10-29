@@ -1,0 +1,127 @@
+{
+  "target": "target",
+  "state": "verified-healthy",
+  "investigation": {
+    "state": "verified-healthy",
+    "observations": 2,
+    "turns": 4,
+    "verdict": {
+      "verdict": "healthy",
+      "evidenceSummary": "Mixed-cart scenario (2 wool-socks + 1 rain-shell + 1 field-cap) subtotal 18100 minor matches catalog (2*1800+11900+2600); TRAIL10 applied to the MIXED cart discounts 1810 (10%) for a total of 16290, exactly the catalog rule. Quantity change on field-cap went 4400 -> 7000 minor (1800+2600 -> 1800+2*2600), consistent. Cart count 4 matches item count. All probes (pricing, cart totals, promo, checkout, responsiveness) pass with no console errors."
+    },
+    "confirmation": null,
+    "coverage": {
+      "mixedCart": true,
+      "promo": true,
+      "quantity": true
+    },
+    "tokensUsed": 0
+  },
+  "initialFailing": [],
+  "repairsCommitted": 0,
+  "finalPass": true,
+  "finalFailing": [],
+  "receipts": [
+    {
+      "status": "investigation-observation",
+      "request": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "wool-socks",
+            "qty": 2
+          },
+          {
+            "id": "rain-shell",
+            "qty": 1
+          },
+          {
+            "id": "field-cap",
+            "qty": 1
+          }
+        ],
+        "promoCode": "TRAIL10"
+      },
+      "observation": {
+        "kind": "cart-scenario",
+        "items": [
+          {
+            "id": "wool-socks",
+            "qty": 2
+          },
+          {
+            "id": "rain-shell",
+            "qty": 1
+          },
+          {
+            "id": "field-cap",
+            "qty": 1
+          }
+        ],
+        "promoApplied": "TRAIL10",
+        "cart": {
+          "count": 4,
+          "totalMinor": 16290
+        },
+        "cartState": {
+          "lines": [
+            "Merino Hiking Socks\n      −\n      2\n      +\n      $36.00Packable Rain Shell\n      −\n      1\n      +\n      $119.00Waxed Field Cap\n      −\n      1\n      +\n      $"
+          ],
+          "subtotalMinor": 18100,
+          "discountMinor": 1810,
+          "promoStatus": "TRAIL10 applied: 10% off",
+          "checkoutText": "Checkout"
+        },
+        "catalogRuleSummary": {
+          "promoCodes": {
+            "TRAIL10": 10
+          }
+        },
+        "errors": []
+      },
+      "model": {
+        "model": "glm-5.3",
+        "id": null,
+        "usage": null
+      }
+    },
+    {
+      "status": "investigation-observation",
+      "request": {
+        "kind": "quantity-change",
+        "items": [
+          {
+            "id": "wool-socks",
+            "qty": 1
+          },
+          {
+            "id": "field-cap",
+            "qty": 1
+          }
+        ],
+        "productId": "field-cap",
+        "delta": 1
+      },
+      "observation": {
+        "kind": "quantity-change",
+        "target": "field-cap",
+        "delta": 1,
+        "beforeQty": {
+          "count": 2,
+          "totalMinor": 4400
+        },
+        "afterQty": {
+          "count": 3,
+          "totalMinor": 7000
+        },
+        "errors": []
+      },
+      "model": {
+        "model": "glm-5.3",
+        "id": null,
+        "usage": null
+      }
+    }
+  ],
+  "finishedAt": "2026-10-29T23:50:32.494Z"
+}

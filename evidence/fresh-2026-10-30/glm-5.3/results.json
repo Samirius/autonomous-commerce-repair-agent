@@ -1,0 +1,146 @@
+{
+  "evaluation": "fresh-stores-2026-10-30",
+  "harnessCommit": "990f684294f34fd466f18103acb3e41d0f8b7c77",
+  "harnessDirty": false,
+  "ranAt": "2026-10-29T23:52:20.231Z",
+  "provider": "hermes/zai",
+  "model": "glm-5.3",
+  "bundles": "eval/results/fresh-2026-10-29T23-44-17-309Z",
+  "rows": [
+    {
+      "store": "store-a",
+      "buggy": true,
+      "outcome": "FOUND+REPAIRED",
+      "agentState": "confirmed-issue-repaired",
+      "observations": 2,
+      "verdict": {
+        "verdict": "suspected",
+        "suspectedIssue": "Bulk discount (minQty 4, 10% off) appears not to be applied independently of the promo code. In turn 1 the cart had 4 items (2×house-blend, 1×single-origin, 1×cold-brew-kit, subtotal $90.00), which meets the bulkDiscount minQty of 4, yet the only discount shown was $9.00 attributed to BREW10 (total $81.00). If bulk and promo stack, the total should be $72.90; more importantly, if the bulk rule applies at all on its own, a 4-item cart with NO promo code must total $81.00, not $90.00. The single observation cannot distinguish 'bulk silently skipped' from 'intentionally non-stacking', so confirmation requires the same cart without any promo code.",
+        "evidenceSummary": "Turn 1 mixed cart (qty 4, subtotal 9000 minor) with BREW10 showed discountMinor 900 and promoStatus 'BREW10 applied: 10% off' — no separate line or evidence of the catalog's bulkDiscount rule (minQty 4, 10% off) being applied even though the cart quantity threshold was met. Turn 2 quantity change behaved correctly (1450→2900 for qty 1→2). Price display and cart-count checks all passed.",
+        "confirmation": {
+          "kind": "cart-scenario",
+          "items": [
+            {
+              "id": "house-blend",
+              "qty": 2
+            },
+            {
+              "id": "single-origin",
+              "qty": 1
+            },
+            {
+              "id": "cold-brew-kit",
+              "qty": 1
+            }
+          ]
+        }
+      },
+      "confirmation": {
+        "spec": {
+          "kind": "cart-scenario",
+          "items": [
+            {
+              "id": "house-blend",
+              "qty": 2
+            },
+            {
+              "id": "single-origin",
+              "qty": 1
+            },
+            {
+              "id": "cold-brew-kit",
+              "qty": 1
+            }
+          ]
+        },
+        "normalizedItems": [
+          {
+            "id": "house-blend",
+            "qty": 2
+          },
+          {
+            "id": "single-origin",
+            "qty": 1
+          },
+          {
+            "id": "cold-brew-kit",
+            "qty": 1
+          }
+        ],
+        "promoApplied": null,
+        "expected": 8100,
+        "observed": 9000,
+        "confirmed": true
+      },
+      "repairsCommitted": 1,
+      "changedFiles": [
+        "app.js"
+      ],
+      "oracleBefore": false,
+      "oracleAfter": true,
+      "oracleAfterFailing": [],
+      "tokens": 0
+    },
+    {
+      "store": "store-b",
+      "buggy": true,
+      "outcome": "MISSED (false healthy)",
+      "agentState": "verified-healthy",
+      "observations": 2,
+      "verdict": {
+        "verdict": "healthy",
+        "evidenceSummary": "All required commerce workflows actively verified against the catalog. (1) Mixed cart: 2x Arc Desk Lamp ($118.00) + 1x Felt Wrist Rest ($24.00) = subtotal 14200 minor, matching catalog 2*5900+2400. (2) Promo DESK15 on the mixed cart: discount 2130 minor = exactly 15% of 14200, total 12070 minor, promo status rendered correctly. (3) Quantity change: Monitor Arm Pro qty 1->2 grew count 1->2 and total 8900->17800 minor (8900 each), no off-by-unit or rounding defects. Cart count matched clicks, promo/checkout/CTA interactions usable across mobile/small/desktop, no console errors, displayed prices match catalog for all 4 products. Arithmetic is consistent across every scenario; no discrepancy found."
+      },
+      "confirmation": null,
+      "repairsCommitted": 0,
+      "changedFiles": [],
+      "oracleBefore": false,
+      "oracleAfter": false,
+      "oracleAfterFailing": [
+        "all four products",
+        "all four + DESK15"
+      ],
+      "tokens": 0
+    },
+    {
+      "store": "store-c",
+      "buggy": true,
+      "outcome": "MISSED (false healthy)",
+      "agentState": "verified-healthy",
+      "observations": 2,
+      "verdict": {
+        "verdict": "healthy",
+        "evidenceSummary": "Mixed-cart scenario (2 wool-socks + 1 rain-shell + 1 field-cap) subtotal 18100 minor matches catalog (2*1800+11900+2600); TRAIL10 applied to the MIXED cart discounts 1810 (10%) for a total of 16290, exactly the catalog rule. Quantity change on field-cap went 4400 -> 7000 minor (1800+2600 -> 1800+2*2600), consistent. Cart count 4 matches item count. All probes (pricing, cart totals, promo, checkout, responsiveness) pass with no console errors."
+      },
+      "confirmation": null,
+      "repairsCommitted": 0,
+      "changedFiles": [],
+      "oracleBefore": false,
+      "oracleAfter": false,
+      "oracleAfterFailing": [
+        "3x wool-socks",
+        "3x wool-socks + field-cap",
+        "3x wool-socks + TRAIL10"
+      ],
+      "tokens": 0
+    },
+    {
+      "store": "store-d",
+      "buggy": false,
+      "outcome": "CORRECT-HEALTHY",
+      "agentState": "verified-healthy",
+      "observations": 2,
+      "verdict": {
+        "verdict": "healthy",
+        "evidenceSummary": "Mixed-product cart (2×desk-lamp + monitor-arm + cable-tray, qty 4) produced subtotal 22600 minor matching catalog rules; DESK15 applied 15% discount of 3390 for a correct 19210 total; independent quantity-change scenario (+1 desk-lamp) raised count 2→3 and total 8300→14200, exactly +5900; all displayed prices match catalog; no console errors."
+      },
+      "confirmation": null,
+      "repairsCommitted": 0,
+      "changedFiles": [],
+      "oracleBefore": true,
+      "oracleAfter": true,
+      "oracleAfterFailing": [],
+      "tokens": 0
+    }
+  ]
+}
