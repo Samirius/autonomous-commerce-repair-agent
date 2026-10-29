@@ -4,7 +4,7 @@ Deadline: **Wed 2026-11-04 21:00 EST = Thu 2026-11-05 04:00 Cairo.** Target: sub
 Everything below marked *owner* needs Samir; nothing here may be automated without his explicit approval.
 
 ## Verified by engineering (2026-10-30, branch `audit-fixes-2026-10-30`)
-- [x] Fresh clone → `npm ci` → `npx playwright install chromium` → `npm test` **32/32 pass** (no key needed)
+- [x] Fresh clone → `npm ci` → `npx playwright install chromium` → `npm test` **33/33 pass** (no key needed)
 - [x] Full-history secret scan (`git log -p --all`, key/token patterns): no credentials found
 - [x] `LICENSE` (MIT) added
 - [x] `npm run replay` works without a key; `npm run demo` without a key exits cleanly with that hint

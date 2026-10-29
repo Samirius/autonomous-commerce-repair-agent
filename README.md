@@ -18,7 +18,7 @@ cd autonomous-commerce-repair-agent
 npm install
 npx playwright install chromium   # one-time browser download, if not already cached
 cp .env.example .env              # fill in the keys below
-npm test                          # 32 tests, no API key needed
+npm test                          # 33 tests, no API key needed
 npm run replay                    # no key? replay the recorded runs (no model calls)
 ```
 
@@ -30,7 +30,7 @@ BASETEN_API_KEY=...      # Baseten key (Muse Spark Open reviewer) — optional b
 # MODEL_PROVIDER=meta  MODEL_NAME=muse-wonder-1.0  MODEL_BASE_URL=https://api.meta.ai/v1
 ```
 
-Swap models/providers with env vars only (`MODEL_PROVIDER=openai-compatible`, `MODEL_BASE_URL`, `MODEL_NAME`; `MODEL_IMAGES=off` for a text-only model, recorded as `vision.included: false`) — no code changes. The entry's evidence comes from Meta models; any run on another provider is stored and labelled separately.
+Swap models/providers with env vars only (`MODEL_PROVIDER=openai-compatible`, `MODEL_BASE_URL`, `MODEL_NAME`; `MODEL_IMAGES=off` for a text-only model, recorded as `vision.included: false`) — no code changes. `MODEL_PROVIDER=hermes` routes calls through a local Hermes agent CLI (default GLM 5.3 via z.ai) so no key is stored in this repo; it is text-only and returns no response ids or token counts. The entry's evidence comes from Meta models; any run on another provider is stored and labelled separately.
 
 ## Two different modes — do not confuse them
 

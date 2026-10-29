@@ -48,5 +48,8 @@ The Mission 008 coverage rule was introduced after a miss on its own target, so 
 ## D17 — Non-Meta provider runs, clearly separated (2026-10-30)
 Meta API credits ran out on 2026-10-30. The public event page asks participants to use Meta models but does not prohibit others; the binding Official Rules were not available to check. Decision: the Oct 28 recorded runs with real Meta models remain the entry's core evidence. New live runs may use another OpenAI-compatible provider (owner chose GLM 5.3 via z.ai) and are stored per model and labelled "not the entry's result". `MODEL_IMAGES=off` supports text-only models without falsely recording vision input.
 
+## D18 — Hermes provider for GLM runs (2026-10-30)
+Owner chose GLM 5.3 for new live runs. Instead of copying a z.ai key into this repo's `.env`, `MODEL_PROVIDER=hermes` calls the owner's local Hermes CLI in one-shot mode (`hermes -z <prompt> --provider zai -m glm-5.3`), which holds the credentials. Trade-offs, recorded in every run: text only (no screenshots), no response ids or token usage, ~25–35 s per call, Hermes' web toolset stays enabled but the prompt forbids tool use. Added before any fresh-store run; the harness is frozen from this commit.
+
 ## D4 — Run artifacts as the memory (2026-10-28)
 Each run writes `artifacts/run-<ts>/` (screenshots, evidence, model decision, diff, verification, history) and appends a summary line to `memory/runs.jsonl`. Rationale: judges and future agents can audit exactly what the model decided and what the tests returned — no fabricated history.

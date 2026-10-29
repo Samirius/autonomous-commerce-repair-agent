@@ -4,7 +4,7 @@ Updated: 2026-10-30 (audit fixes + fresh-store evaluation harness, branch `audit
 
 ## Current state
 - Repository: `Samirius/autonomous-commerce-repair-agent`, **public since 2026-10-30** (owner-approved). The audit work (PR #1) was fast-forwarded into `main` on 2026-10-30.
-- Tests: **32/32** (`npm test`, no API key needed), verified from a fresh clone on 2026-10-30.
+- Tests: **33/33** (`npm test`, no API key needed), verified from a fresh clone on 2026-10-30.
 - Licence: MIT (`LICENSE`).
 - Keyless viewing: `npm run replay` prints the recorded evidence trails; `npm run demo` without a key now exits with that hint instead of a stack trace.
 

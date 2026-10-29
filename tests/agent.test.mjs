@@ -56,6 +56,19 @@ test('provider: MODEL_IMAGES=off sends text only and says so', async () => {
     assert.equal(createProvider({ MODEL_API_KEY: 'k' }).supportsImages, true);
   } finally { globalThis.fetch = realFetch; }
 });
+test('provider: hermes needs no key, sends text only, parses fenced JSON', async () => {
+  const calls = [];
+  const runCommand = async (bin, args) => { calls.push({ bin, args }); return '```json\n{"verdict":"healthy"}\n```\n'; };
+  const p = createProvider({ MODEL_PROVIDER: 'hermes', HERMES_BIN: 'hermes-test' }, { runCommand });
+  assert.equal(p.supportsImages, false);
+  const r = await p.chatJSON({ system: 'sys', user: 'task "quoted"', images: ['data:image/png;base64,AAAA'] });
+  assert.deepEqual(r.parsed, { verdict: 'healthy' });
+  assert.equal(r.provider, 'hermes/zai');
+  assert.equal(r.model, 'glm-5.3');
+  assert.deepEqual(calls[0].args.slice(2), ['--provider', 'zai', '-m', 'glm-5.3', '-t', 'web']);
+  assert.match(calls[0].args[1], /task "quoted"/);
+  assert.doesNotMatch(calls[0].args[1], /base64/);
+});
 
 async function brokenCopy() {
   const dir = await mkdtemp(path.join(tmpdir(), 'acra-'));
